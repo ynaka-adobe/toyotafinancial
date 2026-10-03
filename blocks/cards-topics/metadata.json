@@ -1,0 +1,25 @@
+{
+  "variantName": "cards-topics",
+  "baseBlock": "cards",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "compact",
+    "imagePattern": "noimg",
+    "structure": "grid of link tiles",
+    "columns": 3
+  },
+  "contentPattern": "link-tile-grid",
+  "options": [],
+  "memberVariantIds": [],
+  "sourceContext": {
+    "originUrl": "https://www.toyotafinancial.com/us/en/planning_tools/faq.html",
+    "originPage": "Toyota Financial FAQ",
+    "blockPosition": "middle"
+  },
+  "usage": {
+    "pagesUsing": [],
+    "reuseCount": 0,
+    "lastUsed": "2026-10-03T00:00:00.000Z"
+  }
+}

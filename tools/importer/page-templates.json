@@ -128,9 +128,44 @@
         "https://www.toyotafinancial.com/us/en/planning_tools/faq.html"
       ],
       "representativeUrl": "https://www.toyotafinancial.com/us/en/planning_tools/faq.html",
-      "description": "To be named in naming step",
-      "blocks": [],
-      "urlPattern": "/us/en/planning_tools/*"
+      "description": "FAQ landing page: full-width banner image, Popular Topics heading and a grid of 38 FAQ topic link tiles.",
+      "blocks": [
+        {
+          "name": "cards-topics",
+          "instances": [
+            "#main-content .screenFade > .categorylist .mgb-40"
+          ]
+        }
+      ],
+      "urlPattern": "/us/en/planning_tools/*",
+      "sections": [
+        {
+          "id": "rc7",
+          "name": "page-banner",
+          "selector": [
+            "#main-content .screenFade > .faq-banner-component"
+          ],
+          "style": "page-banner",
+          "blocks": [],
+          "defaultContent": [
+            "#main-content .screenFade > .faq-banner-component .top-section"
+          ]
+        },
+        {
+          "id": "rc8",
+          "name": "popular-topics",
+          "selector": [
+            "#main-content .screenFade > .categorylist"
+          ],
+          "style": null,
+          "blocks": [
+            "cards-topics"
+          ],
+          "defaultContent": [
+            "#main-content .screenFade > .categorylist .faq-para"
+          ]
+        }
+      ]
     },
     {
       "name": "sitemap",

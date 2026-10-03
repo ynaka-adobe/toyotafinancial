@@ -46,7 +46,9 @@
  *   a.js-external-tp (empty)      -> empty anchor in the community card caption
  *   h1-h6 > b|strong (sole child) -> unwrapped so headings are plain
  *                                    (e.g. <h3><b>Our Passion</b><br></h3>)
- *   .banner-component .top-section -> page banner. The live page has NO <img>; the image is an
+ *   p.faq-para                    -> h2 (FAQ landing "Popular Topics" label)
+ *   .banner-component .top-section, .faq-banner-component .top-section
+ *                                 -> page banner. The live page has NO <img>; the image is an
  *                                    inline (or computed) CSS background-image with a Scene7 URL.
  *                                    It is replaced by a real <img> (alt from the element's alt
  *                                    attribute) so the DM transformer rewrites it like any other
@@ -122,8 +124,9 @@ export default function transform(hookName, element, payload) {
   if (hookName === TransformHook.beforeTransform) {
     const doc = element.ownerDocument;
 
-    // about-us page banner: CSS background-image -> real <img>.
-    element.querySelectorAll('.banner-component .top-section').forEach((topSection) => {
+    // page banners (about-us .banner-component, FAQ .faq-banner-component):
+    // CSS background-image -> real <img>.
+    element.querySelectorAll('.banner-component .top-section, .faq-banner-component .top-section').forEach((topSection) => {
       const src = resolveImageUrl(findBannerImageUrl(topSection));
       if (!src) return;
       const existingImg = topSection.querySelector('img');
@@ -161,6 +164,13 @@ export default function transform(hookName, element, payload) {
     // main-text section fallback. Non-empty ones (policy text/table) are kept.
     element.querySelectorAll('.one-column-component').forEach((el) => {
       if (isEmptyContainer(el)) el.remove();
+    });
+
+    // FAQ landing: the "Popular Topics" label is a styled <p>; author it as a heading.
+    element.querySelectorAll('p.faq-para').forEach((p) => {
+      const h2 = doc.createElement('h2');
+      h2.textContent = p.textContent.trim();
+      p.replaceWith(h2);
     });
 
     // about-us: empty external-link anchors (no text, no image) — removed before

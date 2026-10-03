@@ -1,0 +1,62 @@
+/* cards-topics: boxed text-only link tiles (source FAQ .categorylist)
+   1 column on mobile, 3 columns with a 30px gutter from 900px */
+
+.cards-topics {
+  color: var(--text-color);
+}
+
+.cards-topics > ul {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cards-topics > ul > li {
+  display: flex;
+  min-width: 0;
+}
+
+/* tile: the link itself, so the whole box is clickable */
+.cards-topics .cards-topics-tile {
+  box-sizing: border-box;
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 75px;
+  padding: 10px 20px;
+  border: 1px solid rgb(0 0 0 / 8%);
+  background-color: var(--background-color);
+  box-shadow: 0 0 4px rgb(0 0 0 / 20%);
+  font-family: var(--body-font-family);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 24px;
+  color: var(--text-color);
+  text-align: center;
+  overflow-wrap: anywhere;
+  transition: box-shadow 0.2s ease;
+}
+
+.cards-topics a.cards-topics-tile:any-link,
+.cards-topics a.cards-topics-tile:hover,
+.cards-topics a.cards-topics-tile:focus {
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+/* hover darkens the shadow only */
+.cards-topics a.cards-topics-tile:hover,
+.cards-topics a.cards-topics-tile:focus-visible {
+  box-shadow: 0 2px 6px rgb(0 0 0 / 50%);
+}
+
+@media (width >= 900px) {
+  .cards-topics > ul {
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 30px;
+  }
+}
