@@ -47,6 +47,9 @@ function groupByHeading(section, className) {
   return groups;
 }
 
+// production site: pages not yet migrated are linked there and open in the same tab
+const SITE_ORIGIN = 'https://www.toyotafinancial.com';
+
 /**
  * Image-only links get an accessible name from their image; links to other hosts open in a new tab.
  * @param {Element} root footer root
@@ -56,7 +59,8 @@ function decorateLinks(root) {
     const img = a.querySelector('img');
     if (img && !a.textContent.trim() && img.alt) a.setAttribute('aria-label', img.alt);
     const url = new URL(a.href, window.location.href);
-    if (url.origin !== window.location.origin && url.protocol.startsWith('http')) {
+    const sameSite = url.origin === window.location.origin || url.origin === SITE_ORIGIN;
+    if (!sameSite && url.protocol.startsWith('http')) {
       a.target = '_blank';
       a.rel = 'noopener';
     }
