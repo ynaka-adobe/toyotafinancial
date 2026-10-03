@@ -1,3 +1,5 @@
+import { decorateIcons } from '../../scripts/aem.js';
+
 // media query match that indicates desktop width
 const isDesktop = window.matchMedia('(width >= 900px)');
 
@@ -11,6 +13,9 @@ async function fetchNav() {
   if (!resp.ok) return null;
   const container = document.createElement('div');
   container.innerHTML = await resp.text();
+  // published documents wrap list-item content in <p>; unwrap so items hold their links directly
+  container.querySelectorAll('li > p').forEach((p) => p.replaceWith(...p.childNodes));
+  decorateIcons(container);
   return container;
 }
 
