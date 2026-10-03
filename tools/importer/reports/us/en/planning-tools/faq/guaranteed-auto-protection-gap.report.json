@@ -1,0 +1,12 @@
+{
+  "status": "success",
+  "url": "https://www.toyotafinancial.com/us/en/planning_tools/faq/Guaranteed_Auto_Protection_GAP.html",
+  "path": "us/en/planning-tools/faq/guaranteed-auto-protection-gap",
+  "timestamp": "2026-10-03T23:52:51.687Z",
+  "title": "Guaranteed Auto Protection (GAP) | Toyota Financial",
+  "template": "faq",
+  "blocks": [
+    "cards-questions",
+    "fragment"
+  ]
+}

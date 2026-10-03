@@ -1,0 +1,8 @@
+{
+  "status": "failed",
+  "url": "https://www.toyotafinancial.com/us/en/planning_tools/faq/about_credit.html",
+  "path": "us/en/planning_tools/faq/about_credit.html",
+  "timestamp": "2026-10-03T23:49:41.188Z",
+  "error": "page.evaluate: Error: Failed to import page: Cannot read properties of undefined (reading 'replace')\n    at eval (eval at evaluate (:290:30), <anonymous>:29:15)\n    at async <anonymous>:316:30",
+  "errorStack": "page.evaluate: Error: Failed to import page: Cannot read properties of undefined (reading 'replace')\n    at eval (eval at evaluate (:290:30), <anonymous>:29:15)\n    at async <anonymous>:316:30\n    at processUrl (/home/node/.excat-marketplaces/excat-marketplace/excat/skills/excat-content-import/scripts/run-bulk-import.js:693:31)\n    at async main (/home/node/.excat-marketplaces/excat-marketplace/excat/skills/excat-content-import/scripts/run-bulk-import.js:956:22)"
+}

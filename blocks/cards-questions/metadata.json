@@ -1,0 +1,25 @@
+{
+  "variantName": "cards-questions",
+  "baseBlock": "cards",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light-grey",
+    "density": "compact",
+    "imagePattern": "noimg",
+    "structure": "stacked full-width link tiles",
+    "columns": 1
+  },
+  "contentPattern": "link-tile-list",
+  "options": [],
+  "memberVariantIds": [],
+  "sourceContext": {
+    "originUrl": "https://www.toyotafinancial.com/us/en/planning_tools/faq/Guaranteed_Auto_Protection_GAP.html",
+    "originPage": "Toyota Financial FAQ - Guaranteed Auto Protection (GAP)",
+    "blockPosition": "middle"
+  },
+  "usage": {
+    "pagesUsing": [],
+    "reuseCount": 0,
+    "lastUsed": "2026-10-03T00:00:00.000Z"
+  }
+}

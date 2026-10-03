@@ -1,0 +1,12 @@
+{
+  "status": "success",
+  "url": "https://www.toyotafinancial.com/us/en/planning_tools/faq/business_solutions.html",
+  "path": "us/en/planning-tools/faq/business-solutions",
+  "timestamp": "2026-10-03T23:52:08.098Z",
+  "title": "Business Solutions | Toyota Financial",
+  "template": "faq",
+  "blocks": [
+    "cards-questions",
+    "fragment"
+  ]
+}

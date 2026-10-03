@@ -1,0 +1,12 @@
+{
+  "status": "success",
+  "url": "https://www.toyotafinancial.com/us/en/planning_tools/faq/One_Big_Beautiful_Bill_Act.html",
+  "path": "us/en/planning-tools/faq/one-big-beautiful-bill-act",
+  "timestamp": "2026-10-03T23:53:49.874Z",
+  "title": "One Big Beautiful Bill Act (OBBBA) | Toyota Financial",
+  "template": "faq",
+  "blocks": [
+    "cards-questions",
+    "fragment"
+  ]
+}

@@ -123,6 +123,106 @@
       "urlPattern": "/us/en/*"
     },
     {
+      "name": "faq",
+      "urls": [
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/Guaranteed_Auto_Protection_GAP.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/One_Big_Beautiful_Bill_Act.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/about-tfs.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/about_credit.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/about_this_website.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/account_access_and_password.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/account_details.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/account_registration.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/bZ4X.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/billing.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/business_solutions.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/consent_to_electronic_communications_and_agreements.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/encrypted-email.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/enrolling_in_pay_online.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/extension_and_deferral.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/financial-hardship.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/financing_and_protection_products.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/fingerprint_authentication.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/insurance_in_case_of_accident.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/insurance_requirements.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/lease_end_process.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/loan_payoff_and_title_lien_release.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/login-faqs.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/managing_pay_online.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/marketing_preferences.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/mileage.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/military_benefits.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/mobileapp-faqs.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/online_credit_application.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/paperless_billing.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/payments.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/privacy.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/repeat_customers.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/shopping.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/support_center.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/toyota_insurance.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/voluntary_protection_products.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq/wear_and_use.html"
+      ],
+      "representativeUrl": "https://www.toyotafinancial.com/us/en/planning_tools/faq/Guaranteed_Auto_Protection_GAP.html",
+      "description": "FAQ topic pages (38): full-width banner image, Back to FAQs link + topic h1, stacked question link tiles, shared Still need help? box (fragment).",
+      "blocks": [
+        {
+          "name": "cards-questions",
+          "instances": [
+            "#main-content .screenFade > .questionlist div:has(> .faq-question)"
+          ]
+        },
+        {
+          "name": "fragment",
+          "instances": [
+            "#main-content .screenFade > .questionlist #faqcard"
+          ]
+        }
+      ],
+      "urlPattern": "/us/en/planning_tools/faq/*",
+      "sections": [
+        {
+          "id": "rc6",
+          "name": "page-banner",
+          "selector": [
+            "#main-content .screenFade > .faq-banner-component"
+          ],
+          "style": "page-banner",
+          "blocks": [],
+          "defaultContent": [
+            "#main-content .screenFade > .faq-banner-component .top-section"
+          ]
+        },
+        {
+          "id": "rc7",
+          "name": "topic-questions",
+          "selector": [
+            "#main-content .screenFade > .questionlist"
+          ],
+          "style": null,
+          "blocks": [
+            "cards-questions"
+          ],
+          "defaultContent": [
+            "#main-content .screenFade > .questionlist h1"
+          ]
+        },
+        {
+          "id": "rc8",
+          "name": "help-card",
+          "selector": [
+            "#main-content .screenFade > .questionlist #faqcard"
+          ],
+          "style": null,
+          "blocks": [
+            "fragment"
+          ],
+          "defaultContent": []
+        }
+      ]
+    },
+    {
       "name": "planning-tools",
       "urls": [
         "https://www.toyotafinancial.com/us/en/planning_tools/faq.html"

@@ -47,6 +47,9 @@
  *   h1-h6 > b|strong (sole child) -> unwrapped so headings are plain
  *                                    (e.g. <h3><b>Our Passion</b><br></h3>)
  *   p.faq-para                    -> h2 (FAQ landing "Popular Topics" label)
+ *   .two-columns-left-one-column-right -> REMOVED ONLY WHEN EMPTY (FAQ topic pages)
+ *   p.faq_ques_text               -> FAQ topic title: "Back to FAQs" link (landing page) + h1;
+ *                                    the icon-only a.faq-ques "#" back arrow is dropped
  *   .banner-component .top-section, .faq-banner-component .top-section
  *                                 -> page banner. The live page has NO <img>; the image is an
  *                                    inline (or computed) CSS background-image with a Scene7 URL.
@@ -164,6 +167,25 @@ export default function transform(hookName, element, payload) {
     // main-text section fallback. Non-empty ones (policy text/table) are kept.
     element.querySelectorAll('.one-column-component').forEach((el) => {
       if (isEmptyContainer(el)) el.remove();
+    });
+    // FAQ topic pages (e.g. bZ4X, support_center) carry an empty two-column
+    // container; on about-us the same class holds the main text, so only empty ones go.
+    element.querySelectorAll('.two-columns-left-one-column-right').forEach((el) => {
+      if (isEmptyContainer(el)) el.remove();
+    });
+
+    // FAQ topic pages: the title paragraph (icon-only "#" back arrow + topic name)
+    // becomes a "Back to FAQs" link to the FAQ landing page followed by the h1.
+    element.querySelectorAll('p.faq_ques_text').forEach((p) => {
+      const back = doc.createElement('p');
+      const link = doc.createElement('a');
+      link.setAttribute('href', '/us/en/planning_tools/faq.html');
+      link.textContent = 'Back to FAQs';
+      back.append(link);
+      const h1 = doc.createElement('h1');
+      p.querySelectorAll('a.faq-ques').forEach((a) => a.remove());
+      h1.textContent = p.textContent.replace(/\s+/g, ' ').trim();
+      p.replaceWith(back, h1);
     });
 
     // FAQ landing: the "Popular Topics" label is a styled <p>; author it as a heading.

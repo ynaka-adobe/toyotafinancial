@@ -35,24 +35,24 @@ var CustomImportScript = (() => {
   };
   var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-  // tools/importer/import-planning-tools.js
-  var import_planning_tools_exports = {};
-  __export(import_planning_tools_exports, {
-    default: () => import_planning_tools_default
+  // tools/importer/import-faq.js
+  var import_faq_exports = {};
+  __export(import_faq_exports, {
+    default: () => import_faq_default
   });
 
-  // tools/importer/parsers/cards-topics.js
+  // tools/importer/parsers/cards-questions.js
   function parse(element, { document }) {
-    let tiles = [...element.querySelectorAll(".faq-box")];
-    if (!tiles.length) {
-      tiles = [...element.querySelectorAll('[class*="col-"]')].filter((c) => c.querySelector("a[href]"));
+    let items = [...element.querySelectorAll(":scope > .faq-question")];
+    if (!items.length) items = [...element.querySelectorAll(".faq-question")];
+    if (!items.length) {
+      items = [...element.children].filter((c) => c.querySelector("a[href]"));
     }
     const cells = [];
-    tiles.forEach((tile) => {
-      const link = tile.querySelector("a[href]");
+    items.forEach((item) => {
+      const link = item.querySelector("a[href]");
       if (!link) return;
-      const labelEl = link.querySelector(".btn-icon__label") || link;
-      const label = labelEl.textContent.replace(/\s+/g, " ").trim();
+      const label = link.textContent.replace(/\s+/g, " ").trim();
       if (!label) return;
       const a = document.createElement("a");
       a.setAttribute("href", link.getAttribute("href"));
@@ -65,7 +65,21 @@ var CustomImportScript = (() => {
       element.replaceWith(...element.childNodes);
       return;
     }
-    const block = WebImporter.Blocks.createBlock(document, { name: "cards-topics", cells });
+    const block = WebImporter.Blocks.createBlock(document, { name: "cards-questions", cells });
+    element.replaceWith(block);
+  }
+
+  // tools/importer/parsers/fragment.js
+  var FRAGMENTS = {
+    faqcard: "/us/en/fragments/faq-help"
+  };
+  function parse2(element, { document }) {
+    const path = FRAGMENTS[element.id];
+    if (!path) return;
+    const a = document.createElement("a");
+    a.setAttribute("href", path);
+    a.textContent = path;
+    const block = WebImporter.Blocks.createBlock(document, { name: "Fragment", cells: [[a]] });
     element.replaceWith(block);
   }
 
@@ -466,27 +480,71 @@ var CustomImportScript = (() => {
     });
   }
 
-  // tools/importer/import-planning-tools.js
+  // tools/importer/import-faq.js
   var parsers = {
-    "cards-topics": parse
+    "cards-questions": parse,
+    fragment: parse2
   };
   var PAGE_TEMPLATE = {
-    "name": "planning-tools",
-    "description": "FAQ landing page: full-width banner image, Popular Topics heading and a grid of 38 FAQ topic link tiles.",
+    "name": "faq",
+    "description": "FAQ topic pages (38): full-width banner image, Back to FAQs link + topic h1, stacked question link tiles, shared Still need help? box (fragment).",
     "urls": [
-      "https://www.toyotafinancial.com/us/en/planning_tools/faq.html"
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/Guaranteed_Auto_Protection_GAP.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/One_Big_Beautiful_Bill_Act.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/about-tfs.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/about_credit.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/about_this_website.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/account_access_and_password.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/account_details.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/account_registration.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/bZ4X.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/billing.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/business_solutions.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/consent_to_electronic_communications_and_agreements.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/encrypted-email.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/enrolling_in_pay_online.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/extension_and_deferral.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/financial-hardship.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/financing_and_protection_products.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/fingerprint_authentication.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/insurance_in_case_of_accident.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/insurance_requirements.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/lease_end_process.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/loan_payoff_and_title_lien_release.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/login-faqs.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/managing_pay_online.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/marketing_preferences.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/mileage.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/military_benefits.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/mobileapp-faqs.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/online_credit_application.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/paperless_billing.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/payments.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/privacy.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/repeat_customers.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/shopping.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/support_center.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/toyota_insurance.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/voluntary_protection_products.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/faq/wear_and_use.html"
     ],
     "blocks": [
       {
-        "name": "cards-topics",
+        "name": "cards-questions",
         "instances": [
-          "#main-content .screenFade > .categorylist .mgb-40"
+          "#main-content .screenFade > .questionlist div:has(> .faq-question)"
+        ]
+      },
+      {
+        "name": "fragment",
+        "instances": [
+          "#main-content .screenFade > .questionlist #faqcard"
         ]
       }
     ],
     "sections": [
       {
-        "id": "rc7",
+        "id": "rc6",
         "name": "page-banner",
         "selector": [
           "#main-content .screenFade > .faq-banner-component"
@@ -498,18 +556,30 @@ var CustomImportScript = (() => {
         ]
       },
       {
-        "id": "rc8",
-        "name": "popular-topics",
+        "id": "rc7",
+        "name": "topic-questions",
         "selector": [
-          "#main-content .screenFade > .categorylist"
+          "#main-content .screenFade > .questionlist"
         ],
         "style": null,
         "blocks": [
-          "cards-topics"
+          "cards-questions"
         ],
         "defaultContent": [
-          "#main-content .screenFade > .categorylist .faq-para"
+          "#main-content .screenFade > .questionlist h1"
         ]
+      },
+      {
+        "id": "rc8",
+        "name": "help-card",
+        "selector": [
+          "#main-content .screenFade > .questionlist #faqcard"
+        ],
+        "style": null,
+        "blocks": [
+          "fragment"
+        ],
+        "defaultContent": []
       }
     ]
   };
@@ -555,7 +625,7 @@ var CustomImportScript = (() => {
     console.log(`Found ${pageBlocks.length} block instances on page`);
     return pageBlocks;
   }
-  var import_planning_tools_default = {
+  var import_faq_default = {
     transform: (payload) => {
       const {
         document,
@@ -598,5 +668,5 @@ var CustomImportScript = (() => {
       }];
     }
   };
-  return __toCommonJS(import_planning_tools_exports);
+  return __toCommonJS(import_faq_exports);
 })();
