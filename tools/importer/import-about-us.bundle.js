@@ -345,8 +345,11 @@ var CustomImportScript = (() => {
         // about-us
         ".bread-crumb.parbase",
         // breadcrumb
-        ".nav-list-component"
+        ".nav-list-component",
         // empty right-hand nav column
+        // hidden at every breakpoint on the source (e.g. the policy pages'
+        // "View More" link in .terms-view-extra) — never visible to visitors
+        ".hidden-xs.hidden-sm.hidden-md.hidden-lg"
       ]);
       element.querySelectorAll(".one-column-component").forEach((el) => {
         if (isEmptyContainer(el)) el.remove();
