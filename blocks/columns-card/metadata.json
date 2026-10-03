@@ -1,0 +1,30 @@
+{
+  "variantName": "columns-card",
+  "baseBlock": "columns",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "spacious",
+    "purpose": "image-text-card",
+    "imagePattern": "large"
+  },
+  "contentPattern": {
+    "structure": "1 row, 2 cells: [picture] | [text]; white card with red top border and drop shadow, 50/50 on desktop, stacked on mobile",
+    "buttonCount": 0,
+    "imageCount": 1,
+    "hasDescription": true,
+    "hasCTA": false
+  },
+  "options": [],
+  "memberVariantIds": [],
+  "sourceContext": {
+    "originUrl": "https://www.toyotafinancial.com/us/en/about_us/company_overview.html",
+    "originPage": "Toyota Financial company overview",
+    "blockPosition": "middle"
+  },
+  "usage": {
+    "pagesUsing": ["/us/en/about-us/company-overview"],
+    "reuseCount": 1,
+    "lastUsed": "2026-10-03T00:00:00.000Z"
+  }
+}

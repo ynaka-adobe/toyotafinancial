@@ -5,59 +5,109 @@
  * Transformer: toyotafinancial section breaks + section metadata.
  *
  * Driven entirely by `payload.template.sections` from page-templates.json, so
- * it is template-agnostic. For the homepage template the sections are
- * (in document order):
- *   #fold-1 hero-carousel  style=null      -> SKIP section-metadata (full-bleed block bg)
- *   #fold-2 promos         style=null      -> no section-metadata
- *   #fold-3 tools          style=highlight -> Section Metadata (style: highlight)
- *   #fold-4 campaign       style=null      -> SKIP section-metadata (full-bleed block bg)
+ * it is template-agnostic.
  *
- * Behaviour (canonical section-transformer pattern; runs in afterTransform):
- *   - Sections processed in REVERSE order so DOM insertions never shift the
- *     positions of sections not yet processed.
- *   - For every section with a truthy `style`: build a Section Metadata block
- *     via WebImporter.Blocks.createBlock and insert it immediately AFTER the
- *     section element, so the metadata sits inside that section (before the
- *     following section break) in the generated markdown.
- *   - For every section except the first: insert an <hr> immediately BEFORE the
- *     section element to create the section break.
+ *   homepage: #fold-1 hero-carousel (null) | #fold-2 promos (null) |
+ *             #fold-3 tools (highlight)    | #fold-4 campaign (null)
+ *             -> 3 <hr>, 1 Section Metadata (highlight)
+ *   about-us: .banner-component page-banner (page-banner) | main-text (null) |
+ *             .banner.parbase careers-banner (null) | .heading.parbase community (null)
+ *             -> company_overview: 3 <hr>, 1 Section Metadata (page-banner).
+ *             Other about-us pages only match page-banner + main-text -> 1 <hr>.
  *
- * Expected for the homepage template: 3 <hr> (sections.length - 1) and
- * 1 Section Metadata block (only #fold-3 has a style). Section selectors
- * (#fold-1..#fold-4) verified present in migration-work/cleaned.html.
+ * `section.selector` may be an ARRAY of candidate selectors (tried in order,
+ * first match wins) or a legacy single string. Sections whose selectors match
+ * nothing on the page are skipped. The first MATCHED section never gets a
+ * leading <hr> (even if template section 0 is missing on this page).
+ *
+ * Why both hooks: block parsers run between beforeTransform and afterTransform
+ * and replace the element they target. Some section elements ARE block
+ * elements (about-us careers-banner `.banner.parbase` == hero-banner instance),
+ * so they no longer exist in afterTransform. Therefore:
+ *   beforeTransform: resolve every section element, then (reverse order) insert
+ *     an <hr> before each matched section except the first matched, and for
+ *     styled sections an empty marker <span> right AFTER the section element.
+ *     <hr>/<span> are not <div>s, so div :nth-of-type parser selectors are
+ *     unaffected.
+ *   afterTransform: (reverse order) replace each marker with the Section
+ *     Metadata block, so the metadata sits immediately after the section
+ *     element (or whatever the parser replaced it with).
  */
 
 const TransformHook = { beforeTransform: 'beforeTransform', afterTransform: 'afterTransform' };
+const MARKER_ATTR = 'data-tfs-section-meta';
+
+function toSelectorList(selector) {
+  if (Array.isArray(selector)) return selector.filter((s) => typeof s === 'string' && s.trim());
+  if (typeof selector === 'string' && selector.trim()) return [selector];
+  return [];
+}
+
+// First selector (in order) that matches wins.
+function querySection(root, selector) {
+  for (const sel of toSelectorList(selector)) {
+    let el = null;
+    try { el = root.querySelector(sel); } catch (e) { el = null; }
+    if (el) return el;
+  }
+  return null;
+}
+
+function markerId(section, index) {
+  return String(section.id || section.name || `section-${index}`);
+}
 
 export default function transform(hookName, element, payload) {
-  if (hookName !== TransformHook.afterTransform) return;
+  const template = payload && payload.template;
+  const sections = (template && Array.isArray(template.sections)) ? template.sections : [];
+  if (!sections.length) return;
+  const doc = element.ownerDocument || (payload && payload.document);
 
-  const { document, template } = payload;
-  const sections = (template && template.sections) || [];
-  if (!Array.isArray(sections) || sections.length < 2) return;
+  if (hookName === TransformHook.beforeTransform) {
+    // Resolve all section elements first (document order of the template), so
+    // we know which one is the first MATCHED section. An element already
+    // claimed by an earlier section is not reused.
+    const claimed = new Set();
+    const resolved = sections.map((section) => {
+      if (!section) return null;
+      const el = querySection(element, section.selector);
+      if (!el || claimed.has(el)) return null;
+      claimed.add(el);
+      return el;
+    });
+    const firstMatched = resolved.findIndex((el) => el);
+    if (firstMatched === -1) return;
 
-  // Reverse order: inserting <hr>/metadata for later sections first keeps the
-  // DOM positions of earlier, not-yet-processed sections stable.
-  for (let i = sections.length - 1; i >= 0; i -= 1) {
-    const section = sections[i];
-    if (!section || !section.selector) continue;
+    // Reverse order: insertions next to later sections never shift earlier ones.
+    for (let i = sections.length - 1; i >= 0; i -= 1) {
+      const el = resolved[i];
+      if (!el) continue;
+      const section = sections[i];
 
-    const el = element.querySelector(section.selector);
-    if (!el) continue;
+      if (section.style) {
+        const marker = doc.createElement('span');
+        marker.setAttribute(MARKER_ATTR, markerId(section, i));
+        el.after(marker);
+      }
 
-    // Section metadata (only sections that carry a style, e.g. #fold-3 highlight).
-    if (section.style) {
-      const block = WebImporter.Blocks.createBlock(document, {
+      if (i !== firstMatched) {
+        el.before(doc.createElement('hr'));
+      }
+    }
+  }
+
+  if (hookName === TransformHook.afterTransform) {
+    for (let i = sections.length - 1; i >= 0; i -= 1) {
+      const section = sections[i];
+      if (!section || !section.style) continue;
+      const marker = element.querySelector(`[${MARKER_ATTR}="${markerId(section, i)}"]`);
+      if (!marker) continue; // section not matched on this page — skip, never guess
+
+      const block = WebImporter.Blocks.createBlock(doc, {
         name: 'Section Metadata',
         cells: { style: section.style },
       });
-      el.after(block);
-    }
-
-    // Section break before every section except the first.
-    if (i > 0) {
-      const hr = document.createElement('hr');
-      el.before(hr);
+      marker.replaceWith(block);
     }
   }
 }

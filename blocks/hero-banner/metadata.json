@@ -1,6 +1,7 @@
 {
   "variantName": "hero-banner",
   "baseBlock": "hero",
+  "canonicalModel": "standalone",
   "version": "1.0.0",
   "created": "2026-06-23T00:00:00.000Z",
   "sourceContext": {
@@ -30,9 +31,15 @@
       "sections requiring multiple stacked content blocks"
     ]
   },
+  "options": [],
+  "memberVariantIds": [],
   "usage": {
-    "pagesUsing": ["/en/catcorp", "/index"],
-    "reuseCount": 2,
-    "lastUsed": "2026-08-06T00:00:00.000Z"
+    "pagesUsing": [
+      "/en/catcorp",
+      "/index",
+      "/us/en/about-us/company-overview"
+    ],
+    "reuseCount": 3,
+    "lastUsed": "2026-10-03T17:22:13.000Z"
   }
 }

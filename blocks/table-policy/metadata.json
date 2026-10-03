@@ -1,0 +1,30 @@
+{
+  "variantName": "table-policy",
+  "baseBlock": "table",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "compact",
+    "purpose": "legal-data-table",
+    "imagePattern": "noimg"
+  },
+  "contentPattern": {
+    "structure": "first row = header cells (bold); each further row = 2 cells (label text | bulleted list), bordered grid",
+    "buttonCount": 0,
+    "imageCount": 0,
+    "hasDescription": false,
+    "hasCTA": false
+  },
+  "options": [],
+  "memberVariantIds": [],
+  "sourceContext": {
+    "originUrl": "https://www.toyotafinancial.com/us/en/online_privacy_policy.html",
+    "originPage": "Toyota Financial online privacy policy",
+    "blockPosition": "middle"
+  },
+  "usage": {
+    "pagesUsing": ["/us/en/online-privacy-policy"],
+    "reuseCount": 1,
+    "lastUsed": "2026-10-03T00:00:00.000Z"
+  }
+}

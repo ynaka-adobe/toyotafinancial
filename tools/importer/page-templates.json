@@ -4,6 +4,145 @@
   },
   "templates": [
     {
+      "name": "about-us",
+      "urls": [
+        "https://www.toyotafinancial.com/us/en/about_us/company_overview.html",
+        "https://www.toyotafinancial.com/us/en/accessibility.html",
+        "https://www.toyotafinancial.com/us/en/online_policies_and_agreements.html",
+        "https://www.toyotafinancial.com/us/en/online_privacy_policy.html"
+      ],
+      "representativeUrl": "https://www.toyotafinancial.com/us/en/about_us/company_overview.html",
+      "description": "Text and legal content pages (About TFS, Accessibility, Online Policies & Agreements, Online Privacy Policy): full-width banner image, h1 + long rich text, optional careers banner, community card and policy data table.",
+      "blocks": [
+        {
+          "name": "hero-banner",
+          "instances": [
+            "#main-content .screenFade > .banner.parbase"
+          ]
+        },
+        {
+          "name": "columns-card",
+          "instances": [
+            "#main-content .screenFade > .card-component.parbase"
+          ]
+        },
+        {
+          "name": "table-policy",
+          "instances": [
+            "#main-content .screenFade > .one-column-component table"
+          ]
+        }
+      ],
+      "urlPattern": "/us/en/*",
+      "sections": [
+        {
+          "id": "rc7",
+          "name": "page-banner",
+          "selector": [
+            "#main-content .screenFade > .banner-component"
+          ],
+          "style": "page-banner",
+          "blocks": [],
+          "defaultContent": [
+            "#main-content .screenFade > .banner-component .top-section"
+          ]
+        },
+        {
+          "id": "rc8",
+          "name": "main-text",
+          "selector": [
+            "#main-content .screenFade > .two-columns-left-one-column-right",
+            "#main-content .screenFade > .one-column",
+            "#main-content .screenFade > .one-column-component"
+          ],
+          "style": null,
+          "blocks": [
+            "table-policy"
+          ],
+          "defaultContent": [
+            "#main-content .screenFade .page-heading",
+            "#main-content .screenFade .rte"
+          ]
+        },
+        {
+          "id": "rc9",
+          "name": "careers-banner",
+          "selector": [
+            "#main-content .screenFade > .banner.parbase"
+          ],
+          "style": null,
+          "blocks": [
+            "hero-banner"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "rc10+rc11",
+          "name": "community",
+          "selector": [
+            "#main-content .screenFade > .heading.parbase"
+          ],
+          "style": null,
+          "blocks": [
+            "columns-card"
+          ],
+          "defaultContent": [
+            "#main-content .screenFade > .heading.parbase h2"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "contact-us",
+      "urls": [
+        "https://www.toyotafinancial.com/us/en/contact_us.html"
+      ],
+      "representativeUrl": "https://www.toyotafinancial.com/us/en/contact_us.html",
+      "description": "To be named in naming step",
+      "blocks": [],
+      "urlPattern": "/us/en/*"
+    },
+    {
+      "name": "data-privacy-request",
+      "urls": [
+        "https://www.toyotafinancial.com/us/en/data-privacy-request.html"
+      ],
+      "representativeUrl": "https://www.toyotafinancial.com/us/en/data-privacy-request.html",
+      "description": "To be named in naming step",
+      "blocks": [],
+      "urlPattern": "/us/en/*"
+    },
+    {
+      "name": "glossary",
+      "urls": [
+        "https://www.toyotafinancial.com/us/en/glossary.html"
+      ],
+      "representativeUrl": "https://www.toyotafinancial.com/us/en/glossary.html",
+      "description": "To be named in naming step",
+      "blocks": [],
+      "urlPattern": "/us/en/*"
+    },
+    {
+      "name": "planning-tools",
+      "urls": [
+        "https://www.toyotafinancial.com/us/en/planning_tools/faq.html"
+      ],
+      "representativeUrl": "https://www.toyotafinancial.com/us/en/planning_tools/faq.html",
+      "description": "To be named in naming step",
+      "blocks": [],
+      "urlPattern": "/us/en/planning_tools/*"
+    },
+    {
+      "name": "sitemap",
+      "urls": [
+        "https://www.toyotafinancial.com/us/en/sitemap.html"
+      ],
+      "representativeUrl": "https://www.toyotafinancial.com/us/en/sitemap.html",
+      "description": "To be named in naming step",
+      "blocks": [],
+      "urlPattern": "/us/en/*"
+    },
+    {
       "name": "homepage",
       "urls": [
         "https://www.toyotafinancial.com"
@@ -41,7 +180,9 @@
         {
           "id": "rc7-hero",
           "name": "hero-carousel",
-          "selector": "#fold-1",
+          "selector": [
+            "#fold-1"
+          ],
           "style": null,
           "blocks": [
             "carousel-hero"
@@ -51,7 +192,9 @@
         {
           "id": "rc7-promos",
           "name": "promos",
-          "selector": "#fold-2",
+          "selector": [
+            "#fold-2"
+          ],
           "style": null,
           "blocks": [
             "cards-service"
@@ -64,7 +207,9 @@
         {
           "id": "rc7-tools",
           "name": "tools",
-          "selector": "#fold-3",
+          "selector": [
+            "#fold-3"
+          ],
           "style": "highlight",
           "blocks": [
             "cards-explore"
@@ -76,7 +221,9 @@
         {
           "id": "rc7-campaign",
           "name": "campaign",
-          "selector": "#fold-4",
+          "selector": [
+            "#fold-4"
+          ],
           "style": null,
           "blocks": [
             "hero-banner"

@@ -34,12 +34,107 @@
  *   #disable-search, #enableDtmHash, #dtmHashValue -> DTM/search runtime hooks
  *   .hiddendiv.common     -> hidden measurement div
  *   .newpar.new.section, .par.iparys_inherited -> empty AEM parsys placeholders (verified empty)
+ *
+ * about-us template additions (verified in migration-work/cleaned.html, scrape of
+ * /us/en/about_us/company_overview.html; none of these exist on the homepage):
+ *   #main-content .screenFade > .bread-crumb.parbase -> breadcrumb ("Company Overview")
+ *   .nav-list-component.parbase   -> empty right-hand nav column (inside col-sm-3 hidden-xs)
+ *   .one-column-component         -> REMOVED ONLY WHEN EMPTY (no text / images), e.g.
+ *                                    #fair_lending.fair-lending on company_overview. The
+ *                                    non-empty one-column-component holding the legal text /
+ *                                    policy table on the policy pages is kept.
+ *   a.js-external-tp (empty)      -> empty anchor in the community card caption
+ *   h1-h6 > b|strong (sole child) -> unwrapped so headings are plain
+ *                                    (e.g. <h3><b>Our Passion</b><br></h3>)
+ *   .banner-component .top-section -> page banner. The live page has NO <img>; the image is an
+ *                                    inline (or computed) CSS background-image with a Scene7 URL.
+ *                                    It is replaced by a real <img> (alt from the element's alt
+ *                                    attribute) so the DM transformer rewrites it like any other
+ *                                    Scene7 image. .banner-component itself is kept (section anchor).
  */
 
 const TransformHook = { beforeTransform: 'beforeTransform', afterTransform: 'afterTransform' };
 
+const SCENE7_HOST = 'https://toyotafinancial.scene7.com';
+const SITE_ORIGIN = 'https://www.toyotafinancial.com';
+const BG_URL_RE = /background-image\s*:[^;]*?url\(\s*(['"]?)([^'")]+)\1\s*\)/i;
+
+// Resolve a banner image URL to an absolute URL. Relative Scene7 asset paths
+// (/ToyotaFinancial/xxx, as used in the source's commented-out markup) map to
+// the toyotafinancial.scene7.com /is/image/ host.
+function resolveImageUrl(raw) {
+  const url = (raw || '').trim();
+  if (!url) return '';
+  if (/^https?:\/\//i.test(url)) return url;
+  if (url.startsWith('//')) return `https:${url}`;
+  if (url.startsWith('/ToyotaFinancial/')) return `${SCENE7_HOST}/is/image${url}`;
+  if (url.startsWith('/is/image/')) return `${SCENE7_HOST}${url}`;
+  if (url.startsWith('/')) return `${SITE_ORIGIN}${url}`;
+  return url; // e.g. ./images/<hash>.png from an offline scrape — leave as-is
+}
+
+function bgUrlFromStyle(styleText) {
+  const m = (styleText || '').match(BG_URL_RE);
+  return m ? m[2].trim() : '';
+}
+
+// Banner background URL lookup order: inline style -> computed style ->
+// existing absolute/Scene7 <img> -> commented-out source markup -> any <img>.
+function findBannerImageUrl(topSection) {
+  const inline = bgUrlFromStyle(topSection.getAttribute('style'));
+  if (inline) return inline;
+
+  try {
+    const view = topSection.ownerDocument && topSection.ownerDocument.defaultView;
+    if (view && view.getComputedStyle) {
+      const computed = view.getComputedStyle(topSection).backgroundImage || '';
+      const m = computed.match(/url\(\s*(['"]?)([^'")]+)\1\s*\)/i);
+      if (m && m[2]) return m[2].trim();
+    }
+  } catch (e) { /* no computed styles in a parsed/detached document */ }
+
+  const img = topSection.querySelector('img[src]');
+  const imgSrc = img ? img.getAttribute('src') : '';
+  if (/^(https?:)?\/\//i.test(imgSrc) || imgSrc.includes('/is/image/')) return imgSrc;
+
+  // Commented-out markup next to the banner, e.g.
+  // <!-- <div class="col-sm-12 top-section center-focus" style="background-image: url(/ToyotaFinancial/TFS_About_Us_Banner?$MFS$);" alt="About Us"> -->
+  const scope = topSection.parentNode;
+  if (scope) {
+    for (const node of scope.childNodes) {
+      if (node.nodeType === 8 && /top-section/.test(node.nodeValue || '')) {
+        const fromComment = bgUrlFromStyle(node.nodeValue);
+        if (fromComment) return fromComment;
+      }
+    }
+  }
+
+  return imgSrc || '';
+}
+
+// No visible text and no media/table content.
+function isEmptyContainer(el) {
+  return el.textContent.replace(/\u00a0/g, ' ').trim() === ''
+    && !el.querySelector('img, picture, video, iframe, svg, table, input, select, textarea');
+}
+
 export default function transform(hookName, element, payload) {
   if (hookName === TransformHook.beforeTransform) {
+    const doc = element.ownerDocument;
+
+    // about-us page banner: CSS background-image -> real <img>.
+    element.querySelectorAll('.banner-component .top-section').forEach((topSection) => {
+      const src = resolveImageUrl(findBannerImageUrl(topSection));
+      if (!src) return;
+      const existingImg = topSection.querySelector('img');
+      const alt = topSection.getAttribute('alt')
+        || (existingImg && existingImg.getAttribute('alt')) || '';
+      const img = doc.createElement('img');
+      img.setAttribute('src', src);
+      img.setAttribute('alt', alt);
+      topSection.replaceWith(img);
+    });
+
     // Overlays / consent / feedback widgets that would otherwise interfere with
     // block parsing. Remove before parsers run.
     WebImporter.DOMUtils.remove(element, [
@@ -53,7 +148,23 @@ export default function transform(hookName, element, payload) {
       '#home-loading',                // page loading spinner
       '.bottom-info-modal',           // empty runtime info modal in #fold-1 (only a "×" close button)
       'a.carousel-control',           // carousel Previous/Next arrow controls in #fold-1
+      // about-us
+      '.bread-crumb.parbase',         // breadcrumb
+      '.nav-list-component',          // empty right-hand nav column
     ]);
+
+    // about-us: empty .one-column-component containers only (e.g. #fair_lending).
+    // Removed before sections/parsers so an empty one can never be picked as the
+    // main-text section fallback. Non-empty ones (policy text/table) are kept.
+    element.querySelectorAll('.one-column-component').forEach((el) => {
+      if (isEmptyContainer(el)) el.remove();
+    });
+
+    // about-us: empty external-link anchors (no text, no image) — removed before
+    // parsers so they don't end up in block cells (community card caption).
+    element.querySelectorAll('a.js-external-tp').forEach((a) => {
+      if (isEmptyContainer(a)) a.remove();
+    });
   }
 
   if (hookName === TransformHook.afterTransform) {
@@ -83,5 +194,21 @@ export default function transform(hookName, element, payload) {
       'link',
       'noscript',
     ]);
+
+    // Plain headings: unwrap <b>/<strong> when it is the heading's sole content
+    // (ignoring whitespace and <br>), e.g. <h3><b>Our Passion</b><br></h3>.
+    element.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach((heading) => {
+      const meaningful = [...heading.childNodes].filter((n) => {
+        if (n.nodeType === 3) return n.textContent.trim() !== '';
+        if (n.nodeType === 1) return n.tagName !== 'BR';
+        return false;
+      });
+      if (meaningful.length !== 1) return;
+      const only = meaningful[0];
+      if (only.nodeType !== 1 || !['B', 'STRONG'].includes(only.tagName)) return;
+      only.replaceWith(...only.childNodes);
+      // Drop the now-meaningless <br> directly inside the heading.
+      heading.querySelectorAll(':scope > br').forEach((br) => br.remove());
+    });
   }
 }

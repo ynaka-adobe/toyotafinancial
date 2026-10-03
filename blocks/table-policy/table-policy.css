@@ -1,0 +1,51 @@
+/* table-policy: bordered 2-column legal data table (source privacy policy tables)
+   header row in bold, body cells top-aligned, right-hand cells hold bulleted lists */
+
+.table-policy .table-policy-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table-policy table {
+  width: 100%;
+  border: 1px solid #999;
+  border-collapse: collapse;
+  color: var(--text-color);
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-m);
+  line-height: var(--body-line-height);
+}
+
+.table-policy th,
+.table-policy td {
+  border: 1px solid #999;
+  padding: 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.table-policy th {
+  font-weight: 700;
+}
+
+.table-policy th p,
+.table-policy td p {
+  margin: 0;
+}
+
+.table-policy td p + p {
+  margin-top: 0.5em;
+}
+
+.table-policy td ul {
+  margin: 0;
+  padding-left: 25px;
+}
+
+/* desktop: size to content like the source (~624px authored table), never wider than the column */
+@media (width >= 900px) {
+  .table-policy table {
+    width: auto;
+    max-width: 100%;
+  }
+}
