@@ -1,20 +1,326 @@
+/* Toyota Financial footer
+ * Source: https://www.toyotafinancial.com
+ * White footer with a 2px red top rule: brand column (logo, app badges, social icons) +
+ * three link columns, then a dashed divider and the copyright / legal band.
+ * Mobile: link columns move above the brand column as single-expand accordions.
+ */
 footer {
-  background-color: var(--light-color);
-  font-size: var(--body-font-size-xs);
-}
+  --footer-accent: var(--brand-red, #eb0a1e);
+  --footer-muted: #58595b;
+  --footer-divider: #d7d7d7;
+  --footer-open-bg: #fafafa;
 
-footer .footer > div {
-  margin: auto;
-  max-width: 1200px;
-  padding: 40px 24px 24px;
+  display: flow-root;
+  padding-top: 20px;
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
 footer .footer p {
   margin: 0;
 }
 
+footer .footer ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+footer .footer a:any-link {
+  color: var(--footer-muted);
+  text-decoration: none;
+}
+
+footer .footer a:hover {
+  color: var(--footer-muted);
+  text-decoration: none;
+}
+
+footer .footer img {
+  display: block;
+}
+
+footer .footer-main {
+  margin: 0;
+  border-top: 2px solid var(--footer-accent);
+}
+
+/* top band */
+footer .footer-top {
+  display: flex;
+  flex-direction: column;
+  margin-top: 18px;
+}
+
+footer .footer-brand {
+  padding: 0 15px;
+}
+
+footer .footer .footer-logo {
+  margin: 12px 0;
+}
+
+footer .footer-logo img {
+  width: 164px;
+  height: auto;
+}
+
+footer .footer-brand-group {
+  display: flow-root;
+}
+
+footer .footer-brand-group h2 {
+  margin: 20px 0 25px;
+  font-family: var(--display-font-family);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 28px;
+}
+
+footer .footer .footer-badge-list {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+footer .footer-badge-list a:any-link {
+  display: block;
+  margin: 12px 0;
+}
+
+footer .footer-badge-list img {
+  width: 128px;
+  height: 38px;
+}
+
+footer .footer .footer-icon-list {
+  display: flex;
+  margin-bottom: 30px;
+}
+
+footer .footer-icon-list li {
+  padding-left: 6px;
+}
+
+footer .footer-icon-list a:any-link {
+  display: block;
+  margin: 12px 24px 12px 0;
+}
+
+footer .footer-icon-list img {
+  width: 35px;
+  height: 35px;
+}
+
+/* link columns: accordions on mobile, stacked above the brand column */
+footer .footer-columns {
+  display: flex;
+  flex-direction: column;
+  order: -1;
+}
+
+footer .footer-column h2 {
+  position: relative;
+  margin: 0;
+  border-top: 3px solid var(--background-color);
+  border-bottom: 3px solid var(--background-color);
+  padding: 20px 12px;
+  font-family: var(--display-font-family);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+/* right-pointing chevron */
+footer .footer-column h2::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  width: 7px;
+  height: 7px;
+  border-top: 2px solid currentcolor;
+  border-right: 2px solid currentcolor;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+footer .footer-column.is-open h2 {
+  background-color: var(--footer-open-bg);
+}
+
+footer .footer .footer-column ul {
+  display: none;
+  margin-bottom: 10px;
+  padding: 0 15px;
+}
+
+footer .footer .footer-column.is-open ul {
+  display: block;
+}
+
+footer .footer-column li {
+  display: flow-root;
+}
+
+footer .footer-column a:any-link {
+  display: block;
+  margin: 12px 0;
+  font-family: var(--display-font-family);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 17px;
+}
+
+/* bottom band */
+footer .footer-bottom {
+  margin: 10px 0 50px;
+  border-top: 1px dashed var(--footer-divider);
+}
+
+footer .footer-bottom-inner {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 20px 0 21px;
+}
+
+footer .footer .footer-legal-text {
+  margin: 0 0 10px;
+  padding: 0 15px;
+  font-family: var(--display-font-family);
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--footer-muted);
+}
+
+footer .footer .footer-legal-text + .footer-legal-text {
+  margin-bottom: 16px;
+}
+
+/* back to top: fixed black circle with an up arrow */
+footer .footer-back-to-top {
+  position: fixed;
+  right: 20px;
+  bottom: 40px;
+  z-index: 7;
+  display: none;
+  width: 50px;
+  height: 50px;
+  margin: 0;
+  border: 0;
+  border-radius: 25px;
+  padding: 0;
+  background: var(--text-color) linear-gradient(#fff, #fff) center 21px / 2px 16px no-repeat;
+  cursor: pointer;
+}
+
+footer .footer-back-to-top.is-visible {
+  display: block;
+}
+
+footer .footer-back-to-top:hover,
+footer .footer-back-to-top:focus {
+  background-color: var(--text-color);
+  background-image: linear-gradient(#fff, #fff);
+}
+
+footer .footer-back-to-top::before,
+footer .footer-back-to-top::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* bar on top of the arrow */
+footer .footer-back-to-top::before {
+  top: 15px;
+  width: 16px;
+  height: 2px;
+  background-color: #fff;
+}
+
+/* arrow head + shaft */
+footer .footer-back-to-top::after {
+  top: 20px;
+  width: 9px;
+  height: 9px;
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+  transform: translateX(-50%) rotate(45deg);
+}
+
 @media (width >= 900px) {
-  footer .footer > div {
-    padding: 40px 32px 24px;
+  footer .footer-main {
+    margin-top: 20px;
+  }
+
+  footer .footer-top {
+    display: grid;
+    grid-template-columns: minmax(0, 403fr) minmax(0, 927fr);
+    margin-top: 40px;
+    padding: 0 25px 0 85px;
+  }
+
+  footer .footer-logo img {
+    width: 189px;
+  }
+
+  footer .footer .footer-badge-list,
+  footer .footer .footer-icon-list {
+    margin-bottom: 10px;
+  }
+
+  footer .footer-columns {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    order: 0;
+  }
+
+  footer .footer-column {
+    padding: 0 15px;
+  }
+
+  footer .footer-column h2,
+  footer .footer-column.is-open h2 {
+    margin: 24px 0;
+    border: 0;
+    padding: 0;
+    background-color: transparent;
+    font-family: var(--body-font-family);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19px;
+    cursor: auto;
+  }
+
+  footer .footer-column h2::after {
+    content: none;
+  }
+
+  footer .footer .footer-column ul {
+    display: block;
+    padding: 0;
+  }
+
+  footer .footer-bottom {
+    margin-top: 43px;
+  }
+
+  footer .footer-bottom-inner {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    padding: 48px 15px 0;
+  }
+
+  footer .footer .footer-legal-text,
+  footer .footer .footer-legal-text + .footer-legal-text {
+    margin: 0 0 16px;
+    font-size: 10px;
+    line-height: 20px;
   }
 }
