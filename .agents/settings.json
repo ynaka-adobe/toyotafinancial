@@ -1,0 +1,6 @@
+{
+  "enabledPlugins": {
+    "forms-excat@excat-extended": true,
+    "project-management@excat-extended": true
+  }
+}
