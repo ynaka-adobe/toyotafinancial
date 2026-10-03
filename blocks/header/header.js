@@ -16,6 +16,8 @@ async function fetchNav() {
   // published documents wrap list-item content in <p>; unwrap so items hold their links directly
   container.querySelectorAll('li > p').forEach((p) => p.replaceWith(...p.childNodes));
   decorateIcons(container);
+  // keep icon images as plain <img> so the header styles them like the local fragment
+  container.querySelectorAll('span.icon > img').forEach((img) => img.parentElement.replaceWith(img));
   return container;
 }
 
