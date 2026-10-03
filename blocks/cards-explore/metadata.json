@@ -1,0 +1,41 @@
+{
+  "variantName": "cards-explore",
+  "baseBlock": "cards",
+  "version": "1.0.0",
+  "created": "2026-08-06T00:00:00.000Z",
+  "sourceContext": {
+    "originUrl": "https://www.toyotafinancial.com",
+    "originPage": "Toyota Financial homepage",
+    "blockPosition": "middle"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "grey",
+    "density": "spacious",
+    "purpose": "explore-editorial",
+    "imagePattern": "large"
+  },
+  "contentPattern": {
+    "structure": "per card: image (top) + title + short description",
+    "buttonCount": 0,
+    "imageCount": 1,
+    "hasDescription": true,
+    "hasCTA": false
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "'explore more' editorial card grids on a highlighted/grey section",
+      "image-led tiles with image on top, then title + one-line description",
+      "related-content or discovery card rows beneath a section heading"
+    ],
+    "notSuitableFor": [
+      "text-first service tiles with image below (use cards-service)",
+      "promotional cards with CTA buttons (use cards-promo)",
+      "icon-only callout strips (use cards-callouts)"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/index"],
+    "reuseCount": 1,
+    "lastUsed": "2026-08-06T00:00:00.000Z"
+  }
+}

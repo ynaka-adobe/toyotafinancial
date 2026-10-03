@@ -27,6 +27,18 @@
       "components": [
         {
           "...": "./blocks/*.json#/definitions"
+        },
+        {
+          "...": "../../blocks/carousel-hero/_carousel-hero.json#/definitions"
+        },
+        {
+          "...": "../../blocks/cards-service/_cards-service.json#/definitions"
+        },
+        {
+          "...": "../../blocks/cards-explore/_cards-explore.json#/definitions"
+        },
+        {
+          "...": "../../blocks/hero-banner/_hero-banner.json#/definitions"
         }
       ]
     }

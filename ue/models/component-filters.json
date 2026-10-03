@@ -1,12 +1,26 @@
 [
   {
     "id": "main",
-    "components": ["section"]
+    "components": [
+      "section"
+    ]
   },
   {
     "...": "./section.json#/filters"
   },
   {
     "...": "./blocks/*.json#/filters"
+  },
+  {
+    "...": "../../blocks/carousel-hero/_carousel-hero.json#/filters"
+  },
+  {
+    "...": "../../blocks/cards-service/_cards-service.json#/filters"
+  },
+  {
+    "...": "../../blocks/cards-explore/_cards-explore.json#/filters"
+  },
+  {
+    "...": "../../blocks/hero-banner/_hero-banner.json#/filters"
   }
 ]

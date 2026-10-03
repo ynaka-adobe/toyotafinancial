@@ -1,0 +1,42 @@
+{
+  "variantName": "carousel-hero",
+  "baseBlock": "carousel",
+  "version": "1.0.0",
+  "created": "2026-08-06T00:00:00.000Z",
+  "sourceContext": {
+    "originUrl": "https://www.toyotafinancial.com",
+    "originPage": "Toyota Financial homepage",
+    "blockPosition": "top"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "dark",
+    "density": "spacious",
+    "purpose": "hero",
+    "imagePattern": "large"
+  },
+  "contentPattern": {
+    "structure": "per slide: full-bleed background image + title + optional subtext + CTA",
+    "slideCount": 5,
+    "buttonCount": 1,
+    "imageCount": 1,
+    "hasDescription": true,
+    "hasCTA": true
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "top-of-page rotating hero banners",
+      "homepage promotional carousels with full-bleed photographic slides",
+      "multi-message hero areas needing image + heading + subtext + single CTA per slide"
+    ],
+    "notSuitableFor": [
+      "single static hero banners (use hero-banner instead)",
+      "content carousels of small cards or thumbnails",
+      "text-only slide decks without background imagery"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/index"],
+    "reuseCount": 1,
+    "lastUsed": "2026-08-06T00:00:00.000Z"
+  }
+}

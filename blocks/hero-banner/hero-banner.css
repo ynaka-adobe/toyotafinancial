@@ -1,79 +1,153 @@
-/* hero-banner — full-bleed photographic banner with knockout text + yellow CTA */
+/*
+ * hero-banner — full-bleed campaign banner (TFS "parallax-campaign-banner")
+ * background photo + white heading, subheading and red pill CTA.
+ * Values extracted from https://www.toyotafinancial.com (#fold-4 .parallax-campaign-banner).
+ * The source swaps between a mobile and a desktop variant at its lg breakpoint (1200px).
+ */
+
+/* full-bleed: escape the section content max-width */
 .hero-banner-container .hero-banner-wrapper {
   max-width: unset;
   padding: 0;
 }
 
+/* mobile / tablet (source .campaign.hidden-lg) */
 .hero-banner {
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  height: 536px;
-  padding: 48px 24px;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  min-height: 650px;
+  padding-top: 121px;
   overflow: hidden;
-  color: var(--background-color);
+  color: #fff;
 }
 
-/* background photo */
-.hero-banner picture {
+/* row 1: background image */
+.hero-banner > div:first-child picture {
   position: absolute;
   inset: 0;
-  z-index: -2;
+  z-index: 0;
 }
 
-.hero-banner picture img {
+.hero-banner > div:first-child picture img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: 80% 50%;
 }
 
-/* dark scrim so knockout text stays legible */
+/* mobile darkening layer: linear-gradient(rgb(0 0 0 / 60%)) */
 .hero-banner::after {
   content: "";
   position: absolute;
   inset: 0;
-  z-index: -1;
-  background: linear-gradient(90deg, rgb(0 0 0 / 70%) 0%, rgb(0 0 0 / 35%) 55%, rgb(0 0 0 / 10%) 100%);
+  z-index: 1;
+  background: rgb(0 0 0 / 60%);
+  pointer-events: none;
 }
 
-.hero-banner > div {
-  max-width: 1200px;
+/* row 2: text content (source .container > .campaign-content) */
+.hero-banner > div:last-child {
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
   width: 100%;
+  max-width: var(--content-max-width);
   margin: 0 auto;
 }
 
-.hero-banner h1,
+.hero-banner > div:last-child > div {
+  box-sizing: border-box;
+  padding: 0 10px 0 15px;
+}
+
 .hero-banner h2 {
-  margin: 0 0 0.25em;
-  max-width: 640px;
-  color: var(--background-color);
+  margin: 0 0 10px;
+  color: #fff;
   font-family: var(--heading-font-family);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--heading-font-size-xxl);
-  line-height: 1.1;
+
+  /* source face is HelvNeueBold (a bold cut reported as weight 500) */
+  font-weight: 700;
+  font-size: 35px;
+  line-height: 38.5px;
+  text-align: left;
 }
 
 .hero-banner p {
-  max-width: 520px;
-  margin: 0 0 1.5em;
-  font-size: 1.25rem;
-  line-height: 1.4;
+  margin: 0 0 10px;
+  color: #fff;
+  font-family: var(--body-font-family);
+  font-size: 16px;
+  line-height: 30.08px;
+  text-align: left;
 }
 
-.hero-banner a.button:any-link,
-.hero-banner p strong {
+.hero-banner p.button-container {
+  display: block;
+  margin: 0;
+  line-height: 0;
+}
+
+/* red pill CTA (source a.btn.btn-primary) */
+main .hero-banner a.button:any-link {
   display: inline-block;
-  background-color: var(--brand-yellow);
-  color: var(--text-strong-color);
-  font-weight: var(--font-weight-semibold);
-  padding: 0.625em 1.5em;
-  border-radius: var(--border-radius);
+  box-sizing: border-box;
+  margin: 0;
+  border: 1px solid var(--brand-red);
+  border-radius: 60px;
+  padding: 16px 24px;
+  background-color: var(--brand-red);
+  color: #fff;
+  font-family: var(--body-font-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 22.8571px;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
 }
 
-@media (width >= 900px) {
+main .hero-banner a.button:hover,
+main .hero-banner a.button:focus {
+  text-decoration: none;
+}
+
+main .hero-banner a.button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+@media (width >= 768px) {
+  /* source .col-sm-7 */
+  .hero-banner > div:last-child > div {
+    width: 58.3333%;
+  }
+}
+
+/* desktop (source .campaign.visible-lg) */
+@media (width >= 1200px) {
   .hero-banner {
-    height: 536px;
-    padding: 64px 32px;
+    justify-content: center;
+    min-height: 393px;
+    padding-top: 0;
+  }
+
+  .hero-banner::after {
+    content: none;
+  }
+
+  .hero-banner > div:first-child picture img {
+    object-position: 100% 100%;
+  }
+
+  .hero-banner > div:last-child {
+    padding: 0 15px;
+  }
+
+  .hero-banner h2 {
+    font-size: 40px;
+    line-height: 44px;
   }
 }

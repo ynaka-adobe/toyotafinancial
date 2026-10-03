@@ -49,7 +49,11 @@
         "table",
         "text",
         "video",
-        "product-recommendations"
+        "product-recommendations",
+        "carousel-hero",
+        "cards-service",
+        "cards-explore",
+        "hero-banner"
       ]
     }
   ]

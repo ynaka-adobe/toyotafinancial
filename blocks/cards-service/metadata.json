@@ -1,0 +1,41 @@
+{
+  "variantName": "cards-service",
+  "baseBlock": "cards",
+  "version": "1.0.0",
+  "created": "2026-08-06T00:00:00.000Z",
+  "sourceContext": {
+    "originUrl": "https://www.toyotafinancial.com",
+    "originPage": "Toyota Financial homepage",
+    "blockPosition": "middle"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "compact",
+    "purpose": "service-links",
+    "imagePattern": "large"
+  },
+  "contentPattern": {
+    "structure": "per card: title + short description + image (image below text)",
+    "buttonCount": 0,
+    "imageCount": 1,
+    "hasDescription": true,
+    "hasCTA": false
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "grids of linked service/task promo tiles on a light background",
+      "'quick links' style navigation tiles with title + one-line description + image",
+      "equal-height service callout grids without explicit CTA buttons"
+    ],
+    "notSuitableFor": [
+      "large promotional cards with visible CTA buttons (use cards-promo)",
+      "image-top editorial cards (use cards-explore)",
+      "compact icon-only callout strips (use cards-callouts)"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/index"],
+    "reuseCount": 1,
+    "lastUsed": "2026-08-06T00:00:00.000Z"
+  }
+}

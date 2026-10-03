@@ -1,0 +1,89 @@
+{
+  "metadata": {
+    "projectType": "da"
+  },
+  "templates": [
+    {
+      "name": "homepage",
+      "urls": [
+        "https://www.toyotafinancial.com"
+      ],
+      "coverageGaps": [],
+      "description": "Toyota Financial homepage: hero banner carousel, promo callout cards grid, financial tools/quiz cards grid, campaign banner, and footer.",
+      "blocks": [
+        {
+          "name": "carousel-hero",
+          "instances": [
+            "#carousel_image",
+            "#fold-1 .carousel-image.parbase"
+          ]
+        },
+        {
+          "name": "cards-service",
+          "instances": [
+            "#fold-2 > div.container > div.row.equal-height-container"
+          ]
+        },
+        {
+          "name": "cards-explore",
+          "instances": [
+            "#fold-3 > div.row.equal-height-container"
+          ]
+        },
+        {
+          "name": "hero-banner",
+          "instances": [
+            "#fold-4 > div.parallax-campaign-banner.parbase"
+          ]
+        }
+      ],
+      "sections": [
+        {
+          "id": "rc7-hero",
+          "name": "hero-carousel",
+          "selector": "#fold-1",
+          "style": null,
+          "blocks": [
+            "carousel-hero"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "rc7-promos",
+          "name": "promos",
+          "selector": "#fold-2",
+          "style": null,
+          "blocks": [
+            "cards-service"
+          ],
+          "defaultContent": [
+            "#fold-2 > div.container > div.row:nth-of-type(2) > div.col-sm-12.col-xs-12",
+            "#fold-2 > div.container > div.row:nth-of-type(2) > div.faq-link"
+          ]
+        },
+        {
+          "id": "rc7-tools",
+          "name": "tools",
+          "selector": "#fold-3",
+          "style": "highlight",
+          "blocks": [
+            "cards-explore"
+          ],
+          "defaultContent": [
+            "#fold-3 > div.container"
+          ]
+        },
+        {
+          "id": "rc7-campaign",
+          "name": "campaign",
+          "selector": "#fold-4",
+          "style": null,
+          "blocks": [
+            "hero-banner"
+          ],
+          "defaultContent": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,155 @@
+/* cards-explore: "There's more to explore" image-led tiles (source #fold-3 .equal-height-container) */
+
+/* source cards span the full viewport (container-fluid), not the 1300px content column */
+main > .section > div.cards-explore-wrapper {
+  max-width: none;
+}
+
+.cards-explore {
+  position: relative;
+  padding-bottom: 50px;
+  color: var(--text-color);
+}
+
+/* mobile/tablet: horizontal slider (1 card per view, 2 from 576px) */
+.cards-explore > ul {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 20px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+.cards-explore > ul::-webkit-scrollbar {
+  display: none;
+}
+
+.cards-explore > ul > li {
+  position: relative;
+  padding: 20px 15px;
+  scroll-snap-align: start;
+  cursor: pointer;
+}
+
+.cards-explore .cards-explore-card-image {
+  line-height: 0;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.cards-explore .cards-explore-card-image picture {
+  display: block;
+}
+
+.cards-explore .cards-explore-card-image img {
+  display: block;
+  width: 100%;
+  transition: transform 0.2s ease-in-out;
+}
+
+.cards-explore > ul > li:hover img,
+.cards-explore > ul > li:focus-within img {
+  transform: scale(1.1);
+}
+
+.cards-explore .cards-explore-card-body {
+  padding: 10px;
+  text-align: center;
+}
+
+.cards-explore .cards-explore-card-body h3 {
+  margin: 0;
+  font-family: var(--body-font-family);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 33.84px;
+  color: var(--text-color);
+}
+
+.cards-explore .cards-explore-card-body h3 a:any-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* whole tile is clickable on the source */
+.cards-explore .cards-explore-card-body h3 a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.cards-explore .cards-explore-card-body h3 a:hover,
+.cards-explore .cards-explore-card-body h3 a:focus {
+  text-decoration: none;
+}
+
+.cards-explore .cards-explore-card-body p {
+  margin: 0 0 16px;
+  font-size: var(--body-font-size-m);
+  line-height: 20px;
+  color: var(--text-color);
+}
+
+/* slider dots */
+.cards-explore .cards-explore-dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 19px;
+  height: 30px;
+  margin: 0;
+  padding: 6px 0 0;
+  box-sizing: border-box;
+}
+
+.cards-explore .cards-explore-dots[hidden] {
+  display: none;
+}
+
+.cards-explore .cards-explore-dots button,
+.cards-explore .cards-explore-dots button:hover {
+  display: block;
+  box-sizing: border-box;
+  width: 12px;
+  height: 12px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgb(216 216 216);
+  border-radius: 12px;
+  background-color: rgb(216 216 216);
+  cursor: pointer;
+}
+
+.cards-explore .cards-explore-dots button[aria-current='true'] {
+  border-color: rgb(74 74 74);
+  background-color: rgb(74 74 74);
+}
+
+@media (width >= 576px) {
+  .cards-explore > ul {
+    grid-auto-columns: 50%;
+  }
+}
+
+/* desktop: static 4-column grid, no slider */
+@media (width >= 992px) {
+  .cards-explore > ul {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(4, 1fr);
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  .cards-explore .cards-explore-dots {
+    display: none;
+  }
+}

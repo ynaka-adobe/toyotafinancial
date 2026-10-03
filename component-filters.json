@@ -23,7 +23,11 @@
       "table",
       "text",
       "video",
-      "product-recommendations"
+      "product-recommendations",
+      "carousel-hero",
+      "cards-service",
+      "cards-explore",
+      "hero-banner"
     ]
   },
   {
@@ -78,6 +82,24 @@
     "id": "tabs",
     "components": [
       "tabs-item"
+    ]
+  },
+  {
+    "id": "carousel-hero",
+    "components": [
+      "carousel-hero-item"
+    ]
+  },
+  {
+    "id": "cards-service",
+    "components": [
+      "card-service"
+    ]
+  },
+  {
+    "id": "cards-explore",
+    "components": [
+      "card-explore"
     ]
   }
 ]

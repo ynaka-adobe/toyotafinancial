@@ -1,0 +1,63 @@
+{
+  "definitions": [
+    {
+      "title": "Cards Explore",
+      "id": "cards-explore",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block",
+            "template": {
+              "name": "Cards Explore",
+              "filter": "cards-explore"
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Card",
+      "id": "card-explore",
+      "plugins": {
+        "xwalk": {
+          "page": {
+            "resourceType": "core/franklin/components/block/v1/block/item",
+            "template": {
+              "name": "Card",
+              "model": "card-explore"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "models": [
+    {
+      "id": "card-explore",
+      "fields": [
+        {
+          "component": "richtext",
+          "valueType": "string",
+          "name": "image",
+          "label": "Image",
+          "multi": false
+        },
+        {
+          "component": "richtext",
+          "name": "text",
+          "value": "",
+          "label": "Text",
+          "valueType": "string"
+        }
+      ]
+    }
+  ],
+  "filters": [
+    {
+      "id": "cards-explore",
+      "components": [
+        "card-explore"
+      ]
+    }
+  ]
+}

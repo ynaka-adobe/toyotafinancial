@@ -13,5 +13,17 @@
   },
   {
     "...": "./blocks/*.json#/models"
+  },
+  {
+    "...": "../../blocks/carousel-hero/_carousel-hero.json#/models"
+  },
+  {
+    "...": "../../blocks/cards-service/_cards-service.json#/models"
+  },
+  {
+    "...": "../../blocks/cards-explore/_cards-explore.json#/models"
+  },
+  {
+    "...": "../../blocks/hero-banner/_hero-banner.json#/models"
   }
 ]
