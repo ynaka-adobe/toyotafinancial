@@ -1,269 +1,352 @@
-import {
-  createOptimizedPicture,
-  decorateIcons,
-  fetchPlaceholders,
-} from '../../scripts/aem.js';
+import { decorateIcons, fetchPlaceholders } from '../../scripts/aem.js';
+import { loadFragment } from '../fragment/fragment.js';
 
-const searchParams = new URLSearchParams(window.location.search);
+const PAGE_SIZE = 20;
+const QUERY_PARAMS = ['query', 'q'];
+const STOPWORDS = new Set(['a', 'an', 'and', 'are', 'as', 'at', 'be', 'by', 'can', 'do', 'for', 'from', 'how', 'i', 'if', 'in', 'is', 'it', 'my', 'of', 'on', 'or', 'the', 'to', 'what', 'when', 'where', 'why', 'with', 'you', 'your']);
+const LABEL_OVERRIDES = {
+  'financing-options': 'Explore Financing',
+  'vehicle-protection-plan': 'Vehicle Protection',
+  'tfs-thoughtfuel-blog': 'TFS ThoughtFuel Blog',
+  'mobileapp-faqs': 'Mobile App',
+  'login-faqs': 'Login',
+  'guaranteed-auto-protection-gap': 'Guaranteed Auto Protection (GAP)',
+  bz4x: 'bZ4X',
+  faq: 'Frequently Asked Questions',
+};
+const WORD_OVERRIDES = { tfs: 'TFS', faqs: 'FAQs', gap: 'GAP' };
+const SMALL_WORDS = new Set(['a', 'and', 'in', 'of', 'or', 'the', 'to', 'for']);
 
-function findNextHeading(el) {
-  let preceedingEl = el.parentElement.previousElement || el.parentElement.parentElement;
-  let h = 'H2';
-  while (preceedingEl) {
-    const lastHeading = [...preceedingEl.querySelectorAll('h1, h2, h3, h4, h5, h6')].pop();
-    if (lastHeading) {
-      const level = parseInt(lastHeading.nodeName[1], 10);
-      h = level < 6 ? `H${level + 1}` : 'H6';
-      preceedingEl = false;
-    } else {
-      preceedingEl = preceedingEl.previousElement || preceedingEl.parentElement;
-    }
-  }
-  return h;
+function slugToLabel(slug) {
+  if (LABEL_OVERRIDES[slug]) return LABEL_OVERRIDES[slug];
+  return slug.split('-').map((w, i) => {
+    if (WORD_OVERRIDES[w]) return WORD_OVERRIDES[w];
+    if (i > 0 && SMALL_WORDS.has(w)) return w;
+    return w.charAt(0).toUpperCase() + w.slice(1);
+  }).join(' ');
 }
 
-function highlightTextElements(terms, elements) {
-  elements.forEach((element) => {
-    if (!element || !element.textContent) return;
+/** Category: FAQ sub-folder for FAQ entries, otherwise the top-level section. */
+function getCategory(path) {
+  const segs = path.split('/').filter(Boolean).slice(2);
+  if (segs[0] === 'planning-tools' && segs[1] === 'faq' && segs.length > 3) return slugToLabel(segs[2]);
+  if (segs.length > 1 || ['end-of-lease-options', 'financing-options', 'vehicle-protection-plan',
+    'tfs-thoughtfuel-blog', 'investor-relations', 'planning-tools'].includes(segs[0])) {
+    return slugToLabel(segs[0]);
+  }
+  return 'General';
+}
 
-    const matches = [];
-    const { textContent } = element;
-    terms.forEach((term) => {
-      let start = 0;
-      let offset = textContent.toLowerCase().indexOf(term.toLowerCase(), start);
-      while (offset >= 0) {
-        matches.push({ offset, term: textContent.substring(offset, offset + term.length) });
-        start = offset + term.length;
-        offset = textContent.toLowerCase().indexOf(term.toLowerCase(), start);
+function cleanTitle(result) {
+  return (result.header || result.title || '').replace(/\s*\|\s*Toyota Financial.*$/i, '').trim();
+}
+
+function normalize(text) {
+  return (text || '').toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+function stem(word) {
+  return word.length > 3 ? word.replace(/(ies|es|s)$/, (m) => (m === 'ies' ? 'y' : '')) : word;
+}
+
+function tokenize(text) {
+  return normalize(text).split(' ').filter((w) => w && !STOPWORDS.has(w)).map(stem);
+}
+
+function scoreResult(entry, terms, phrase) {
+  const fields = [
+    [entry.titleTokens, 4],
+    [entry.categoryTokens, 2],
+    [entry.descriptionTokens, 1],
+    [entry.pathTokens, 1],
+  ];
+  let score = 0;
+  let matched = 0;
+  terms.forEach((term) => {
+    let best = 0;
+    fields.forEach(([tokens, weight]) => {
+      if (tokens.some((t) => t === term || (term.length > 3 && t.startsWith(term)))) {
+        best = Math.max(best, weight);
       }
     });
-
-    if (!matches.length) {
-      return;
-    }
-
-    matches.sort((a, b) => a.offset - b.offset);
-    let currentIndex = 0;
-    const fragment = matches.reduce((acc, { offset, term }) => {
-      if (offset < currentIndex) return acc;
-      const textBefore = textContent.substring(currentIndex, offset);
-      if (textBefore) {
-        acc.appendChild(document.createTextNode(textBefore));
-      }
-      const markedTerm = document.createElement('mark');
-      markedTerm.textContent = term;
-      acc.appendChild(markedTerm);
-      currentIndex = offset + term.length;
-      return acc;
-    }, document.createDocumentFragment());
-    const textAfter = textContent.substring(currentIndex);
-    if (textAfter) {
-      fragment.appendChild(document.createTextNode(textAfter));
-    }
-    element.innerHTML = '';
-    element.appendChild(fragment);
+    if (best) matched += 1;
+    score += best;
   });
+  if (phrase && normalize(entry.title).includes(phrase)) score += 10;
+  if (phrase && normalize(entry.category) === phrase) score += 6;
+  return { score, matched };
 }
 
-export async function fetchData(source) {
-  const response = await fetch(source);
-  if (!response.ok) {
-    // eslint-disable-next-line no-console
-    console.error('error loading API response', response);
-    return null;
-  }
-
-  const json = await response.json();
-  if (!json) {
-    // eslint-disable-next-line no-console
-    console.error('empty API response', source);
-    return null;
-  }
-
-  return json.data;
+function search(index, query) {
+  const terms = [...new Set(tokenize(query))];
+  if (!terms.length) return [];
+  const phrase = normalize(query);
+  const scored = index.map((entry) => ({ entry, ...scoreResult(entry, terms, phrase) }))
+    .filter((r) => r.score > 0);
+  const all = scored.filter((r) => r.matched === terms.length);
+  const pool = all.length ? all : scored;
+  return pool
+    .sort((a, b) => b.matched - a.matched
+      || b.score - a.score
+      || a.entry.title.localeCompare(b.entry.title))
+    .map((r) => r.entry);
 }
 
-function renderResult(result, searchTerms, titleTag) {
-  const li = document.createElement('li');
-  const a = document.createElement('a');
-  a.href = result.path;
-  if (result.image) {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'search-result-image';
-    const pic = createOptimizedPicture(result.image, '', false, [{ width: '375' }]);
-    wrapper.append(pic);
-    a.append(wrapper);
-  }
-  if (result.title) {
-    const title = document.createElement(titleTag);
-    title.className = 'search-result-title';
-    const link = document.createElement('a');
-    link.href = result.path;
-    link.textContent = result.title;
-    highlightTextElements(searchTerms, [link]);
-    title.append(link);
-    a.append(title);
-  }
-  if (result.description) {
-    const description = document.createElement('p');
-    description.textContent = result.description;
-    highlightTextElements(searchTerms, [description]);
-    a.append(description);
-  }
-  li.append(a);
-  return li;
-}
-
-function clearSearchResults(block) {
-  const searchResults = block.querySelector('.search-results');
-  searchResults.innerHTML = '';
-}
-
-function clearSearch(block) {
-  clearSearchResults(block);
-  if (window.history.replaceState) {
-    const url = new URL(window.location.href);
-    url.search = '';
-    searchParams.delete('q');
-    window.history.replaceState({}, '', url.toString());
-  }
-}
-
-async function renderResults(block, config, filteredData, searchTerms) {
-  clearSearchResults(block);
-  const searchResults = block.querySelector('.search-results');
-  const headingTag = searchResults.dataset.h;
-
-  if (filteredData.length) {
-    searchResults.classList.remove('no-results');
-    filteredData.forEach((result) => {
-      const li = renderResult(result, searchTerms, headingTag);
-      searchResults.append(li);
+async function fetchIndex(source) {
+  const resp = await fetch(`${source}${source.includes('?') ? '&' : '?'}limit=5000`);
+  if (!resp.ok) return [];
+  const { data = [] } = await resp.json();
+  return data
+    .filter((r) => !/noindex/i.test(r.robots || ''))
+    .map((r) => {
+      const title = cleanTitle(r);
+      const category = getCategory(r.path);
+      return {
+        ...r,
+        title,
+        category,
+        titleTokens: tokenize(title),
+        categoryTokens: tokenize(category),
+        descriptionTokens: tokenize(r.description),
+        pathTokens: tokenize(r.path.split('/').slice(3).join(' ')),
+      };
     });
-  } else {
-    const noResultsMessage = document.createElement('li');
-    searchResults.classList.add('no-results');
-    noResultsMessage.textContent = config.placeholders.searchNoResults || 'No results found.';
-    searchResults.append(noResultsMessage);
-  }
 }
 
-function compareFound(hit1, hit2) {
-  return hit1.minIdx - hit2.minIdx;
-}
-
-function filterData(searchTerms, data) {
-  const foundInHeader = [];
-  const foundInMeta = [];
-
-  data.forEach((result) => {
-    let minIdx = -1;
-
-    searchTerms.forEach((term) => {
-      const idx = (result.header || result.title).toLowerCase().indexOf(term);
-      if (idx < 0) return;
-      if (minIdx < idx) minIdx = idx;
+/** Answer = default content of the page's main text section (minus back link + h1). */
+async function loadAnswer(entry) {
+  const pageUrl = new URL(entry.path, window.location.origin);
+  const resp = await fetch(`${entry.path}.plain.html`);
+  if (!resp.ok) return null;
+  const doc = new DOMParser().parseFromString(await resp.text(), 'text/html');
+  const sections = [...doc.body.children].filter((s) => !s.classList.contains('page-banner'));
+  const section = sections.find((s) => s.querySelector(':scope > h1')) || sections[0];
+  if (!section) return null;
+  const isFaq = /\/faq\/[^/]+\/[^/]+$/.test(entry.path);
+  const allowed = ['P', 'UL', 'OL', 'H2', 'H3', 'H4', 'H5', 'H6', 'TABLE', 'BLOCKQUOTE'];
+  const nodes = [...section.children].filter((n) => allowed.includes(n.tagName)
+    && !n.querySelector('picture, img')
+    && !(n.tagName === 'P' && /^back to /i.test(n.textContent.trim())));
+  const picked = isFaq ? nodes : nodes.slice(0, 3);
+  const frag = document.createDocumentFragment();
+  picked.forEach((node) => {
+    node.querySelectorAll('a[href]').forEach((a) => {
+      a.href = new URL(a.getAttribute('href'), pageUrl).href;
     });
-
-    if (minIdx >= 0) {
-      foundInHeader.push({ minIdx, result });
-      return;
-    }
-
-    const metaContents = `${result.title} ${result.description} ${result.path.split('/').pop()}`.toLowerCase();
-    searchTerms.forEach((term) => {
-      const idx = metaContents.indexOf(term);
-      if (idx < 0) return;
-      if (minIdx < idx) minIdx = idx;
-    });
-
-    if (minIdx >= 0) {
-      foundInMeta.push({ minIdx, result });
-    }
+    node.querySelectorAll('[id]').forEach((n) => n.removeAttribute('id'));
+    frag.append(document.importNode(node, true));
   });
-
-  return [
-    ...foundInHeader.sort(compareFound),
-    ...foundInMeta.sort(compareFound),
-  ].map((item) => item.result);
+  return frag.childNodes.length ? frag : null;
 }
 
-async function handleSearch(e, block, config) {
-  const searchValue = e.target.value;
-  searchParams.set('q', searchValue);
-  if (window.history.replaceState) {
-    const url = new URL(window.location.href);
-    url.search = searchParams.toString();
-    window.history.replaceState({}, '', url.toString());
-  }
-
-  if (searchValue.length < 3) {
-    clearSearch(block);
-    return;
-  }
-  const searchTerms = searchValue.toLowerCase().split(/\s+/).filter((term) => !!term);
-
-  const data = await fetchData(config.source);
-  const filteredData = filterData(searchTerms, data);
-  await renderResults(block, config, filteredData, searchTerms);
-}
-
-function searchResultsContainer(block) {
-  const results = document.createElement('ul');
-  results.className = 'search-results';
-  results.dataset.h = findNextHeading(block);
-  return results;
-}
-
-function searchInput(block, config) {
-  const input = document.createElement('input');
-  input.setAttribute('type', 'search');
-  input.className = 'search-input';
-
-  const searchPlaceholder = config.placeholders.searchPlaceholder || 'Search...';
-  input.placeholder = searchPlaceholder;
-  input.setAttribute('aria-label', searchPlaceholder);
-
-  input.addEventListener('input', (e) => {
-    handleSearch(e, block, config);
+function el(tag, attrs = {}, ...children) {
+  const node = document.createElement(tag);
+  Object.entries(attrs).forEach(([k, v]) => {
+    if (k === 'class') node.className = v;
+    else if (k === 'text') node.textContent = v;
+    else node.setAttribute(k, v);
   });
-
-  input.addEventListener('keyup', (e) => { if (e.code === 'Escape') { clearSearch(block); } });
-
-  return input;
+  node.append(...children.filter(Boolean));
+  return node;
 }
 
-function searchIcon() {
-  const icon = document.createElement('span');
-  icon.classList.add('icon', 'icon-search');
-  return icon;
+function renderResult(entry, ph) {
+  const summary = el('summary', {}, el('span', { class: 'search-result-title', text: entry.title }));
+  const body = el('div', { class: 'search-result-answer' });
+  const details = el('details', { class: 'search-result' }, summary, body);
+  details.addEventListener('toggle', async () => {
+    if (!details.open || body.dataset.loaded) return;
+    body.dataset.loaded = 'true';
+    body.setAttribute('aria-busy', 'true');
+    const answer = await loadAnswer(entry).catch(() => null);
+    if (answer) body.append(answer);
+    else if (entry.description) body.append(el('p', { text: entry.description }));
+    body.append(el('p', { class: 'button-wrapper' }, el('a', {
+      class: 'button primary', href: entry.path, text: ph.searchLearnMore || 'Learn More',
+    })));
+    body.removeAttribute('aria-busy');
+  });
+  return el('li', {}, details);
 }
 
-function searchBox(block, config) {
-  const box = document.createElement('div');
-  box.classList.add('search-box');
-  box.append(
-    searchIcon(),
-    searchInput(block, config),
-  );
+function readState() {
+  const params = new URLSearchParams(window.location.search);
+  const query = QUERY_PARAMS.map((p) => params.get(p)).find((v) => v) || '';
+  const categories = params.getAll('category');
+  const page = Math.max(1, parseInt(params.get('page'), 10) || 1);
+  return { query, categories, page };
+}
 
-  return box;
+function writeState({ query, categories, page }, push) {
+  const url = new URL(window.location.href);
+  [...QUERY_PARAMS, 'category', 'page'].forEach((p) => url.searchParams.delete(p));
+  if (query) url.searchParams.set('query', query);
+  categories.forEach((c) => url.searchParams.append('category', c));
+  if (page > 1) url.searchParams.set('page', page);
+  window.history[push ? 'pushState' : 'replaceState']({}, '', url);
 }
 
 export default async function decorate(block) {
-  const placeholders = await fetchPlaceholders();
-  const source = block.querySelector('a[href]') ? block.querySelector('a[href]').href : '/query-index.json';
-  block.innerHTML = '';
-  block.append(
-    searchBox(block, { source, placeholders }),
-    searchResultsContainer(block),
-  );
+  const links = [...block.querySelectorAll('a[href]')].map((a) => a.getAttribute('href'));
+  const source = links.find((h) => /\.json(\?|$)/.test(h)) || '/query-index.json';
+  const helpPath = links.find((h) => !/\.json(\?|$)/.test(h));
+  const ph = await fetchPlaceholders();
+  const indexPromise = fetchIndex(source);
 
-  if (searchParams.get('q')) {
-    const input = block.querySelector('input');
-    input.value = searchParams.get('q');
-    input.dispatchEvent(new Event('input'));
+  const searchLabel = ph.searchPlaceholder || 'Search';
+  const input = el('input', {
+    type: 'search',
+    name: 'query',
+    class: 'search-input',
+    autocomplete: 'off',
+    placeholder: searchLabel,
+    'aria-label': searchLabel,
+  });
+  const clear = el('button', { type: 'button', class: 'search-clear', 'aria-label': 'Clear search' });
+  const submit = el(
+    'button',
+    { type: 'submit', class: 'search-submit', 'aria-label': 'Search' },
+    el('span', { class: 'icon icon-search' }),
+  );
+  const form = el('form', { class: 'search-bar', role: 'search' }, input, clear, submit);
+
+  const facetList = el('ul', { class: 'search-facet-options' });
+  const facets = el(
+    'aside',
+    { class: 'search-facets', 'aria-label': 'Filters' },
+    el('fieldset', {}, el('legend', { text: ph.searchCategory || 'Category' }), facetList),
+  );
+  const count = el('p', { class: 'search-count', 'aria-live': 'polite' });
+  const chips = el('ul', { class: 'search-chips' });
+  const filtersToggle = el('button', {
+    type: 'button',
+    class: 'search-filters-toggle',
+    'aria-expanded': 'false',
+    text: ph.searchFilters || 'Filters',
+  });
+  const results = el('ul', { class: 'search-results' });
+  const pagination = el('nav', { class: 'search-pagination', 'aria-label': 'Search results pages' });
+  const help = el('div', { class: 'search-help' });
+  const summary = el('div', { class: 'search-summary' }, count, chips, filtersToggle);
+  const main = el('div', { class: 'search-main' }, summary, results, pagination, help);
+  const layout = el('div', { class: 'search-layout' }, facets, main);
+
+  block.replaceChildren(form, layout);
+  decorateIcons(block);
+
+  if (helpPath) {
+    loadFragment(new URL(helpPath, window.location.href).pathname).then((fragment) => {
+      if (fragment) help.append(...fragment.childNodes);
+    });
   }
 
-  decorateIcons(block);
+  let state = readState();
+
+  const render = async () => {
+    input.value = state.query;
+    clear.hidden = !state.query;
+    const index = await indexPromise;
+    const hits = state.query ? search(index, state.query) : [];
+    block.classList.toggle('has-query', !!state.query);
+    block.classList.toggle('no-results', !!state.query && !hits.length);
+
+    // facets (counts from the query hits, independent of the category selection)
+    const counts = new Map();
+    hits.forEach((h) => counts.set(h.category, (counts.get(h.category) || 0) + 1));
+    state.categories = state.categories.filter((c) => counts.has(c));
+    facetList.replaceChildren(...[...counts.entries()]
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .map(([label, n]) => {
+        const cb = el('input', { type: 'checkbox', value: label });
+        cb.checked = state.categories.includes(label);
+        cb.addEventListener('change', () => {
+          state.categories = cb.checked
+            ? [...state.categories, label] : state.categories.filter((c) => c !== label);
+          state.page = 1;
+          writeState(state, true);
+          render();
+        });
+        return el('li', {}, el('label', {}, cb, el('span', { text: `${label} (${n})` })));
+      }));
+    facets.hidden = !counts.size;
+    filtersToggle.hidden = !counts.size;
+
+    const filtered = state.categories.length
+      ? hits.filter((h) => state.categories.includes(h.category)) : hits;
+    const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    state.page = Math.min(state.page, pages);
+    const start = (state.page - 1) * PAGE_SIZE;
+    const pageHits = filtered.slice(start, start + PAGE_SIZE);
+
+    if (!state.query) count.textContent = '';
+    else if (!filtered.length) {
+      count.textContent = (ph.searchNoResults || 'No results found for “{query}”.').replace('{query}', state.query);
+    } else count.textContent = `${start + 1} - ${start + pageHits.length} of ${filtered.length}`;
+
+    const chipFor = (label, onRemove) => {
+      const btn = el('button', { type: 'button', 'aria-label': `Remove ${label}` }, el('span', { text: label }));
+      btn.addEventListener('click', onRemove);
+      return el('li', {}, btn);
+    };
+    chips.replaceChildren(...(state.query && filtered.length ? [
+      chipFor(state.query, () => {
+        state = { query: '', categories: [], page: 1 };
+        writeState(state, true);
+        render();
+        input.focus();
+      }),
+      ...state.categories.map((c) => chipFor(c, () => {
+        state.categories = state.categories.filter((x) => x !== c);
+        writeState(state, true);
+        render();
+      })),
+    ] : []));
+
+    results.replaceChildren(...pageHits.map((h) => renderResult(h, ph)));
+
+    pagination.replaceChildren();
+    if (pages > 1) {
+      const go = (p) => () => {
+        state.page = p;
+        writeState(state, true);
+        render();
+        block.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+      const pageBtn = (label, p, attrs = {}) => {
+        const b = el('button', { type: 'button', ...attrs, text: label });
+        if (p === state.page) b.setAttribute('aria-current', 'page');
+        b.disabled = p < 1 || p > pages;
+        b.addEventListener('click', go(p));
+        return b;
+      };
+      pagination.append(pageBtn('‹', state.page - 1, { 'aria-label': 'Previous page', class: 'prev' }));
+      for (let p = 1; p <= pages; p += 1) pagination.append(pageBtn(String(p), p));
+      pagination.append(pageBtn('›', state.page + 1, { 'aria-label': 'Next page', class: 'next' }));
+    }
+  };
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    state = { query: input.value.trim(), categories: [], page: 1 };
+    writeState(state, true);
+    render();
+  });
+  input.addEventListener('input', () => { clear.hidden = !input.value; });
+  clear.addEventListener('click', () => {
+    input.value = '';
+    clear.hidden = true;
+    input.focus();
+  });
+  filtersToggle.addEventListener('click', () => {
+    const open = !block.classList.contains('facets-open');
+    block.classList.toggle('facets-open', open);
+    filtersToggle.setAttribute('aria-expanded', open);
+  });
+  window.addEventListener('popstate', () => {
+    state = readState();
+    render();
+  });
+
+  writeState(state, false);
+  render();
 }

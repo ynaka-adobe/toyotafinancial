@@ -123,7 +123,7 @@ function buildSearch(link) {
 
   const input = document.createElement('input');
   input.type = 'search';
-  input.name = 'q';
+  input.name = 'query';
   input.placeholder = link ? link.textContent.trim() : '';
   input.setAttribute('aria-label', input.placeholder || 'Search');
 

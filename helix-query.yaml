@@ -14,6 +14,9 @@ indices:
       - '/**/drafts/**'
     target: /query-index.json
     properties:
+      header:
+        select: main h1
+        value: textContent(el)
       title:
         select: head > meta[property="og:title"]
         value: attribute(el, "content")
