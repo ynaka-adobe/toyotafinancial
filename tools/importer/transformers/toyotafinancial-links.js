@@ -21,6 +21,11 @@
  * Left untouched: "#..." in-page anchors, "/" (site root), external/absolute
  * links, protocol-relative "//host", mailto:/tel:/javascript: and empty hrefs.
  *
+ * Since 2026-10-04 every content-page link becomes its new-site path with ".html"
+ * (/us/en/planning_tools/faq.html -> /us/en/planning-tools/faq.html), whether or
+ * not the page is migrated yet; see toNewSitePath and withHtml below. The notes
+ * above describe the earlier original-site rule, still used for non-page links.
+ *
  * Runs in afterTransform only, so links inside parser-built block tables are
  * rewritten too. Register BEFORE the DM transformer.
  */
@@ -28,6 +33,10 @@
 const TransformHook = { beforeTransform: 'beforeTransform', afterTransform: 'afterTransform' };
 
 const SITE_ORIGIN = 'https://www.toyotafinancial.com';
+// Account app (source /dss/...) is served from a custom domain:
+// /dss/login?deeplink=x -> https://dss.toyotafinancial.ynaka-adobe.com/login?deeplink=x
+const DSS_ORIGIN = 'https://dss.toyotafinancial.ynaka-adobe.com';
+const DSS_PATH_RE = /^\/dss(?=[/?#]|$)/i;
 const CONTENT_PREFIX_RE = /^\/content\/toyotafinancial(?=[/?#]|$)/i;
 const SITE_ABSOLUTE_RE = /^https?:\/\/(www\.)?toyotafinancial\.com(?=[/?#]|$)/i;
 
@@ -121,8 +130,8 @@ const LINK_CORRECTIONS = {
     '/us/en/financing-options/rebate-finance-programs/military-rebate-program',
   // redirects on the original site
   '/us/en/about_us': '/us/en/about-us/company-overview',
-  '/us/en/consumer-web/home/login': `${SITE_ORIGIN}/dss/login`,
-  '/us/en/external_login': `${SITE_ORIGIN}/dss/login`,
+  '/us/en/consumer-web/home/login': `${DSS_ORIGIN}/login`,
+  '/us/en/external_login': `${DSS_ORIGIN}/login`,
   // credit application form (part of the app, stays on the original site)
   '/us/en/planning_tools/apply_for_credit/application/form': `${SITE_ORIGIN}/us/en/planning_tools/apply_for_credit/application/form`,
 };
@@ -154,6 +163,13 @@ function toNewSitePath(sitePath) {
   return `${pathname === '/' ? '/' : sanitizePath(pathname)}${m[2] || ''}`;
 }
 
+// "/dss/login?q" -> "https://dss.toyotafinancial.ynaka-adobe.com/login?q", else null.
+function toDssLink(sitePath) {
+  if (!DSS_PATH_RE.test(sitePath)) return null;
+  const rest = sitePath.replace(DSS_PATH_RE, '');
+  return `${DSS_ORIGIN}${rest.startsWith('/') ? '' : '/'}${rest}`;
+}
+
 function rewriteHref(rawHref) {
   const href = (rawHref || '').trim();
   if (!href) return null;
@@ -163,6 +179,8 @@ function rewriteHref(rawHref) {
   if (abs) {
     const after = href.slice(abs[0].length);
     const rest = after.replace(CONTENT_PREFIX_RE, '') || '/';
+    const dss = toDssLink(rest);
+    if (dss) return dss;
     const page = toCorrectedLink(rest) || toMigratedPath(rest) || toNewSitePath(rest);
     if (page) return page;
     if (!CONTENT_PREFIX_RE.test(after)) return null;
@@ -175,16 +193,34 @@ function rewriteHref(rawHref) {
   let path = href.replace(CONTENT_PREFIX_RE, '');
   if (!path.startsWith('/')) path = `/${path}`;
   if (isNewSitePath(path)) return path === href ? null : path;
+  const dss = toDssLink(path);
+  if (dss) return dss;
   const page = toCorrectedLink(path) || toMigratedPath(path) || toNewSitePath(path);
   if (page) return page === href ? null : page;
   return `${SITE_ORIGIN}${path}`;
+}
+
+// Page links on the new site use ".html" (/us/en/glossary.html#x): the CDN serves
+// /page.html from the EDS page /page, and on aem.page/aem.live the 404 page
+// forwards /page.html to /page. Not for "/", shared fragment references (the
+// fragment block loads <path>.plain.html), app paths or links with an extension.
+const NO_HTML_PREFIXES = ['/us/en/fragments/', '/fragments/', ...NON_PAGE_PREFIXES];
+
+function withHtml(href) {
+  if (!href.startsWith('/') || href.startsWith('//')) return href;
+  const m = href.match(/^([^?#]*)([?#].*)?$/);
+  const path = m[1].replace(/\/+$/, '');
+  if (!path || NO_HTML_PREFIXES.some((prefix) => `${path}/`.toLowerCase().startsWith(prefix))) return href;
+  if (/\.[a-z0-9]{2,5}$/i.test(path.split('/').pop())) return href;
+  return `${path}.html${m[2] || ''}`;
 }
 
 export default function transform(hookName, element, payload) {
   if (hookName !== TransformHook.afterTransform) return;
 
   element.querySelectorAll('a[href]').forEach((a) => {
-    const next = rewriteHref(a.getAttribute('href'));
-    if (next) a.setAttribute('href', next);
+    const href = a.getAttribute('href');
+    const next = withHtml(rewriteHref(href) || href);
+    if (next !== href) a.setAttribute('href', next);
   });
 }
