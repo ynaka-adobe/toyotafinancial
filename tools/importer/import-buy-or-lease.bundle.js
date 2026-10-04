@@ -875,11 +875,21 @@ var CustomImportScript = (() => {
     if (page) return page === href ? null : page;
     return `${SITE_ORIGIN2}${path}`;
   }
+  var NO_HTML_PREFIXES = ["/us/en/fragments/", "/fragments/", ...NON_PAGE_PREFIXES];
+  function withHtml(href) {
+    if (!href.startsWith("/") || href.startsWith("//")) return href;
+    const m = href.match(/^([^?#]*)([?#].*)?$/);
+    const path = m[1].replace(/\/+$/, "");
+    if (!path || NO_HTML_PREFIXES.some((prefix) => `${path}/`.toLowerCase().startsWith(prefix))) return href;
+    if (/\.[a-z0-9]{2,5}$/i.test(path.split("/").pop())) return href;
+    return `${path}.html${m[2] || ""}`;
+  }
   function transform3(hookName, element, payload) {
     if (hookName !== TransformHook3.afterTransform) return;
     element.querySelectorAll("a[href]").forEach((a) => {
-      const next = rewriteHref(a.getAttribute("href"));
-      if (next) a.setAttribute("href", next);
+      const href = a.getAttribute("href");
+      const next = withHtml(rewriteHref(href) || href);
+      if (next !== href) a.setAttribute("href", next);
     });
   }
 

@@ -21,6 +21,11 @@
  * Left untouched: "#..." in-page anchors, "/" (site root), external/absolute
  * links, protocol-relative "//host", mailto:/tel:/javascript: and empty hrefs.
  *
+ * Since 2026-10-04 every content-page link becomes its new-site path with ".html"
+ * (/us/en/planning_tools/faq.html -> /us/en/planning-tools/faq.html), whether or
+ * not the page is migrated yet; see toNewSitePath and withHtml below. The notes
+ * above describe the earlier original-site rule, still used for non-page links.
+ *
  * Runs in afterTransform only, so links inside parser-built block tables are
  * rewritten too. Register BEFORE the DM transformer.
  */
@@ -180,11 +185,27 @@ function rewriteHref(rawHref) {
   return `${SITE_ORIGIN}${path}`;
 }
 
+// Page links on the new site use ".html" (/us/en/glossary.html#x): the CDN serves
+// /page.html from the EDS page /page, and on aem.page/aem.live the 404 page
+// forwards /page.html to /page. Not for "/", shared fragment references (the
+// fragment block loads <path>.plain.html), app paths or links with an extension.
+const NO_HTML_PREFIXES = ['/us/en/fragments/', '/fragments/', ...NON_PAGE_PREFIXES];
+
+function withHtml(href) {
+  if (!href.startsWith('/') || href.startsWith('//')) return href;
+  const m = href.match(/^([^?#]*)([?#].*)?$/);
+  const path = m[1].replace(/\/+$/, '');
+  if (!path || NO_HTML_PREFIXES.some((prefix) => `${path}/`.toLowerCase().startsWith(prefix))) return href;
+  if (/\.[a-z0-9]{2,5}$/i.test(path.split('/').pop())) return href;
+  return `${path}.html${m[2] || ''}`;
+}
+
 export default function transform(hookName, element, payload) {
   if (hookName !== TransformHook.afterTransform) return;
 
   element.querySelectorAll('a[href]').forEach((a) => {
-    const next = rewriteHref(a.getAttribute('href'));
-    if (next) a.setAttribute('href', next);
+    const href = a.getAttribute('href');
+    const next = withHtml(rewriteHref(href) || href);
+    if (next !== href) a.setAttribute('href', next);
   });
 }
