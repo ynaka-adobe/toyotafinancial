@@ -1,0 +1,31 @@
+version: 1
+
+indices:
+  site:
+    # Search index for the search block (its default source: /query-index.json).
+    include:
+      - '/us/en'
+      - '/us/en/**'
+    exclude:
+      - '/us/en/nav'
+      - '/us/en/footer'
+      - '/us/en/search'
+      - '/us/en/fragments/**'
+      - '/**/drafts/**'
+    target: /query-index.json
+    properties:
+      title:
+        select: head > meta[property="og:title"]
+        value: attribute(el, "content")
+      description:
+        select: head > meta[name="description"]
+        value: attribute(el, "content")
+      image:
+        select: head > meta[property="og:image"]
+        value: match(attribute(el, "content"), "https:\/\/[^/]+(\/.*)")
+      lastModified:
+        select: none
+        value: parseTimestamp(headers["last-modified"], "ddd, DD MMM YYYY hh:mm:ss GMT")
+      robots:
+        select: head > meta[name="robots"]
+        value: attribute(el, "content")
