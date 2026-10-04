@@ -162,7 +162,7 @@ function renderResult(entry, ph) {
     if (answer) body.append(answer);
     else if (entry.description) body.append(el('p', { text: entry.description }));
     body.append(el('p', { class: 'button-wrapper' }, el('a', {
-      class: 'button primary', href: entry.path, text: ph.searchLearnMore || 'Learn More',
+      class: 'button', href: entry.path, text: ph.searchLearnMore || 'Learn More',
     })));
     body.removeAttribute('aria-busy');
   });
