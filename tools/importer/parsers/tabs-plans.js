@@ -32,9 +32,15 @@
  *   - dropdown card call: build block + every panel of every consecutive sibling .tabcomponent,
  *     remove the tabcomponents (later calls on them are no-ops: detached).
  *   - .tabcomponent call with no dropdown card on the page (tire_wheel): block with a neutral
- *     label + one Tab Group for this and every consecutive sibling .tabcomponent.
+ *     label (not rendered with a single group) and panels WITHOUT `Tab Group` (plain tab bar),
+ *     for this and every consecutive sibling .tabcomponent.
  *   - An <hr> directly before a removed .tabcomponent (section break added by the sections
  *     transformer for the rc8-tabs section) is removed so it does not create an empty section.
+ *   - If authored content follows the last panel inside <main> before the next section break,
+ *     an <hr> is added after the last Section Metadata so that content is not folded into the
+ *     last panel (the section after the last panel must not carry `Tab`).
+ * Validated 2026-10-04 through the full html2md pipeline: PPM 7 panels / 2 groups,
+ * VSA 13 panels / 4 groups, tire_wheel 3 panels / no group.
  */
 const NEUTRAL_LABEL = 'Select a plan';
 const NEUTRAL_GROUP = 'Plans';
@@ -54,6 +60,31 @@ function collectTabComponents(start, includeStart) {
     next = next.nextElementSibling;
   }
   return list;
+}
+
+// Chrome the cleanup transformer only removes in afterTransform (header/footer/nav/iframes):
+// it must not count as content that follows the tab set.
+const CHROME = 'nav, header, footer, .footer, .tfs-header-wrapper, iframe, script, style, noscript, link';
+
+// True when authored content (text or media) follows `node` inside <main> before the next
+// section break. Without a break that content would land in the LAST panel's section and be
+// shown only inside that tab.
+function contentFollows(node, document) {
+  const root = node.closest('main') || document.body;
+  const walker = document.createTreeWalker(root, 1 | 4); // elements + text
+  walker.currentNode = node;
+  let n = walker.nextNode();
+  while (n && node.contains(n)) n = walker.nextNode();
+  while (n) {
+    if (n.nodeType === 1) {
+      if (n.tagName === 'HR') return false;
+      if (/^(IMG|PICTURE|VIDEO|TABLE)$/.test(n.tagName) && !n.closest(CHROME)) return true;
+    } else if (n.textContent.replace(/ /g, ' ').trim() && !n.parentElement.closest(CHROME)) {
+      return true;
+    }
+    n = walker.nextNode();
+  }
+  return false;
 }
 
 function removeTabComponent(tc) {
@@ -132,6 +163,9 @@ export default function parse(element, { document }) {
     while (prev && (prev.tagName === 'HR' || prev.matches('.tabcomponent'))) prev = prev.previousElementSibling;
     if (prev && prev.matches('.card-component') && prev.querySelector('.materialized-dropdown')) return;
     tabComponents = collectTabComponents(element, true);
+    // No dropdown on the source (tire_wheel): omit `Tab Group` on every panel -> plain tab bar
+    // (README: "Omit it on every panel for a plain tab bar with no dropdown").
+    fallbackGroup = '';
   }
 
   const panels = [];
@@ -157,4 +191,8 @@ export default function parse(element, { document }) {
     element.replaceWith(block);
   }
   block.after(...rest);
+  // Close the tab set: content after the last panel (before the next template section break)
+  // must start a section without `Tab`, or it would be folded into the last panel.
+  const lastMeta = rest[rest.length - 1];
+  if (contentFollows(lastMeta, document)) lastMeta.after(document.createElement('hr'));
 }

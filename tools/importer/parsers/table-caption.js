@@ -34,13 +34,78 @@ function stripAttributes(root) {
   return root;
 }
 
+// A <br> followed by more text splits the cell into separate lines.
+function hasLineBreak(cell) {
+  return [...cell.querySelectorAll('br')].some((br) => {
+    let n = br.nextSibling;
+    while (n) {
+      if ((n.textContent || '').replace(/ /g, ' ').trim()) return true;
+      n = n.nextSibling;
+    }
+    return false;
+  });
+}
+
 function isSimpleCell(cell) {
   if (cell.querySelector('ul, ol, table, img, a, b, strong, sup')) return false;
+  if (hasLineBreak(cell)) return false;
   return cell.querySelectorAll('p').length <= 1;
+}
+
+// Inline-only copy of a caption node: text + sup/sub/b/strong/em/i/a kept; p/span/br unwrapped.
+function inlineContent(src, document) {
+  const frag = document.createDocumentFragment();
+  [...src.childNodes].forEach((n) => {
+    if (n.nodeType === 3) {
+      const t = n.textContent.replace(/ /g, ' ').replace(/\s+/g, ' ');
+      if (t.trim() || (frag.lastChild && t === ' ')) frag.append(document.createTextNode(t));
+      return;
+    }
+    if (n.nodeType !== 1 || n.tagName === 'BR') return;
+    if (/^(SUP|SUB|B|STRONG|EM|I|A)$/.test(n.tagName)) {
+      if (!cleanText(n)) return;
+      const el = document.createElement(n.tagName.toLowerCase());
+      if (n.tagName === 'A' && n.getAttribute('href')) el.setAttribute('href', n.getAttribute('href'));
+      el.append(inlineContent(n, document));
+      frag.append(el);
+      return;
+    }
+    // p / span / div inside the caption: unwrap (keep a separating space)
+    if (frag.lastChild) frag.append(document.createTextNode(' '));
+    frag.append(inlineContent(n, document));
+  });
+  return frag;
+}
+
+function trimEdges(el) {
+  const first = el.firstChild;
+  if (first && first.nodeType === 3) first.textContent = first.textContent.replace(/^\s+/, '');
+  const last = el.lastChild;
+  if (last && last.nodeType === 3) last.textContent = last.textContent.replace(/\s+$/, '');
+  return el;
+}
+
+// Cell with <br>-separated lines and no block children: one <p> per line.
+function buildLineCell(cell, document) {
+  const frag = document.createDocumentFragment();
+  let p = document.createElement('p');
+  const flush = () => {
+    trimEdges(p);
+    if (cleanText(p)) frag.append(p);
+    p = document.createElement('p');
+  };
+  [...cell.childNodes].forEach((n) => {
+    if (n.nodeType === 1 && n.tagName === 'BR') { flush(); return; }
+    if (n.nodeType === 3) { p.append(document.createTextNode(n.textContent.replace(/ /g, ' ').replace(/\s+/g, ' '))); return; }
+    if (n.nodeType === 1) p.append(stripAttributes(n.cloneNode(true)));
+  });
+  flush();
+  return frag;
 }
 
 function buildCell(cell, document) {
   if (isSimpleCell(cell)) return cleanText(cell);
+  if (hasLineBreak(cell) && !cell.querySelector('p, div, ul, ol, table')) return buildLineCell(cell, document);
   const frag = document.createDocumentFragment();
   [...cell.childNodes].forEach((child) => {
     if (child.nodeType === 3) {
@@ -76,14 +141,14 @@ export default function parse(element, { document }) {
     captionBox.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach((h) => {
       if (!cleanText(h)) return;
       const h3 = document.createElement('h3');
-      h3.textContent = cleanText(h);
-      captionCell.push(h3);
+      h3.append(inlineContent(h, document));
+      captionCell.push(trimEdges(h3));
     });
     [...captionBox.querySelectorAll('p')].filter((p) => !p.closest('h1, h2, h3, h4, h5, h6')).forEach((p) => {
       if (!cleanText(p)) return;
       const np = document.createElement('p');
-      np.textContent = cleanText(p);
-      captionCell.push(np);
+      np.append(inlineContent(p, document));
+      captionCell.push(trimEdges(np));
     });
     if (captionCell.length) cells.push([captionCell]);
   }

@@ -57,6 +57,25 @@ const MIGRATED_PATHS = new Set([
   '/us/en/planning_tools/get_started',
   '/us/en/contact_us',
   '/us/en/planning_tools/apply_for_credit',
+  // batch 2026-10-04: protection plans, planning tools, financing, end of lease, blog
+  ...[
+    'vehicle_protection_plan/which_plan_is_right_for_me', 'vehicle_protection_plan/vehicle_service_agreements',
+    'vehicle_protection_plan/guaranteed_auto_protection', 'vehicle_protection_plan/prepaid_maintenance_plan',
+    'vehicle_protection_plan/tire_wheel_protection', 'vehicle_protection_plan/how_to_file_a_claim',
+    'planning_tools/ways_to_pay', 'planning_tools/visiting_the_dealer',
+    'financing_options/buy_or_lease', 'financing_options/buy_a_toyota', 'financing_options/leasing_a_toyota',
+    'financing_options/rebate_finance_programs/find_rebate_finance_programs',
+    'financing_options/rebate_finance_programs/college_rebate_program',
+    'financing_options/rebate_finance_programs/military_rebate_program',
+    'financing_options/rebate_finance_programs/repeat_customers',
+    'financing_options/understanding_credit/credit_101', 'financing_options/understanding_credit/credit_tips',
+    'financing_options/for_businesses/business_solutions', 'financing_options/for_businesses/business_credit_applications',
+    'financing_options/toyota_rewards_visa',
+    'end_of_lease_options/your_option', 'end_of_lease_options/lease-end-videos', 'end_of_lease_options/early_lease_return',
+    'end_of_lease_options/mileage', 'end_of_lease_options/wear_and_use', 'end_of_lease_options/return_your_vehicle',
+    'end_of_lease_options/faqs',
+    'TFS_ThoughtFuel_Blog',
+  ].map((p) => `/us/en/${p}`),
   ...FAQ_TOPICS.map((t) => `/us/en/planning_tools/faq/${t}`),
 ].map((p) => p.toLowerCase()));
 

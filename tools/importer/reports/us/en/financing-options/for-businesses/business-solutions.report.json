@@ -1,0 +1,12 @@
+{
+  "status": "success",
+  "url": "https://www.toyotafinancial.com/us/en/financing_options/for_businesses/business_solutions.html",
+  "path": "us/en/financing-options/for-businesses/business-solutions",
+  "timestamp": "2026-10-04T06:06:16.167Z",
+  "title": "Business Solutions | Toyota Financial",
+  "template": "content-page",
+  "blocks": [
+    "columns-callout",
+    "accordion-faq"
+  ]
+}

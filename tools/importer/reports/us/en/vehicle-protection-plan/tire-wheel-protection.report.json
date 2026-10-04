@@ -1,0 +1,23 @@
+{
+  "status": "success",
+  "url": "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/tire_wheel_protection.html",
+  "path": "us/en/vehicle-protection-plan/tire-wheel-protection",
+  "timestamp": "2026-10-04T06:03:26.503Z",
+  "title": "Tire & Wheel Protection | Toyota Financial",
+  "template": "content-page",
+  "blocks": [
+    "columns-callout",
+    "columns-callout",
+    "columns-callout",
+    "columns-callout",
+    "columns-callout",
+    "columns-callout",
+    "accordion-faq",
+    "accordion-faq",
+    "accordion-faq",
+    "video-poster",
+    "table-caption",
+    "table-caption",
+    "tabs-plans"
+  ]
+}

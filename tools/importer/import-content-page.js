@@ -2,8 +2,16 @@
 /* global WebImporter */
 
 // PARSER IMPORTS
-import cardsThumbnailParser from './parsers/cards-thumbnail.js';
 import columnsCalloutParser from './parsers/columns-callout.js';
+import accordionFaqParser from './parsers/accordion-faq.js';
+import accordionBoxedParser from './parsers/accordion-boxed.js';
+import videoPosterParser from './parsers/video-poster.js';
+import quizPlansParser from './parsers/quiz-plans.js';
+import carouselCardsParser from './parsers/carousel-cards.js';
+import cardsThumbnailParser from './parsers/cards-thumbnail.js';
+import tableCaptionParser from './parsers/table-caption.js';
+import columnsCardParser from './parsers/columns-card.js';
+import tabsPlansParser from './parsers/tabs-plans.js';
 
 // TRANSFORMER IMPORTS
 import cleanupTransformer from './transformers/toyotafinancial-cleanup.js';
@@ -12,11 +20,19 @@ import linksTransformer from './transformers/toyotafinancial-links.js';
 import dmImagesTransformer from './transformers/toyotafinancial-dm-images.js';
 
 // PARSER REGISTRY
+// tabs-plans runs last (blocks[] order): it moves panel content that the
+// other parsers have already turned into blocks.
 const parsers = {
-  // Only the parsers needed so far (get_started, contact_us); the other
-  // content-page blocks get their parsers when the rest of the template is migrated.
-  'cards-thumbnail': cardsThumbnailParser,
   'columns-callout': columnsCalloutParser,
+  'accordion-faq': accordionFaqParser,
+  'accordion-boxed': accordionBoxedParser,
+  'video-poster': videoPosterParser,
+  'quiz-plans': quizPlansParser,
+  'carousel-cards': carouselCardsParser,
+  'cards-thumbnail': cardsThumbnailParser,
+  'table-caption': tableCaptionParser,
+  'columns-card': columnsCardParser,
+  'tabs-plans': tabsPlansParser,
 };
 
 // PAGE TEMPLATE CONFIGURATION - Embedded from page-templates.json

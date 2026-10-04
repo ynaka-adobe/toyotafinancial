@@ -1,0 +1,13 @@
+{
+  "status": "success",
+  "url": "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/guaranteed_auto_protection.html",
+  "path": "us/en/vehicle-protection-plan/guaranteed-auto-protection",
+  "timestamp": "2026-10-04T06:03:13.602Z",
+  "title": "Guaranteed Auto Protection | Toyota Financial",
+  "template": "content-page",
+  "blocks": [
+    "columns-callout",
+    "columns-callout",
+    "video-poster"
+  ]
+}
