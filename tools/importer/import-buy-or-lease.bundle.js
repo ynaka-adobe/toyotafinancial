@@ -720,6 +720,8 @@ var CustomImportScript = (() => {
   // tools/importer/transformers/toyotafinancial-links.js
   var TransformHook3 = { beforeTransform: "beforeTransform", afterTransform: "afterTransform" };
   var SITE_ORIGIN2 = "https://www.toyotafinancial.com";
+  var DSS_ORIGIN = "https://dss.toyotafinancial.ynaka-adobe.com";
+  var DSS_PATH_RE = /^\/dss(?=[/?#]|$)/i;
   var CONTENT_PREFIX_RE = /^\/content\/toyotafinancial(?=[/?#]|$)/i;
   var SITE_ABSOLUTE_RE = /^https?:\/\/(www\.)?toyotafinancial\.com(?=[/?#]|$)/i;
   var FAQ_TOPICS = [
@@ -832,8 +834,8 @@ var CustomImportScript = (() => {
     "/us/en/financing_options/rebate_finance_programs/military_rebate": "/us/en/financing-options/rebate-finance-programs/military-rebate-program",
     // redirects on the original site
     "/us/en/about_us": "/us/en/about-us/company-overview",
-    "/us/en/consumer-web/home/login": `${SITE_ORIGIN2}/dss/login`,
-    "/us/en/external_login": `${SITE_ORIGIN2}/dss/login`,
+    "/us/en/consumer-web/home/login": `${DSS_ORIGIN}/login`,
+    "/us/en/external_login": `${DSS_ORIGIN}/login`,
     // credit application form (part of the app, stays on the original site)
     "/us/en/planning_tools/apply_for_credit/application/form": `${SITE_ORIGIN2}/us/en/planning_tools/apply_for_credit/application/form`
   };
@@ -855,6 +857,11 @@ var CustomImportScript = (() => {
     if (!isContentPage(m[1])) return null;
     return `${pathname === "/" ? "/" : sanitizePath(pathname)}${m[2] || ""}`;
   }
+  function toDssLink(sitePath) {
+    if (!DSS_PATH_RE.test(sitePath)) return null;
+    const rest = sitePath.replace(DSS_PATH_RE, "");
+    return `${DSS_ORIGIN}${rest.startsWith("/") ? "" : "/"}${rest}`;
+  }
   function rewriteHref(rawHref) {
     const href = (rawHref || "").trim();
     if (!href) return null;
@@ -862,6 +869,8 @@ var CustomImportScript = (() => {
     if (abs) {
       const after = href.slice(abs[0].length);
       const rest = after.replace(CONTENT_PREFIX_RE, "") || "/";
+      const dss2 = toDssLink(rest);
+      if (dss2) return dss2;
       const page2 = toCorrectedLink(rest) || toMigratedPath(rest) || toNewSitePath(rest);
       if (page2) return page2;
       if (!CONTENT_PREFIX_RE.test(after)) return null;
@@ -871,6 +880,8 @@ var CustomImportScript = (() => {
     let path = href.replace(CONTENT_PREFIX_RE, "");
     if (!path.startsWith("/")) path = `/${path}`;
     if (isNewSitePath(path)) return path === href ? null : path;
+    const dss = toDssLink(path);
+    if (dss) return dss;
     const page = toCorrectedLink(path) || toMigratedPath(path) || toNewSitePath(path);
     if (page) return page === href ? null : page;
     return `${SITE_ORIGIN2}${path}`;
