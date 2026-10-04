@@ -1,0 +1,8 @@
+{
+  "mappings": [
+    "/content/forms/af/:/forms/af/"
+  ],
+  "includes": [
+    "/content/forms/af/"
+  ]
+}
