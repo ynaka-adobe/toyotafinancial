@@ -1,0 +1,189 @@
+/* quiz-plans: branching radio quiz card (source quiz-component)
+   framed card (red top border, shadow); photo stacked on top on mobile, photo left (1/3) and
+   quiz right from 900px; centred step counter, radio list, Back / Next pills bottom right */
+
+.quiz-plans {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-top: 2px solid var(--brand-red);
+  border-radius: 4px;
+  background-color: var(--background-color);
+  box-shadow: rgb(0 0 0 / 20%) 0 2px 6px 0;
+  color: var(--text-color);
+}
+
+.quiz-plans .quiz-plans-media {
+  line-height: 0;
+}
+
+.quiz-plans .quiz-plans-media picture,
+.quiz-plans .quiz-plans-media img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.quiz-plans .quiz-plans-body {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 40px 40px 25px;
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-m);
+  line-height: 1.5;
+}
+
+/* screen-reader-only live region */
+.quiz-plans .quiz-plans-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.quiz-plans .quiz-plans-steps > [hidden] {
+  display: none;
+}
+
+.quiz-plans .quiz-plans-steps > :focus {
+  outline: none;
+}
+
+.quiz-plans .quiz-plans-question {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.quiz-plans .quiz-plans-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  padding: 0;
+  font-weight: 500;
+}
+
+.quiz-plans .quiz-plans-counter {
+  text-align: center;
+  font-weight: 700;
+}
+
+.quiz-plans .quiz-plans-answers {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.quiz-plans .quiz-plans-answer {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.quiz-plans .quiz-plans-answer input {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  accent-color: var(--brand-red);
+  cursor: pointer;
+}
+
+.quiz-plans .quiz-plans-answer label {
+  cursor: pointer;
+}
+
+.quiz-plans .quiz-plans-answer input:focus-visible {
+  outline: 2px solid var(--text-color);
+  outline-offset: 2px;
+}
+
+/* result: recommended products list */
+.quiz-plans .quiz-plans-result > ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.quiz-plans .quiz-plans-result > ul > li + li {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #ddd;
+}
+
+.quiz-plans .quiz-plans-result h3 {
+  margin: 0 0 5px;
+  font-size: var(--heading-font-size-s);
+}
+
+.quiz-plans .quiz-plans-result p {
+  margin: 0;
+}
+
+.quiz-plans .quiz-plans-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 40px;
+}
+
+.quiz-plans .quiz-plans-nav > [hidden] {
+  display: none;
+}
+
+.quiz-plans .quiz-plans-nav button {
+  min-width: 120px;
+}
+
+/* disabled Next keeps the brand pill, faded (source behaviour) */
+.quiz-plans .quiz-plans-nav button:disabled,
+.quiz-plans .quiz-plans-nav button:disabled:hover {
+  background-color: var(--brand-red);
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.quiz-plans .quiz-plans-nav button.secondary:hover {
+  background-color: transparent;
+  color: var(--brand-red);
+}
+
+@media (width >= 900px) {
+  .quiz-plans {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .quiz-plans .quiz-plans-media {
+    flex: 0 0 33.333%;
+  }
+
+  .quiz-plans .quiz-plans-media img {
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .quiz-plans .quiz-plans-body {
+    flex: 1 1 auto;
+    padding: 40px 80px 40px 40px;
+  }
+
+  .quiz-plans .quiz-plans-legend {
+    gap: 10px;
+  }
+
+  .quiz-plans .quiz-plans-nav {
+    justify-content: flex-end;
+    margin-top: 45px;
+  }
+}

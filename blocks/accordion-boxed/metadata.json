@@ -1,0 +1,31 @@
+{
+  "variantName": "accordion-boxed",
+  "baseBlock": "accordion",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light-grey",
+    "density": "spacious",
+    "purpose": "boxed-accordion",
+    "imagePattern": "noimg",
+    "structure": "N rows, 2 cells: [title] | [body rich text: p, ul (nested), links, h3]"
+  },
+  "contentPattern": {
+    "structure": "N rows, 2 cells: [title] | [body rich text: p, ul (nested), links, h3]; separated boxed panels with grey header bar and red +/- icon, red outline when open; all closed on load, multiple can be open",
+    "buttonCount": 0,
+    "imageCount": 0,
+    "hasDescription": true,
+    "hasCTA": false
+  },
+  "options": [],
+  "memberVariantIds": [],
+  "sourceContext": {
+    "originUrl": "https://www.toyotafinancial.com/us/en/planning_tools/ways_to_pay.html",
+    "originPage": "Toyota Financial - Ways to Pay",
+    "blockPosition": "middle"
+  },
+  "usage": {
+    "pagesUsing": [],
+    "reuseCount": 0,
+    "lastUsed": "2026-10-04T00:00:00.000Z"
+  }
+}

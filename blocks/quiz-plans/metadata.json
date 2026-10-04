@@ -1,0 +1,31 @@
+{
+  "variantName": "quiz-plans",
+  "baseBlock": "quiz",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "spacious",
+    "purpose": "branching-quiz",
+    "imagePattern": "large",
+    "structure": "framed card: photo left | step counter, question, radio answers, Back/Next"
+  },
+  "contentPattern": {
+    "structure": "Row 1: [picture]. Question rows: [id e.g. q1] | [question text] | [ul: each li = answer text as a link to '#<next id>']. Result rows: [id e.g. a4a] | [Result] | [ul: each li = h3/strong link to product page + p description]. First question row is the start; 'Question n of N'; Next disabled until an answer is chosen; Back supported",
+    "buttonCount": 2,
+    "imageCount": 1,
+    "hasDescription": true,
+    "hasCTA": true
+  },
+  "options": [],
+  "memberVariantIds": [],
+  "sourceContext": {
+    "originUrl": "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/which_plan_is_right_for_me.html",
+    "originPage": "Toyota Financial - Which plan is right for me",
+    "blockPosition": "middle"
+  },
+  "usage": {
+    "pagesUsing": [],
+    "reuseCount": 0,
+    "lastUsed": "2026-10-04T00:00:00.000Z"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "variantName": "tabs-plans",
+  "baseBlock": "tabs",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "spacious",
+    "purpose": "grouped-section-tabs",
+    "imagePattern": "noimg",
+    "structure": "dropdown card (tab groups) + tab bar + section-based panels"
+  },
+  "contentPattern": {
+    "structure": "Block: 1 row, 1 cell = dropdown label. Followed by N sections, each ending with Section Metadata { Tab Group: <dropdown option>, Tab: <tab label> }; each section is one panel and may contain default content and other blocks (table-caption, columns-callout, accordion-faq). The block builds a <select> of distinct Tab Group values and a tab bar per group; first group/first tab active on load",
+    "buttonCount": 0,
+    "imageCount": 0,
+    "hasDescription": true,
+    "hasCTA": false
+  },
+  "options": [],
+  "memberVariantIds": [],
+  "sourceContext": {
+    "originUrl": "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/prepaid_maintenance_plan.html",
+    "originPage": "Toyota Financial - Prepaid Maintenance Plan",
+    "blockPosition": "middle"
+  },
+  "usage": {
+    "pagesUsing": [],
+    "reuseCount": 0,
+    "lastUsed": "2026-10-04T00:00:00.000Z"
+  }
+}

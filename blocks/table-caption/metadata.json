@@ -1,0 +1,31 @@
+{
+  "variantName": "table-caption",
+  "baseBlock": "table",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "dark-caption",
+    "density": "compact",
+    "purpose": "captioned-data-table",
+    "imagePattern": "noimg",
+    "structure": "Row 1: 1 merged cell [h3 caption, p]; row 2: header cells; rows 3..n: data cells (first column bold)"
+  },
+  "contentPattern": {
+    "structure": "Row 1: 1 merged cell [h3 caption, p] rendered as a dark caption box; row 2: header cells (e.g. Rating | FICO Score | Description); rows 3..n: data cells, first column bold row label; light row dividers and outer border",
+    "buttonCount": 0,
+    "imageCount": 0,
+    "hasDescription": true,
+    "hasCTA": false
+  },
+  "options": [],
+  "memberVariantIds": [],
+  "sourceContext": {
+    "originUrl": "https://www.toyotafinancial.com/us/en/financing_options/understanding_credit/your_credit.html",
+    "originPage": "Toyota Financial - Your Credit",
+    "blockPosition": "middle"
+  },
+  "usage": {
+    "pagesUsing": [],
+    "reuseCount": 0,
+    "lastUsed": "2026-10-04T00:00:00.000Z"
+  }
+}

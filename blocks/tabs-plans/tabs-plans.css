@@ -1,0 +1,128 @@
+/* tabs-plans: group dropdown card + tab bar + section-based panels (source PPM plan tabs)
+   framed dropdown (red top border, shadow, underlined select); equal-width tabs, red inactive
+   labels, grey baseline under inactive tabs; panels hold whole authored sections */
+
+.tabs-plans {
+  color: var(--text-color);
+}
+
+/* dropdown card */
+.tabs-plans .tabs-plans-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-sizing: border-box;
+  margin-bottom: 30px;
+  padding: 15px 20px 20px;
+  border-top: 2px solid var(--brand-red);
+  border-radius: 4px;
+  background-color: var(--background-color);
+  box-shadow: rgb(0 0 0 / 20%) 0 2px 6px 0;
+}
+
+.tabs-plans .tabs-plans-picker-label {
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-m);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.tabs-plans .tabs-plans-select {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid var(--text-color);
+  border-radius: 0;
+  padding: 6px 30px 8px 0;
+  appearance: none;
+  background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='6' viewBox='0 0 12 6'%3E%3Cpath d='M0 0h12L6 6z'/%3E%3C/svg%3E") no-repeat right 6px center;
+  color: var(--text-color);
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-m);
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.tabs-plans .tabs-plans-select:focus-visible {
+  outline: 2px solid var(--text-color);
+  outline-offset: 2px;
+}
+
+/* tab bar: equal-width tabs; labels may wrap on small screens */
+.tabs-plans .tabs-plans-list {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  margin-bottom: 20px;
+}
+
+/* reset the global red pill button styles */
+.tabs-plans .tabs-plans-tab {
+  display: block;
+  max-width: none;
+  margin: 0;
+  border: 0;
+  border-bottom: 2px solid #ccc;
+  border-radius: 0;
+  padding: 8px 4px;
+  background: none;
+  color: var(--brand-red);
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-s);
+  font-weight: 400;
+  line-height: 1.3;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.tabs-plans .tabs-plans-tab:hover {
+  background: none;
+  color: var(--brand-red);
+  text-decoration: underline;
+}
+
+.tabs-plans .tabs-plans-tab[aria-selected='true'] {
+  border-bottom-color: transparent;
+  color: #58595b;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: default;
+}
+
+.tabs-plans .tabs-plans-tab:focus-visible {
+  outline: 2px solid var(--text-color);
+  outline-offset: -2px;
+}
+
+.tabs-plans .tabs-plans-group[hidden],
+.tabs-plans .tabs-plans-panel[hidden] {
+  display: none;
+}
+
+.tabs-plans .tabs-plans-panel:focus-visible {
+  outline: 2px solid var(--text-color);
+  outline-offset: 2px;
+}
+
+/* a panel holds a whole authored section: give its blocks/default content vertical rhythm */
+.tabs-plans .tabs-plans-panel > .section > div + div {
+  margin-top: 30px;
+}
+
+.tabs-plans .tabs-plans-panel > .section > .default-content-wrapper > :first-child {
+  margin-top: 0;
+}
+
+@media (width >= 900px) {
+  .tabs-plans .tabs-plans-picker {
+    padding: 15px 40px 25px 30px;
+  }
+
+  .tabs-plans .tabs-plans-tab {
+    padding: 10px 15px;
+    font-size: var(--body-font-size-m);
+  }
+}

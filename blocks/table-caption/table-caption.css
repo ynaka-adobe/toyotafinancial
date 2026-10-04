@@ -1,0 +1,79 @@
+/* table-caption: dark caption box over a bordered data table (source default-table)
+   caption: dark grey box, white h3 + p; header row bold; first column bold; light row dividers */
+
+.table-caption .table-caption-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table-caption table {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-collapse: collapse;
+  color: var(--text-color);
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-m);
+  line-height: 1.4;
+}
+
+.table-caption th p,
+.table-caption td p {
+  margin: 0;
+}
+
+.table-caption td p + p {
+  margin-top: 0.5em;
+}
+
+.table-caption .table-caption-caption {
+  padding: 20px 16px 30px;
+  background-color: #433d3c;
+  color: #fff;
+  text-align: left;
+  line-height: var(--body-line-height);
+}
+
+.table-caption .table-caption-caption h2,
+.table-caption .table-caption-caption h3,
+.table-caption .table-caption-caption h4 {
+  margin: 0 0 10px;
+  color: inherit;
+  font-size: var(--heading-font-size-l);
+}
+
+.table-caption .table-caption-caption p {
+  margin: 0;
+}
+
+.table-caption .table-caption-caption > :last-child {
+  margin-bottom: 0;
+}
+
+.table-caption tr {
+  border-bottom: 1px solid #ddd;
+}
+
+.table-caption th,
+.table-caption td {
+  padding: 10px 8px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.table-caption th {
+  font-weight: 700;
+}
+
+.table-caption thead th {
+  font-weight: 500;
+}
+
+.table-caption tbody th {
+  vertical-align: middle;
+}
+
+@media (width >= 900px) {
+  .table-caption tbody th {
+    vertical-align: top;
+  }
+}

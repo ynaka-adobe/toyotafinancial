@@ -1,0 +1,80 @@
+/* cards-thumbnail: image-top cards in a 2-column grid (source get_started .thumbnail-card)
+   white card, red top border, shadow; title, text, CTA pinned to the bottom; 1 column on mobile */
+
+.cards-thumbnail {
+  color: var(--text-color);
+}
+
+.cards-thumbnail > ul {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cards-thumbnail .cards-thumbnail-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border-top: 2px solid var(--brand-red);
+  border-radius: 4px;
+  background-color: var(--background-color);
+  box-shadow: rgb(0 0 0 / 20%) 0 2px 6px 0;
+}
+
+.cards-thumbnail .cards-thumbnail-card-image {
+  line-height: 0;
+}
+
+.cards-thumbnail .cards-thumbnail-card-image picture,
+.cards-thumbnail .cards-thumbnail-card-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 930 / 515;
+  object-fit: cover;
+}
+
+.cards-thumbnail .cards-thumbnail-card-body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  padding: 10px 16px 20px;
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-m);
+  line-height: var(--body-line-height);
+}
+
+.cards-thumbnail .cards-thumbnail-card-body > :first-child {
+  margin-top: 0;
+}
+
+.cards-thumbnail .cards-thumbnail-card-body h2,
+.cards-thumbnail .cards-thumbnail-card-body h3 {
+  margin: 0 0 10px;
+  font-size: 30px;
+  line-height: 1.2;
+}
+
+/* CTA paragraph sits at the bottom so CTAs line up across a row */
+.cards-thumbnail .cards-thumbnail-card-body > p:last-child:has(a) {
+  margin-top: auto;
+  padding-top: 20px;
+  margin-bottom: 0;
+}
+
+/* text-only card: centred content with a pill CTA */
+.cards-thumbnail .cards-thumbnail-card-text .cards-thumbnail-card-body {
+  align-items: center;
+  padding: 30px 20px;
+  text-align: center;
+}
+
+@media (width >= 900px) {
+  .cards-thumbnail > ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

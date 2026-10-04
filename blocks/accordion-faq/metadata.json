@@ -1,0 +1,31 @@
+{
+  "variantName": "accordion-faq",
+  "baseBlock": "accordion",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "compact",
+    "purpose": "faq-accordion",
+    "imagePattern": "noimg",
+    "structure": "N rows, 2 cells: [title text] | [body rich text: p, ul, sup, links]"
+  },
+  "contentPattern": {
+    "structure": "N rows, 2 cells: [title text] | [body rich text: p, ul, sup, links]; red bold titles, right chevron, grey dividers; all closed on load, multiple can be open",
+    "buttonCount": 0,
+    "imageCount": 0,
+    "hasDescription": true,
+    "hasCTA": false
+  },
+  "options": [],
+  "memberVariantIds": [],
+  "sourceContext": {
+    "originUrl": "https://www.toyotafinancial.com/us/en/financing_options/leasing_a_toyota.html",
+    "originPage": "Toyota Financial - Leasing a Toyota",
+    "blockPosition": "middle"
+  },
+  "usage": {
+    "pagesUsing": [],
+    "reuseCount": 0,
+    "lastUsed": "2026-10-04T00:00:00.000Z"
+  }
+}

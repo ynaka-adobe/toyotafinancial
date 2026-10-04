@@ -1,0 +1,31 @@
+{
+  "variantName": "video-poster",
+  "baseBlock": "video",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "spacious",
+    "purpose": "click-to-play-video",
+    "imagePattern": "large",
+    "structure": "Row 1: link to the MP4 URL; row 2: poster picture (Block Collection video model)"
+  },
+  "contentPattern": {
+    "structure": "Row 1: link to the MP4 URL (absolute, hosted on toyotafinancial.com); row 2: poster picture. Poster swaps to an inline HTML5 player with controls on click; centred at 8/12 width on desktop, full width on mobile",
+    "buttonCount": 0,
+    "imageCount": 1,
+    "hasDescription": false,
+    "hasCTA": false
+  },
+  "options": [],
+  "memberVariantIds": [],
+  "sourceContext": {
+    "originUrl": "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/prepaid_maintenance_plan.html",
+    "originPage": "Toyota Financial - Prepaid Maintenance Plan",
+    "blockPosition": "middle"
+  },
+  "usage": {
+    "pagesUsing": [],
+    "reuseCount": 0,
+    "lastUsed": "2026-10-04T00:00:00.000Z"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "variantName": "columns-callout",
+  "baseBlock": "columns",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "spacious",
+    "purpose": "cta-callout",
+    "imagePattern": "noimg",
+    "structure": "1 row, 2 cells: [p > strong title (or h3), p text] | [p > strong > a CTA (primary button)]"
+  },
+  "contentPattern": {
+    "structure": "1 row, 2 cells: [p > strong title (or h3), p text] | [p > strong > a CTA (primary button)]; white box with red top border and shadow, text left / CTA right on desktop, centred stack on mobile",
+    "buttonCount": 1,
+    "imageCount": 0,
+    "hasDescription": true,
+    "hasCTA": true
+  },
+  "options": [],
+  "memberVariantIds": [],
+  "sourceContext": {
+    "originUrl": "https://www.toyotafinancial.com/us/en/financing_options/leasing_a_toyota.html",
+    "originPage": "Toyota Financial - Leasing a Toyota",
+    "blockPosition": "middle"
+  },
+  "usage": {
+    "pagesUsing": [],
+    "reuseCount": 0,
+    "lastUsed": "2026-10-04T00:00:00.000Z"
+  }
+}

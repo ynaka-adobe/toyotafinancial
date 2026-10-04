@@ -1,0 +1,32 @@
+{
+  "variantName": "cards-thumbnail",
+  "baseBlock": "cards",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "spacious",
+    "purpose": "image-top-card-grid",
+    "imagePattern": "card-top",
+    "structure": "N rows, 2 cells: [picture] | [h3 title, p text, p > a CTA]",
+    "columns": 2
+  },
+  "contentPattern": {
+    "structure": "N rows, 2 cells: [picture] | [h3 title, p text, p > a CTA]; white cards with red top border and shadow, 2 columns from 900px, 1 on mobile; a row with only the text cell renders a centred text-only card",
+    "buttonCount": 0,
+    "imageCount": 2,
+    "hasDescription": true,
+    "hasCTA": true
+  },
+  "options": [],
+  "memberVariantIds": [],
+  "sourceContext": {
+    "originUrl": "https://www.toyotafinancial.com/us/en/planning_tools/get_started.html",
+    "originPage": "Toyota Financial - Get Started",
+    "blockPosition": "middle"
+  },
+  "usage": {
+    "pagesUsing": [],
+    "reuseCount": 0,
+    "lastUsed": "2026-10-04T00:00:00.000Z"
+  }
+}

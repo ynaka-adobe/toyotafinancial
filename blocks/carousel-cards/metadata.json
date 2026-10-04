@@ -1,0 +1,31 @@
+{
+  "variantName": "carousel-cards",
+  "baseBlock": "carousel",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "spacious",
+    "purpose": "filterable-card-carousel",
+    "imagePattern": "card-top",
+    "structure": "framed box: filter dropdown + slides of 3 image-top cards + dot indicators"
+  },
+  "contentPattern": {
+    "structure": "Row 1 (optional, 1 cell): filter label 'View Plans by...'. Card rows, 3 cells: [picture (+ optional link to MP4 = play in modal)] | [h3 title, p text or ul, link 'More Details'] | [categories, comma-separated]. Distinct categories become the filter options; a card without categories shows for every filter; 3 cards per slide, dots only, no autoplay",
+    "buttonCount": 0,
+    "imageCount": 6,
+    "hasDescription": true,
+    "hasCTA": true
+  },
+  "options": [],
+  "memberVariantIds": [],
+  "sourceContext": {
+    "originUrl": "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/which_plan_is_right_for_me.html",
+    "originPage": "Toyota Financial - Which plan is right for me",
+    "blockPosition": "middle"
+  },
+  "usage": {
+    "pagesUsing": [],
+    "reuseCount": 0,
+    "lastUsed": "2026-10-04T00:00:00.000Z"
+  }
+}
