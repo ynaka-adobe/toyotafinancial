@@ -94,19 +94,57 @@
       "coverageGaps": []
     },
     {
-      "name": "contact-us",
+      "name": "buy-or-lease",
       "urls": [
-        "https://www.toyotafinancial.com/us/en/financing_options/buy_or_lease.html",
-        "https://www.toyotafinancial.com/us/en/financing_options/for_businesses/business_credit_applications.html",
-        "https://www.toyotafinancial.com/us/en/financing_options/rebate_finance_programs/college_rebate_program.html",
-        "https://www.toyotafinancial.com/us/en/financing_options/rebate_finance_programs/military_rebate_program.html",
-        "https://www.toyotafinancial.com/us/en/planning_tools/visiting_the_dealer.html",
-        "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/how_to_file_a_claim.html"
+        "https://www.toyotafinancial.com/us/en/financing_options/buy_or_lease.html"
       ],
-      "representativeUrl": "https://www.toyotafinancial.com/us/en/contact_us.html",
-      "description": "To be named in naming step",
-      "blocks": [],
-      "urlPattern": "/us/en/*"
+      "representativeUrl": "https://www.toyotafinancial.com/us/en/financing_options/buy_or_lease.html",
+      "description": "Buy or Lease Quiz: banner, heading + intro, scored 7-question quiz with results and product cards (results panel folded into the block), Ready to apply callout.",
+      "blocks": [
+        {
+          "name": "quiz-buy-lease",
+          "instances": [
+            "#main-content .screenFade > .generalcolumn .buyleasequizcard"
+          ]
+        },
+        {
+          "name": "columns-callout",
+          "instances": [
+            "#main-content .screenFade > .generalcolumn .card-component.parbase:has(.card-content, .img-card):not(:has(.thumbnail-card, .materialized-dropdown, .card.no-pd))"
+          ]
+        }
+      ],
+      "urlPattern": "/us/en/*",
+      "sections": [
+        {
+          "id": "rc7",
+          "name": "page-banner",
+          "selector": [
+            "#main-content .screenFade > .banner-component"
+          ],
+          "style": "page-banner",
+          "blocks": [],
+          "defaultContent": [
+            "#main-content .screenFade > .banner-component .top-section"
+          ]
+        },
+        {
+          "id": "rc8",
+          "name": "quiz",
+          "selector": [
+            "#main-content .screenFade > .generalcolumn"
+          ],
+          "style": null,
+          "blocks": [
+            "quiz-buy-lease",
+            "columns-callout"
+          ],
+          "defaultContent": [
+            "#main-content .screenFade > .generalcolumn .page-heading",
+            "#main-content .screenFade > .generalcolumn .rte"
+          ]
+        }
+      ]
     },
     {
       "name": "data-privacy-request",
@@ -428,7 +466,12 @@
         "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/tire_wheel_protection.html",
         "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/vehicle_service_agreements.html",
         "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/which_plan_is_right_for_me.html",
-        "https://www.toyotafinancial.com/us/en/contact_us.html"
+        "https://www.toyotafinancial.com/us/en/contact_us.html",
+        "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/how_to_file_a_claim.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/visiting_the_dealer.html",
+        "https://www.toyotafinancial.com/us/en/financing_options/rebate_finance_programs/college_rebate_program.html",
+        "https://www.toyotafinancial.com/us/en/financing_options/rebate_finance_programs/military_rebate_program.html",
+        "https://www.toyotafinancial.com/us/en/financing_options/for_businesses/business_credit_applications.html"
       ],
       "representativeUrl": "https://www.toyotafinancial.com/us/en/financing_options/leasing_a_toyota.html",
       "description": "Older-design content pages: banner image, main text column with embedded components (accordions, tabs, videos, cards, tables, carousel), blog index and article.",

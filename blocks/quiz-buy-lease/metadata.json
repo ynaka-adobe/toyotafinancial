@@ -1,0 +1,26 @@
+{
+  "variantName": "quiz-buy-lease",
+  "baseBlock": "quiz",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "spacious",
+    "purpose": "scored-quiz",
+    "imagePattern": "large",
+    "structure": "stepped scored quiz in a framed card (photo left | step counter, question, radio answers, Back/Next) + scored result message + conditional product cards carousel"
+  },
+  "contentPattern": {
+    "structure": "First cell = row type. Image row: [picture]. Question rows: [q1..qN] | [question text] | [ul: one li per option] | [weights, e.g. '3, 1, -3'; empty = not scored]. Result rows: [Lease | Finance] | [condition; empty = default] | [rich content]. Products row: [Products] | [heading]. Product rows: [Product] | [condition] | [picture] | [title, description, Learn More link]. Lease if sum of weights > 0 else Finance; first matching result row of that outcome is shown; every matching product row is shown. Condition: comma-separated AND clauses 'qN = k', 'qN = k or m', 'Lease', 'Finance', 'Always'; empty = always",
+    "buttonCount": 3,
+    "imageCount": 1,
+    "hasDescription": true,
+    "hasCTA": true
+  },
+  "options": [],
+  "memberVariantIds": [],
+  "usage": {
+    "pagesUsing": [],
+    "reuseCount": 0,
+    "lastUsed": "2026-10-04T00:00:00.000Z"
+  }
+}

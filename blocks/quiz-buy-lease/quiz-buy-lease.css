@@ -1,0 +1,322 @@
+/* quiz-buy-lease: scored Buy-vs-Lease quiz (source buyleasequizcard)
+   quiz view: framed card (red top border, shadow), photo stacked on top on mobile, photo left
+   (1/3) and quiz right from 900px; step counter, radios, Back / Next pills (as quiz-plans).
+   result view: centred result headings + text, product cards carousel (1 per slide, 3 from
+   900px), dots when more than one slide, Start over */
+
+.quiz-buy-lease {
+  color: var(--text-color);
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-m);
+  line-height: 1.5;
+}
+
+.quiz-buy-lease [hidden] {
+  display: none;
+}
+
+/* ---------- quiz card ---------- */
+.quiz-buy-lease .quiz-buy-lease-quiz {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-top: 2px solid var(--brand-red);
+  border-radius: 4px;
+  background-color: var(--background-color);
+  box-shadow: rgb(0 0 0 / 20%) 0 2px 6px 0;
+}
+
+.quiz-buy-lease .quiz-buy-lease-quiz[hidden] {
+  display: none;
+}
+
+.quiz-buy-lease .quiz-buy-lease-media {
+  line-height: 0;
+}
+
+.quiz-buy-lease .quiz-buy-lease-media picture,
+.quiz-buy-lease .quiz-buy-lease-media img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.quiz-buy-lease .quiz-buy-lease-body {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 40px 40px 25px;
+}
+
+/* screen-reader-only live region */
+.quiz-buy-lease .quiz-buy-lease-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.quiz-buy-lease .quiz-buy-lease-question {
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+.quiz-buy-lease .quiz-buy-lease-question:focus {
+  outline: none;
+}
+
+.quiz-buy-lease .quiz-buy-lease-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  padding: 0;
+  font-weight: 500;
+}
+
+.quiz-buy-lease .quiz-buy-lease-counter {
+  text-align: center;
+  font-weight: 700;
+}
+
+.quiz-buy-lease .quiz-buy-lease-answers {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.quiz-buy-lease .quiz-buy-lease-answer {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.quiz-buy-lease .quiz-buy-lease-answer input {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  accent-color: var(--brand-red);
+  cursor: pointer;
+}
+
+.quiz-buy-lease .quiz-buy-lease-answer label {
+  cursor: pointer;
+}
+
+.quiz-buy-lease .quiz-buy-lease-answer input:focus-visible {
+  outline: 2px solid var(--text-color);
+  outline-offset: 2px;
+}
+
+.quiz-buy-lease .quiz-buy-lease-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 40px;
+}
+
+.quiz-buy-lease .quiz-buy-lease-nav button,
+.quiz-buy-lease .quiz-buy-lease-actions button {
+  min-width: 120px;
+}
+
+/* disabled Next keeps the brand pill, faded (source behaviour) */
+.quiz-buy-lease .quiz-buy-lease-nav button:disabled,
+.quiz-buy-lease .quiz-buy-lease-nav button:disabled:hover {
+  background-color: var(--brand-red);
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.quiz-buy-lease button.secondary:hover {
+  background-color: transparent;
+  color: var(--brand-red);
+}
+
+/* ---------- results ---------- */
+.quiz-buy-lease .quiz-buy-lease-results {
+  scroll-margin-top: calc(var(--header-height) + 20px);
+}
+
+.quiz-buy-lease .quiz-buy-lease-results:focus {
+  outline: none;
+}
+
+.quiz-buy-lease .quiz-buy-lease-result h2,
+.quiz-buy-lease .quiz-buy-lease-result h3 {
+  margin: 0 0 15px;
+  text-align: center;
+}
+
+.quiz-buy-lease .quiz-buy-lease-result h3 {
+  font-weight: 400;
+}
+
+.quiz-buy-lease .quiz-buy-lease-result p {
+  margin: 0 0 15px;
+}
+
+.quiz-buy-lease .quiz-buy-lease-products {
+  margin-top: 40px;
+}
+
+.quiz-buy-lease .quiz-buy-lease-products-heading > * {
+  margin: 0 0 20px;
+}
+
+.quiz-buy-lease .quiz-buy-lease-slide {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+}
+
+.quiz-buy-lease .quiz-buy-lease-slide[hidden] {
+  display: none;
+}
+
+.quiz-buy-lease .quiz-buy-lease-card {
+  display: flex;
+  flex: 0 1 100%;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  background-color: var(--background-color);
+  box-shadow: rgb(0 0 0 / 20%) 0 2px 6px 0;
+}
+
+.quiz-buy-lease .quiz-buy-lease-card-body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  padding: 15px 10px 10px;
+  text-align: center;
+}
+
+.quiz-buy-lease .quiz-buy-lease-card-body > * {
+  margin: 0 0 10px;
+}
+
+.quiz-buy-lease .quiz-buy-lease-card-title {
+  font-size: var(--heading-font-size-xs);
+  font-weight: 700;
+}
+
+/* short red rule under the card title */
+.quiz-buy-lease .quiz-buy-lease-card-title::after {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 2px;
+  margin: 15px auto 0;
+  background-color: var(--brand-red);
+}
+
+/* Learn More: last paragraph sits left, at the bottom of the text */
+.quiz-buy-lease .quiz-buy-lease-card-body > :last-child:not(:first-child) {
+  margin-top: auto;
+  margin-bottom: 0;
+  text-align: left;
+}
+
+.quiz-buy-lease .quiz-buy-lease-card-media {
+  line-height: 0;
+}
+
+.quiz-buy-lease .quiz-buy-lease-card-media picture,
+.quiz-buy-lease .quiz-buy-lease-card-media img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.quiz-buy-lease .quiz-buy-lease-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.quiz-buy-lease .quiz-buy-lease-dots[hidden] {
+  display: none;
+}
+
+.quiz-buy-lease .quiz-buy-lease-dot,
+.quiz-buy-lease .quiz-buy-lease-dot:hover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  min-width: 0;
+  height: 24px;
+  border: 0;
+  border-radius: 50%;
+  padding: 0;
+  background-color: transparent;
+}
+
+.quiz-buy-lease .quiz-buy-lease-dot::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--light-color);
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 15%);
+}
+
+.quiz-buy-lease .quiz-buy-lease-dot[aria-current='true']::before {
+  background-color: var(--dark-color);
+}
+
+.quiz-buy-lease .quiz-buy-lease-actions {
+  display: flex;
+  justify-content: center;
+  margin: 40px 0;
+}
+
+@media (width >= 900px) {
+  .quiz-buy-lease .quiz-buy-lease-quiz {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .quiz-buy-lease .quiz-buy-lease-media {
+    flex: 0 0 33.333%;
+  }
+
+  .quiz-buy-lease .quiz-buy-lease-media img {
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .quiz-buy-lease .quiz-buy-lease-body {
+    flex: 1 1 auto;
+    padding: 40px 80px 40px 40px;
+  }
+
+  .quiz-buy-lease .quiz-buy-lease-legend {
+    gap: 10px;
+  }
+
+  .quiz-buy-lease .quiz-buy-lease-nav {
+    justify-content: flex-end;
+    margin-top: 45px;
+  }
+
+  .quiz-buy-lease .quiz-buy-lease-slide {
+    gap: 30px;
+  }
+
+  .quiz-buy-lease .quiz-buy-lease-card {
+    flex: 0 1 calc((100% - 60px) / 3);
+  }
+}

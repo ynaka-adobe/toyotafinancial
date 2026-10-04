@@ -1,0 +1,12 @@
+{
+  "status": "success",
+  "url": "https://www.toyotafinancial.com/us/en/financing_options/buy_or_lease.html",
+  "path": "us/en/financing-options/buy-or-lease",
+  "timestamp": "2026-10-04T06:40:27.273Z",
+  "title": "Buy or Lease Quiz | Toyota Financial",
+  "template": "buy-or-lease",
+  "blocks": [
+    "quiz-buy-lease",
+    "columns-callout"
+  ]
+}

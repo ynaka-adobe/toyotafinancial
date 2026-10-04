@@ -1,26 +1,8 @@
-/* eslint-disable */
 var CustomImportScript = (() => {
   var __defProp = Object.defineProperty;
-  var __defProps = Object.defineProperties;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-  var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
   var __getOwnPropNames = Object.getOwnPropertyNames;
-  var __getOwnPropSymbols = Object.getOwnPropertySymbols;
   var __hasOwnProp = Object.prototype.hasOwnProperty;
-  var __propIsEnum = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues = (a, b) => {
-    for (var prop in b || (b = {}))
-      if (__hasOwnProp.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
-    if (__getOwnPropSymbols)
-      for (var prop of __getOwnPropSymbols(b)) {
-        if (__propIsEnum.call(b, prop))
-          __defNormalProp(a, prop, b[prop]);
-      }
-    return a;
-  };
-  var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
   var __export = (target, all) => {
     for (var name in all)
       __defProp(target, name, { get: all[name], enumerable: true });
@@ -885,6 +867,18 @@ var CustomImportScript = (() => {
     });
     return panels;
   }
+  function readCardGroups(card, optionLabels) {
+    const panels = [];
+    card.querySelectorAll(".materialized-dropdown-group").forEach((pane) => {
+      if (pane.closest(".tabcomponent")) return;
+      const key = [...pane.classList].find((c) => optionLabels.has(c));
+      if (!key) return;
+      pane.querySelectorAll("h1 > b, h2 > b, h3 > b, h4 > b, h5 > b, h6 > b, h1 > strong, h2 > strong, h3 > strong, h4 > strong, h5 > strong, h6 > strong").forEach((b) => b.replaceWith(...b.childNodes));
+      const label = optionLabels.get(key);
+      panels.push({ group: label, tab: label, pane });
+    });
+    return panels;
+  }
   function buildOutput(document, label, panels) {
     const block = WebImporter.Blocks.createBlock(document, { name: "tabs-plans", cells: [[label]] });
     const rest = [];
@@ -927,6 +921,7 @@ var CustomImportScript = (() => {
     }
     const panels = [];
     tabComponents.forEach((tc) => panels.push(...readPanels(tc, optionLabels, fallbackGroup)));
+    if (isDropdownCard && !tabComponents.length) panels.push(...readCardGroups(element, optionLabels));
     if (!panels.length) {
       if (!isDropdownCard) element.replaceWith(...element.childNodes);
       else element.remove();
@@ -1344,7 +1339,7 @@ var CustomImportScript = (() => {
     let u;
     try {
       u = new URL(urlStr, "https://x/");
-    } catch (e) {
+    } catch {
       return false;
     }
     if (u.pathname.startsWith("/is/image/")) {
@@ -1446,7 +1441,12 @@ var CustomImportScript = (() => {
       "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/tire_wheel_protection.html",
       "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/vehicle_service_agreements.html",
       "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/which_plan_is_right_for_me.html",
-      "https://www.toyotafinancial.com/us/en/contact_us.html"
+      "https://www.toyotafinancial.com/us/en/contact_us.html",
+      "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/how_to_file_a_claim.html",
+      "https://www.toyotafinancial.com/us/en/planning_tools/visiting_the_dealer.html",
+      "https://www.toyotafinancial.com/us/en/financing_options/rebate_finance_programs/college_rebate_program.html",
+      "https://www.toyotafinancial.com/us/en/financing_options/rebate_finance_programs/military_rebate_program.html",
+      "https://www.toyotafinancial.com/us/en/financing_options/for_businesses/business_credit_applications.html"
     ],
     "blocks": [
       {
@@ -1629,9 +1629,10 @@ var CustomImportScript = (() => {
     transform4
   ];
   function executeTransformers(hookName, element, payload) {
-    const enhancedPayload = __spreadProps(__spreadValues({}, payload), {
+    const enhancedPayload = {
+      ...payload,
       template: PAGE_TEMPLATE
-    });
+    };
     transformers.forEach((transformerFn) => {
       try {
         transformerFn.call(null, hookName, element, enhancedPayload);

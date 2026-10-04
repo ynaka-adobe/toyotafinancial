@@ -79,6 +79,19 @@ function buildGroup(group, gi, prefix) {
   wrapper.id = `${prefix}-group-${gi}`;
   if (group.name) wrapper.dataset.group = group.name;
 
+  // a single panel needs no tab row: the dropdown alone switches it (e.g. How to File a Claim)
+  if (group.items.length === 1) {
+    const [tab] = group.items;
+    const panel = document.createElement('div');
+    panel.className = 'tabs-plans-panel';
+    panel.id = `${prefix}-g${gi}-t0-panel`;
+    panel.setAttribute('role', 'region');
+    panel.setAttribute('aria-label', tab.label);
+    panel.append(tab.section || tab.content);
+    wrapper.append(panel);
+    return wrapper;
+  }
+
   const tablist = document.createElement('div');
   tablist.className = 'tabs-plans-list';
   tablist.setAttribute('role', 'tablist');

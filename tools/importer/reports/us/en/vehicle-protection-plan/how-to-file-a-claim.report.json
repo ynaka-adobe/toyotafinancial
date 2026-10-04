@@ -1,0 +1,12 @@
+{
+  "status": "success",
+  "url": "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/how_to_file_a_claim.html",
+  "path": "us/en/vehicle-protection-plan/how-to-file-a-claim",
+  "timestamp": "2026-10-04T06:16:49.792Z",
+  "title": "How to File a Claim | Toyota Financial",
+  "template": "content-page",
+  "blocks": [
+    "columns-callout",
+    "tabs-plans"
+  ]
+}

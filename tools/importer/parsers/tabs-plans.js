@@ -34,6 +34,11 @@
  *   - .tabcomponent call with no dropdown card on the page (tire_wheel): block with a neutral
  *     label (not rendered with a single group) and panels WITHOUT `Tab Group` (plain tab bar),
  *     for this and every consecutive sibling .tabcomponent.
+ *   - dropdown card with NO .tabcomponent (how_to_file_a_claim): the card holds one
+ *     .materialized-dropdown-group.<data-value> per option (all in the DOM, hidden) and no tab
+ *     bar. Label = p.card-header; one panel per group with `Tab Group` = `Tab` = option label;
+ *     <b>/<strong> wrapping a heading is unwrapped. Only used when no tab group was found, so
+ *     the tabcomponent pages are unaffected.
  *   - An <hr> directly before a removed .tabcomponent (section break added by the sections
  *     transformer for the rc8-tabs section) is removed so it does not create an empty section.
  *   - If authored content follows the last panel inside <main> before the next section break,
@@ -118,6 +123,23 @@ function readPanels(tc, optionLabels, fallbackGroup) {
   return panels;
 }
 
+// [{ group, tab, pane }] for a dropdown card whose .materialized-dropdown-group.<data-value>
+// panels sit inside the card (no .tabcomponent): Tab Group and Tab are both the option label.
+function readCardGroups(card, optionLabels) {
+  const panels = [];
+  card.querySelectorAll('.materialized-dropdown-group').forEach((pane) => {
+    if (pane.closest('.tabcomponent')) return;
+    const key = [...pane.classList].find((c) => optionLabels.has(c));
+    if (!key) return;
+    // Headings authored as <hN><b>text</b></hN>: unwrap the bold so the heading is plain.
+    pane.querySelectorAll('h1 > b, h2 > b, h3 > b, h4 > b, h5 > b, h6 > b, h1 > strong, h2 > strong, h3 > strong, h4 > strong, h5 > strong, h6 > strong')
+      .forEach((b) => b.replaceWith(...b.childNodes));
+    const label = optionLabels.get(key);
+    panels.push({ group: label, tab: label, pane });
+  });
+  return panels;
+}
+
 function buildOutput(document, label, panels) {
   const block = WebImporter.Blocks.createBlock(document, { name: 'tabs-plans', cells: [[label]] });
   const rest = [];
@@ -170,6 +192,9 @@ export default function parse(element, { document }) {
 
   const panels = [];
   tabComponents.forEach((tc) => panels.push(...readPanels(tc, optionLabels, fallbackGroup)));
+  // Dropdown card with NO .tabcomponent (how_to_file_a_claim): the option groups live inside
+  // the card itself, one per option, without a tab bar -> one panel per group.
+  if (isDropdownCard && !tabComponents.length) panels.push(...readCardGroups(element, optionLabels));
 
   // Empty-block guard: nothing to build.
   if (!panels.length) {

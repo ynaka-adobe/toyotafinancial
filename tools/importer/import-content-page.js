@@ -61,7 +61,12 @@ const PAGE_TEMPLATE = {
     "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/tire_wheel_protection.html",
     "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/vehicle_service_agreements.html",
     "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/which_plan_is_right_for_me.html",
-    "https://www.toyotafinancial.com/us/en/contact_us.html"
+    "https://www.toyotafinancial.com/us/en/contact_us.html",
+    "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/how_to_file_a_claim.html",
+    "https://www.toyotafinancial.com/us/en/planning_tools/visiting_the_dealer.html",
+    "https://www.toyotafinancial.com/us/en/financing_options/rebate_finance_programs/college_rebate_program.html",
+    "https://www.toyotafinancial.com/us/en/financing_options/rebate_finance_programs/military_rebate_program.html",
+    "https://www.toyotafinancial.com/us/en/financing_options/for_businesses/business_credit_applications.html"
   ],
   "blocks": [
     {
