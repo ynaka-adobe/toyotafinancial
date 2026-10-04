@@ -1,15 +1,15 @@
 import { decorateIcons } from '../../scripts/aem.js';
+import { fetchFirstAvailable, getSharedDocumentUrls } from '../../scripts/scripts.js';
 
 const isDesktop = window.matchMedia('(width >= 900px)');
 
 /**
- * Fetches the footer fragment: /content first (local preview), then the site root (DA/EDS).
+ * Fetches the footer for the page's language folder (e.g. /us/en/footer), falling back to /footer.
  * @returns {Promise<HTMLElement|null>} container holding the fragment sections
  */
 async function fetchFooter() {
-  let resp = await fetch('/content/footer.plain.html');
-  if (!resp.ok) resp = await fetch('/footer.plain.html');
-  if (!resp.ok) return null;
+  const resp = await fetchFirstAvailable(getSharedDocumentUrls('footer'));
+  if (!resp) return null;
   const container = document.createElement('div');
   container.innerHTML = await resp.text();
   // published documents wrap list-item content in <p>; unwrap so items hold their links directly

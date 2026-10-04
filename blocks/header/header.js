@@ -1,16 +1,16 @@
 import { decorateIcons } from '../../scripts/aem.js';
+import { fetchFirstAvailable, getSharedDocumentUrls } from '../../scripts/scripts.js';
 
 // media query match that indicates desktop width
 const isDesktop = window.matchMedia('(width >= 900px)');
 
 /**
- * Fetches the nav fragment: /content first (local preview), then the site root (DA/EDS).
+ * Fetches the nav for the page's language folder (e.g. /us/en/nav), falling back to /nav.
  * @returns {Promise<HTMLElement|null>} container holding the fragment sections
  */
 async function fetchNav() {
-  let resp = await fetch('/content/nav.plain.html');
-  if (!resp.ok) resp = await fetch('/nav.plain.html');
-  if (!resp.ok) return null;
+  const resp = await fetchFirstAvailable(getSharedDocumentUrls('nav'));
+  if (!resp) return null;
   const container = document.createElement('div');
   container.innerHTML = await resp.text();
   // published documents wrap list-item content in <p>; unwrap so items hold their links directly
