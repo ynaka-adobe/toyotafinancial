@@ -11,7 +11,8 @@
  * Attributes:
  *   locale     language folder holding the nav/footer documents, e.g. /us/en (default: site root)
  *   link-base  origin that nav/footer links point to (default: the origin serving this script)
- *   base       origin serving code and content (default: the origin serving this script)
+ *   base       URL serving code and content; may be a same-origin proxy path such as /aem
+ *              (default: the origin serving this script)
  *
  * Cross-origin hosts need CORS headers on the EDS site for the nav/footer
  * .plain.html documents and for /scripts, /blocks and /styles.
@@ -74,7 +75,7 @@ class AemChrome extends HTMLElement {
   async connectedCallback() {
     if (this.shadowRoot) return;
     const { blockName } = this.constructor;
-    const base = (this.getAttribute('base') || SCRIPT_BASE).replace(/\/$/, '');
+    const base = new URL(this.getAttribute('base') || SCRIPT_BASE, document.baseURI).href.replace(/\/$/, '');
     const shadow = this.attachShadow({ mode: 'open' });
 
     try {
