@@ -54,6 +54,7 @@ const MIGRATED_PATHS = new Set([
   '/us/en/online_policies_and_agreements',
   '/us/en/online_privacy_policy',
   '/us/en/planning_tools/faq',
+  '/us/en/planning_tools/get_started',
   ...FAQ_TOPICS.map((t) => `/us/en/planning_tools/faq/${t}`),
 ].map((p) => p.toLowerCase()));
 
