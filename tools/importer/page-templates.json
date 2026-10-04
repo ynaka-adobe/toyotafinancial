@@ -90,12 +90,19 @@
             "#main-content .screenFade > .heading.parbase h2"
           ]
         }
-      ]
+      ],
+      "coverageGaps": []
     },
     {
       "name": "contact-us",
       "urls": [
-        "https://www.toyotafinancial.com/us/en/contact_us.html"
+        "https://www.toyotafinancial.com/us/en/contact_us.html",
+        "https://www.toyotafinancial.com/us/en/financing_options/buy_or_lease.html",
+        "https://www.toyotafinancial.com/us/en/financing_options/for_businesses/business_credit_applications.html",
+        "https://www.toyotafinancial.com/us/en/financing_options/rebate_finance_programs/college_rebate_program.html",
+        "https://www.toyotafinancial.com/us/en/financing_options/rebate_finance_programs/military_rebate_program.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/visiting_the_dealer.html",
+        "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/how_to_file_a_claim.html"
       ],
       "representativeUrl": "https://www.toyotafinancial.com/us/en/contact_us.html",
       "description": "To be named in naming step",
@@ -121,6 +128,16 @@
       "description": "To be named in naming step",
       "blocks": [],
       "urlPattern": "/us/en/*"
+    },
+    {
+      "name": "apply-for-credit",
+      "urls": [
+        "https://www.toyotafinancial.com/us/en/planning_tools/apply_for_credit.html"
+      ],
+      "representativeUrl": "https://www.toyotafinancial.com/us/en/planning_tools/apply_for_credit.html",
+      "description": "To be named in naming step",
+      "blocks": [],
+      "urlPattern": "/us/en/planning_tools/*"
     },
     {
       "name": "faq",
@@ -366,6 +383,224 @@
           "defaultContent": []
         }
       ]
+    },
+    {
+      "name": "content-page",
+      "urls": [
+        "https://www.toyotafinancial.com/us/en/TFS_ThoughtFuel_Blog.html",
+        "https://www.toyotafinancial.com/us/en/TFS_ThoughtFuel_Blog/Weighing_Your_Options_Buy_vs_Lease.html",
+        "https://www.toyotafinancial.com/us/en/financing_options/buy_a_toyota.html",
+        "https://www.toyotafinancial.com/us/en/financing_options/for_businesses.html",
+        "https://www.toyotafinancial.com/us/en/financing_options/for_businesses/business_solutions.html",
+        "https://www.toyotafinancial.com/us/en/financing_options/leasing_a_toyota.html",
+        "https://www.toyotafinancial.com/us/en/financing_options/rebate_finance_programs.html",
+        "https://www.toyotafinancial.com/us/en/financing_options/rebate_finance_programs/find_rebate_finance_programs.html",
+        "https://www.toyotafinancial.com/us/en/financing_options/rebate_finance_programs/repeat_customers.html",
+        "https://www.toyotafinancial.com/us/en/financing_options/toyota_rewards_visa.html",
+        "https://www.toyotafinancial.com/us/en/financing_options/understanding_credit.html",
+        "https://www.toyotafinancial.com/us/en/financing_options/understanding_credit/credit_101.html",
+        "https://www.toyotafinancial.com/us/en/financing_options/understanding_credit/credit_tips.html",
+        "https://www.toyotafinancial.com/us/en/financing_options/understanding_credit/your_credit.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/get_started.html",
+        "https://www.toyotafinancial.com/us/en/planning_tools/ways_to_pay.html",
+        "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/guaranteed_auto_protection.html",
+        "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/prepaid_maintenance_plan.html",
+        "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/tire_wheel_protection.html",
+        "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/vehicle_service_agreements.html",
+        "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/which_plan_is_right_for_me.html"
+      ],
+      "representativeUrl": "https://www.toyotafinancial.com/us/en/financing_options/leasing_a_toyota.html",
+      "description": "Older-design content pages: banner image, main text column with embedded components (accordions, tabs, videos, cards, tables, carousel), blog index and article.",
+      "blocks": [
+        {
+          "name": "columns-callout",
+          "instances": [
+            "#main-content .screenFade .card-component.parbase:has(.card-content, .img-card):not(:has(.thumbnail-card, .materialized-dropdown, .card.no-pd))"
+          ]
+        },
+        {
+          "name": "accordion-faq",
+          "instances": [
+            "#main-content .screenFade .accordion.parbase ul.custom-faq-accordion"
+          ]
+        },
+        {
+          "name": "accordion-boxed",
+          "instances": [
+            "#main-content .screenFade .compContainer.parbase .tmcc-accordion > .newAccordion.parbase"
+          ]
+        },
+        {
+          "name": "video-poster",
+          "instances": [
+            "#main-content .screenFade .video-component.parbase:has(video)"
+          ]
+        },
+        {
+          "name": "quiz-plans",
+          "instances": [
+            "#main-content .screenFade .quiz-component.parbase .quiz-card"
+          ]
+        },
+        {
+          "name": "carousel-cards",
+          "instances": [
+            "#main-content .screenFade .secondary-section > .viewplans"
+          ]
+        },
+        {
+          "name": "cards-thumbnail",
+          "instances": [
+            "#main-content .screenFade .generalcolumn.parbase:has(.thumbnail-card)"
+          ]
+        },
+        {
+          "name": "table-caption",
+          "instances": [
+            "#main-content .screenFade .table.parbase:has(table)"
+          ]
+        },
+        {
+          "name": "columns-card",
+          "instances": [
+            "#main-content .screenFade > .card-component.parbase:has(.card.no-pd)"
+          ]
+        },
+        {
+          "name": "tabs-plans",
+          "instances": [
+            "#main-content .screenFade .card-component.parbase:has(.materialized-dropdown)",
+            "#main-content .screenFade .tabcomponent"
+          ]
+        }
+      ],
+      "coverageGaps": [],
+      "sections": [
+        {
+          "id": "rc7",
+          "name": "page-banner",
+          "selector": [
+            "#main-content .screenFade > .banner-component"
+          ],
+          "style": "page-banner",
+          "blocks": [],
+          "defaultContent": [
+            "#main-content .screenFade > .banner-component img"
+          ]
+        },
+        {
+          "id": "rc8",
+          "name": "main-text",
+          "selector": [
+            "#main-content .screenFade > .two-columns-left-one-column-right"
+          ],
+          "style": null,
+          "blocks": [
+            "columns-callout",
+            "accordion-faq",
+            "accordion-boxed",
+            "video-poster",
+            "quiz-plans",
+            "cards-thumbnail",
+            "table-caption",
+            "tabs-plans"
+          ],
+          "defaultContent": [
+            "#main-content .screenFade > .two-columns-left-one-column-right .page-heading",
+            "#main-content .screenFade > .two-columns-left-one-column-right .rte.parbase",
+            "#main-content .screenFade > .two-columns-left-one-column-right .list.parbase",
+            "#main-content .screenFade > .two-columns-left-one-column-right .image.parbase figure",
+            "#main-content .screenFade > .two-columns-left-one-column-right .accordion.parbase > div > h2",
+            "#main-content .screenFade > .two-columns-left-one-column-right .accordion.parbase > div > p",
+            "#main-content .screenFade > .two-columns-left-one-column-right .accordion.parbase .btn-primary-center",
+            "#main-content .screenFade > .two-columns-left-one-column-right .accordion.parbase .disclaimer-note",
+            "#main-content .screenFade > .two-columns-left-one-column-right .accordion.parbase ol.disclaimer",
+            "#main-content .screenFade > .two-columns-left-one-column-right .quiz-component.parbase > div > h2",
+            "#main-content .screenFade > .two-columns-left-one-column-right .quiz-component.parbase > div > h3",
+            "#main-content .screenFade > .two-columns-left-one-column-right .quiz-component.parbase > div > p"
+          ]
+        },
+        {
+          "id": "rc8-tabs",
+          "name": "plan-tab-panels",
+          "selector": [
+            "#main-content .screenFade .tabcomponent"
+          ],
+          "style": null,
+          "blocks": [
+            "table-caption",
+            "columns-callout",
+            "accordion-faq"
+          ],
+          "defaultContent": [
+            "#main-content .screenFade .tabcomponent .tab-pane .rte.parbase",
+            "#main-content .screenFade .tabcomponent .tab-pane .accordion.parbase > div > h2",
+            "#main-content .screenFade .tabcomponent .tab-pane .accordion.parbase .disclaimer-note",
+            "#main-content .screenFade .tabcomponent .tab-pane .accordion.parbase ol.disclaimer"
+          ]
+        },
+        {
+          "id": "rc9",
+          "name": "secondary-faq",
+          "selector": [
+            "#main-content .screenFade > .one-column:has(.parbase)"
+          ],
+          "style": null,
+          "blocks": [
+            "accordion-faq",
+            "columns-callout"
+          ],
+          "defaultContent": [
+            "#main-content .screenFade > .one-column .accordion.parbase > div > h2",
+            "#main-content .screenFade > .one-column .accordion.parbase > div > p",
+            "#main-content .screenFade > .one-column .accordion.parbase .btn-primary-center",
+            "#main-content .screenFade > .one-column .accordion.parbase ol.disclaimer"
+          ]
+        },
+        {
+          "id": "rc9-carousel",
+          "name": "plans-carousel",
+          "selector": [
+            "#main-content .screenFade > .one-column-component:has(.viewplans)"
+          ],
+          "style": null,
+          "blocks": [
+            "carousel-cards",
+            "columns-callout"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "rc9-rc49",
+          "name": "blog-index",
+          "selector": [
+            "#main-content .screenFade > .one-column-component:not(:has(.viewplans))"
+          ],
+          "style": null,
+          "blocks": [
+            "columns-card"
+          ],
+          "defaultContent": [
+            "#main-content .screenFade > .one-column-component .rte.parbase"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "end-of-lease",
+      "urls": [
+        "https://www.toyotafinancial.com/us/en/end_of_lease_options/early_lease_return.html",
+        "https://www.toyotafinancial.com/us/en/end_of_lease_options/faqs.html",
+        "https://www.toyotafinancial.com/us/en/end_of_lease_options/lease-end-videos.html",
+        "https://www.toyotafinancial.com/us/en/end_of_lease_options/mileage.html",
+        "https://www.toyotafinancial.com/us/en/end_of_lease_options/wear_and_use.html",
+        "https://www.toyotafinancial.com/us/en/end_of_lease_options/your_option.html",
+        "https://www.toyotafinancial.com/us/en/end_of_lease_options/return_your_vehicle.html"
+      ],
+      "representativeUrl": "https://www.toyotafinancial.com/us/en/end_of_lease_options/your_option.html",
+      "description": "End of lease section (newer page design): banner image, two-column layout with section menu, rich text with accordions/videos, footer cards.",
+      "blocks": [],
+      "coverageGaps": []
     }
   ]
 }
