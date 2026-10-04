@@ -663,8 +663,77 @@
       ],
       "representativeUrl": "https://www.toyotafinancial.com/us/en/end_of_lease_options/your_option.html",
       "description": "End of lease section (newer page design): banner image, two-column layout with section menu, rich text with accordions/videos, footer cards.",
-      "blocks": [],
-      "coverageGaps": []
+      "blocks": [
+        {
+          "name": "cards-steps",
+          "instances": [
+            "main > .container-fluid.px-0 .lease-end-right-container > .card-button.parbase"
+          ]
+        },
+        {
+          "name": "accordion-circle",
+          "instances": [
+            "main > .container-fluid.px-0 .lease-end-right-container > .accordion.parbase > .row > div:has(.accordion-card)"
+          ]
+        },
+        {
+          "name": "cards-video",
+          "instances": [
+            "main > .container-fluid.px-0 .lease-end-right-container > .general-column:has(.video-promo):not(.general-column + .general-column)"
+          ]
+        },
+        {
+          "name": "fragment",
+          "instances": [
+            "main > .container-fluid.px-0 .lease-end-right-container > .login-reg-card.parbase"
+          ]
+        }
+      ],
+      "coverageGaps": [],
+      "sections": [
+        {
+          "id": "rc5",
+          "name": "page-banner",
+          "selector": [
+            "main > .container-fluid.px-0 > .banner-image.parbase"
+          ],
+          "style": "page-banner",
+          "blocks": [],
+          "defaultContent": [
+            "main > .container-fluid.px-0 > .banner-image.parbase .your-option-img-container.d-md-block"
+          ]
+        },
+        {
+          "id": "rc6",
+          "name": "main-column",
+          "selector": [
+            "main > .container-fluid.px-0 > .two-columns-right-one-column-left"
+          ],
+          "style": null,
+          "blocks": [
+            "cards-steps",
+            "accordion-circle",
+            "cards-video",
+            "fragment"
+          ],
+          "defaultContent": [
+            "main > .container-fluid.px-0 > .two-columns-right-one-column-left .lease-end-right-container > .simpleparagraph.parbase",
+            "main > .container-fluid.px-0 > .two-columns-right-one-column-left .lease-end-right-container > .links-section",
+            "main > .container-fluid.px-0 > .two-columns-right-one-column-left .lease-end-right-container > .button.parbase",
+            "main > .container-fluid.px-0 > .two-columns-right-one-column-left .lease-end-right-container > .accordion.parbase > .row > h4"
+          ]
+        },
+        {
+          "id": "rc7",
+          "name": "dealer-callout",
+          "selector": [
+            "main > .container-fluid.px-0 > .footer-card.parbase"
+          ],
+          "style": null,
+          "blocks": [],
+          "defaultContent": []
+        }
+      ]
     }
   ]
 }

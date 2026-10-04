@@ -10,13 +10,18 @@
     "structure": "1 row, 2 cells: [p > strong title (or h3), p text] | [p > strong > a CTA (primary button)]"
   },
   "contentPattern": {
-    "structure": "1 row, 2 cells: [p > strong title (or h3), p text] | [p > strong > a CTA (primary button)]; white box with red top border and shadow, text left / CTA right on desktop, centred stack on mobile",
+    "structure": "1 row, 2 cells: [p > strong title (or h3), p text] | [p > strong > a CTA (primary button)]; white box with red top border and shadow, text left / CTA right on desktop, centred stack on mobile. Option grey: flat #fafafa box with no red top border, shadow or radius, compact bold title (end-of-lease help card)",
     "buttonCount": 1,
     "imageCount": 0,
     "hasDescription": true,
     "hasCTA": true
   },
-  "options": [],
+  "options": [
+    {
+      "class": "grey",
+      "label": "Grey"
+    }
+  ],
   "memberVariantIds": [],
   "sourceContext": {
     "originUrl": "https://www.toyotafinancial.com/us/en/financing_options/leasing_a_toyota.html",
@@ -25,9 +30,11 @@
   },
   "usage": {
     "pagesUsing": [
-      "/us/en/financing-options/buy-or-lease"
+      "/us/en/financing-options/buy-or-lease",
+      "/us/en/fragments/lease-end-help"
     ],
-    "reuseCount": 1,
-    "lastUsed": "2026-10-04T06:23:43.000Z"
+    "reuseCount": 2,
+    "lastUsed": "2026-10-04T06:52:34.086Z",
+    "note": "end-of-lease template via fragment on: /us/en/end-of-lease-options/your-option, /us/en/end-of-lease-options/early-lease-return, /us/en/end-of-lease-options/faqs, /us/en/end-of-lease-options/lease-end-videos, /us/en/end-of-lease-options/mileage, /us/en/end-of-lease-options/wear-and-use, /us/en/end-of-lease-options/return-your-vehicle"
   }
 }

@@ -1,0 +1,31 @@
+{
+  "variantName": "cards-steps",
+  "baseBlock": "cards",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "spacious",
+    "purpose": "numbered-options",
+    "imagePattern": "noimg",
+    "structure": "N rows, 1 cell: [h3 title (sup allowed), p text (inline links, em note), p > strong > a CTA (primary button), p disclaimer (small text, optional)]"
+  },
+  "contentPattern": {
+    "structure": "N rows, 1 cell: [h3 title (sup allowed), p text (inline links, em note), p > strong > a CTA (primary button), p disclaimer (small text, optional)]. Numbers 1..N are auto-generated (CSS counter) in a red outlined circle; grey divider between steps; number above content on mobile, left of content on desktop",
+    "buttonCount": 1,
+    "imageCount": 0,
+    "hasDescription": true,
+    "hasCTA": true
+  },
+  "options": [],
+  "memberVariantIds": [],
+  "sourceContext": {
+    "originUrl": "https://www.toyotafinancial.com/us/en/end_of_lease_options/your_option.html",
+    "originPage": "Toyota Financial - End of Lease Options",
+    "blockPosition": "middle"
+  },
+  "usage": {
+    "pagesUsing": [],
+    "reuseCount": 0,
+    "lastUsed": "2026-10-04T00:00:00.000Z"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "variantName": "cards-video",
+  "baseBlock": "cards",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "spacious",
+    "purpose": "video-tiles",
+    "imagePattern": "large",
+    "structure": "N rows, 2 cells: [poster picture] | [h3 title, p description, p > a MP4 URL (absolute https://www.toyotafinancial.com/content/dam/.../*.mp4)]",
+    "columns": 2
+  },
+  "contentPattern": {
+    "structure": "N rows, 2 cells: [poster picture] | [h3 title, p description, p > a MP4 URL (absolute https://www.toyotafinancial.com/content/dam/.../*.mp4)]; white shadowed tiles with centred title, red rule, description and the poster (play icon) at the bottom; 2 per row from 900px, 1 on mobile; clicking the poster opens a modal dialog that plays the MP4 with controls, closing pauses and removes it",
+    "buttonCount": 0,
+    "imageCount": 1,
+    "hasDescription": true,
+    "hasCTA": false
+  },
+  "options": [],
+  "memberVariantIds": [],
+  "sourceContext": {
+    "originUrl": "https://www.toyotafinancial.com/us/en/end_of_lease_options/lease-end-videos.html",
+    "originPage": "Toyota Financial - Lease-End Videos",
+    "blockPosition": "middle"
+  },
+  "usage": {
+    "pagesUsing": [],
+    "reuseCount": 0,
+    "lastUsed": "2026-10-04T00:00:00.000Z"
+  }
+}

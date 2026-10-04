@@ -13,14 +13,40 @@
  * fragment document. The source element id is mapped to the fragment path; unknown
  * ids leave the element untouched. The fragment documents themselves are produced
  * separately by the import script.
+ *
+ * Class-based mapping (added 2026-10-04, template end-of-lease):
+ *   Selector: main > .container-fluid.px-0 .lease-end-right-container > .login-reg-card.parbase
+ *   Source: https://www.toyotafinancial.com/us/en/end_of_lease_options/your_option.html (all 7 pages)
+ *   The login card is replaced by the fragment block and the footer-card dealer callout
+ *   (main > .container-fluid.px-0 > .footer-card.parbase) is removed from the document —
+ *   both live in the shared /us/en/fragments/lease-end-help fragment.
+ *   Id mapping is checked first, so the FAQ (#faqcard) behaviour is unchanged.
  */
 const FRAGMENTS = {
   faqcard: '/us/en/fragments/faq-help',
 };
 
+const CLASS_FRAGMENTS = [
+  {
+    selector: '.login-reg-card',
+    path: '/us/en/fragments/lease-end-help',
+    // Companion elements folded into the same fragment (removed from the page).
+    remove: ['main > .container-fluid.px-0 > .footer-card.parbase'],
+  },
+];
+
 export default function parse(element, { document }) {
-  const path = FRAGMENTS[element.id];
-  if (!path) return;
+  let path = FRAGMENTS[element.id];
+  if (!path) {
+    const match = CLASS_FRAGMENTS.find((f) => element.matches(f.selector));
+    if (!match) return;
+    path = match.path;
+    match.remove.forEach((sel) => {
+      document.querySelectorAll(sel).forEach((el) => {
+        if (!el.contains(element)) el.remove();
+      });
+    });
+  }
 
   const a = document.createElement('a');
   a.setAttribute('href', path);

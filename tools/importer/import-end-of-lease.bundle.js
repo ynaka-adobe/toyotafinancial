@@ -35,21 +35,238 @@ var CustomImportScript = (() => {
   };
   var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-  // tools/importer/import-apply-for-credit.js
-  var import_apply_for_credit_exports = {};
-  __export(import_apply_for_credit_exports, {
-    default: () => import_apply_for_credit_default
+  // tools/importer/import-end-of-lease.js
+  var import_end_of_lease_exports = {};
+  __export(import_end_of_lease_exports, {
+    default: () => import_end_of_lease_default
   });
 
-  // tools/importer/parsers/embed-app.js
-  var DEFAULT_TITLE = "Apply for Credit application";
-  function parse(element, { document }) {
-    const form = element.querySelector("form[action][target]");
-    if (!form) return;
+  // tools/importer/parsers/cards-steps.js
+  function cleanText(el) {
+    return (el.textContent || "").replace(/ /g, " ").replace(/\s+/g, " ").trim();
+  }
+  function buildCta(a, document) {
     const link = document.createElement("a");
-    link.setAttribute("href", new URL(form.getAttribute("action"), "https://www.toyotafinancial.com").href);
-    link.textContent = DEFAULT_TITLE;
-    const block = WebImporter.Blocks.createBlock(document, { name: "embed-app", cells: [[link]] });
+    link.setAttribute("href", a.getAttribute("href") || "");
+    link.textContent = cleanText(a);
+    const strong = document.createElement("strong");
+    strong.append(link);
+    const p = document.createElement("p");
+    p.append(strong);
+    return p;
+  }
+  function parse(element, { document }) {
+    let cards = [...element.querySelectorAll(".your-options-card")];
+    if (!cards.length) {
+      cards = [...element.querySelectorAll(".option-number")].map((n) => n.parentElement);
+    }
+    const cells = [];
+    cards.forEach((card) => {
+      const content = card.querySelector(":scope > div:not(.option-number)") || card;
+      const titleEl = content.querySelector("h4, h3, h2, h5");
+      const contentCell = [];
+      const ctas = [];
+      const disclaimers = [];
+      if (titleEl && cleanText(titleEl)) {
+        const h3 = document.createElement("h3");
+        [...titleEl.childNodes].forEach((n) => h3.append(n.cloneNode(true)));
+        contentCell.push(h3);
+      }
+      [...content.children].forEach((child) => {
+        if (child === titleEl || child.classList.contains("option-number")) return;
+        const btn = child.matches("a.primary-btn, a.button-link") ? child : child.querySelector("a.primary-btn, a.button-link");
+        if (btn && child.tagName !== "P") {
+          ctas.push(buildCta(btn, document));
+          return;
+        }
+        if (!cleanText(child) && !child.querySelector("img")) return;
+        if (child.classList.contains("disclaimer-text")) {
+          disclaimers.push(child);
+          return;
+        }
+        contentCell.push(child);
+      });
+      if (!contentCell.length && !ctas.length) return;
+      cells.push([[...contentCell, ...ctas, ...disclaimers]]);
+    });
+    if (!cells.length) {
+      element.replaceWith(...element.childNodes);
+      return;
+    }
+    const block = WebImporter.Blocks.createBlock(document, { name: "cards-steps", cells });
+    element.replaceWith(block);
+  }
+
+  // tools/importer/parsers/accordion-circle.js
+  function cleanText2(el) {
+    return (el.textContent || "").replace(/[ ​]/g, " ").replace(/\s+/g, " ").trim();
+  }
+  var BTN = "a.primary-btn, a.button-link";
+  var BLOCK_CHILD = ":scope > p, :scope > ul, :scope > ol, :scope > div, :scope > h1, :scope > h2, :scope > h3, :scope > h4, :scope > h5, :scope > h6";
+  function buildButton(a, document) {
+    const link = document.createElement("a");
+    link.setAttribute("href", a.getAttribute("href") || "");
+    link.textContent = cleanText2(a);
+    const strong = document.createElement("strong");
+    strong.append(link);
+    const p = document.createElement("p");
+    p.append(strong);
+    return p;
+  }
+  function hasContent(el) {
+    return !!cleanText2(el) || !!el.querySelector("img, picture, video, iframe");
+  }
+  function collectBody(container, document, out) {
+    [...container.childNodes].forEach((node) => {
+      if (node.nodeType === 3) {
+        const t = node.textContent.replace(/\s+/g, " ").trim();
+        if (t) {
+          const p = document.createElement("p");
+          p.textContent = t;
+          out.push(p);
+        }
+        return;
+      }
+      if (node.nodeType !== 1) return;
+      if (!hasContent(node)) return;
+      if (node.tagName === "A" && node.matches(BTN)) {
+        out.push(buildButton(node, document));
+        return;
+      }
+      if (node.tagName === "DIV") {
+        const btns = [...node.querySelectorAll(BTN)];
+        if (btns.length && cleanText2(node) === btns.map(cleanText2).join(" ")) {
+          btns.forEach((b) => out.push(buildButton(b, document)));
+          return;
+        }
+        if (node.querySelector(BLOCK_CHILD)) {
+          collectBody(node, document, out);
+        } else {
+          const p = document.createElement("p");
+          p.append(...node.childNodes);
+          out.push(p);
+        }
+        return;
+      }
+      out.push(node);
+    });
+  }
+  function parse2(element, { document }) {
+    const items = [...element.querySelectorAll(".accordion-card")];
+    const cells = [];
+    items.forEach((item) => {
+      const titleEl = item.querySelector(".card-header button > div") || item.querySelector(".card-header button, .card-header h5, .card-header");
+      const body = item.querySelector(".card-body") || item.querySelector(".collapse");
+      if (!titleEl || !cleanText2(titleEl)) return;
+      if (body) {
+        body.querySelectorAll("a:not([href])").forEach((a) => a.replaceWith(...a.childNodes));
+      }
+      const bodyCell = [];
+      if (body) collectBody(body, document, bodyCell);
+      cells.push([cleanText2(titleEl), bodyCell.length ? bodyCell : ""]);
+    });
+    if (!cells.length) {
+      element.replaceWith(...element.childNodes);
+      return;
+    }
+    const block = WebImporter.Blocks.createBlock(document, { name: "accordion-circle", cells });
+    element.replaceWith(block);
+  }
+
+  // tools/importer/parsers/cards-video.js
+  var ORIGIN = "https://www.toyotafinancial.com";
+  function cleanText3(el) {
+    return (el && el.textContent || "").replace(/ /g, " ").replace(/\s+/g, " ").trim();
+  }
+  function absolute(url) {
+    if (!url) return "";
+    try {
+      return new URL(url.trim(), ORIGIN).href;
+    } catch (e) {
+      return url.trim();
+    }
+  }
+  function parse3(element, { document }) {
+    const rows = [element];
+    let next = element.nextElementSibling;
+    while (next && next.classList.contains("general-column")) {
+      rows.push(next);
+      next = next.nextElementSibling;
+    }
+    const tiles = rows.flatMap((row) => [...row.querySelectorAll(".video-promo")]);
+    const cells = [];
+    tiles.forEach((tile) => {
+      const thumb = tile.querySelector('.video-thumbnail[data-src], [data-src$=".mp4"]');
+      const titleEl = tile.querySelector("p.promo-header, .promo-header");
+      const srcImg = tile.querySelector("img.img-responsive") || tile.querySelector("img");
+      const descPs = [...new Set(tile.querySelectorAll("div.fadeInUp p, .promo-content > p:not(.promo-header)"))].filter((p) => cleanText3(p));
+      if (!titleEl && !srcImg && !thumb) return;
+      let imageCell = "";
+      if (srcImg && srcImg.getAttribute("src")) {
+        const img = document.createElement("img");
+        img.setAttribute("src", absolute(srcImg.getAttribute("src")));
+        img.setAttribute("alt", srcImg.getAttribute("alt") || cleanText3(titleEl));
+        imageCell = img;
+      }
+      const textCell = [];
+      if (cleanText3(titleEl)) {
+        const h3 = document.createElement("h3");
+        h3.textContent = cleanText3(titleEl);
+        textCell.push(h3);
+      }
+      descPs.forEach((p) => {
+        const np = document.createElement("p");
+        np.append(...p.childNodes);
+        textCell.push(np);
+      });
+      const mp4 = thumb ? absolute(thumb.getAttribute("data-src")) : "";
+      if (mp4) {
+        const a = document.createElement("a");
+        a.setAttribute("href", mp4);
+        a.textContent = mp4;
+        const p = document.createElement("p");
+        p.append(a);
+        textCell.push(p);
+      }
+      cells.push([imageCell, textCell.length ? textCell : ""]);
+    });
+    if (!cells.length) {
+      element.replaceWith(...element.childNodes);
+      return;
+    }
+    rows.slice(1).forEach((row) => row.remove());
+    const block = WebImporter.Blocks.createBlock(document, { name: "cards-video", cells });
+    element.replaceWith(block);
+  }
+
+  // tools/importer/parsers/fragment.js
+  var FRAGMENTS = {
+    faqcard: "/us/en/fragments/faq-help"
+  };
+  var CLASS_FRAGMENTS = [
+    {
+      selector: ".login-reg-card",
+      path: "/us/en/fragments/lease-end-help",
+      // Companion elements folded into the same fragment (removed from the page).
+      remove: ["main > .container-fluid.px-0 > .footer-card.parbase"]
+    }
+  ];
+  function parse4(element, { document }) {
+    let path = FRAGMENTS[element.id];
+    if (!path) {
+      const match = CLASS_FRAGMENTS.find((f) => element.matches(f.selector));
+      if (!match) return;
+      path = match.path;
+      match.remove.forEach((sel) => {
+        document.querySelectorAll(sel).forEach((el) => {
+          if (!el.contains(element)) el.remove();
+        });
+      });
+    }
+    const a = document.createElement("a");
+    a.setAttribute("href", path);
+    a.textContent = path;
+    const block = WebImporter.Blocks.createBlock(document, { name: "Fragment", cells: [[a]] });
     element.replaceWith(block);
   }
 
@@ -665,35 +882,92 @@ var CustomImportScript = (() => {
     });
   }
 
-  // tools/importer/import-apply-for-credit.js
+  // tools/importer/import-end-of-lease.js
   var parsers = {
-    "embed-app": parse
+    "cards-steps": parse,
+    "accordion-circle": parse2,
+    "cards-video": parse3,
+    "fragment": parse4
   };
   var PAGE_TEMPLATE = {
-    "name": "apply-for-credit",
-    "description": "Apply for Credit: embedded credit application (form POST into an iframe), no other content.",
+    "name": "end-of-lease",
+    "description": "End of lease section (newer page design): banner image, two-column layout with section menu, rich text with accordions/videos, footer cards.",
     "urls": [
-      "https://www.toyotafinancial.com/us/en/planning_tools/apply_for_credit.html"
+      "https://www.toyotafinancial.com/us/en/end_of_lease_options/early_lease_return.html",
+      "https://www.toyotafinancial.com/us/en/end_of_lease_options/faqs.html",
+      "https://www.toyotafinancial.com/us/en/end_of_lease_options/lease-end-videos.html",
+      "https://www.toyotafinancial.com/us/en/end_of_lease_options/mileage.html",
+      "https://www.toyotafinancial.com/us/en/end_of_lease_options/wear_and_use.html",
+      "https://www.toyotafinancial.com/us/en/end_of_lease_options/your_option.html",
+      "https://www.toyotafinancial.com/us/en/end_of_lease_options/return_your_vehicle.html"
     ],
     "blocks": [
       {
-        "name": "embed-app",
+        "name": "cards-steps",
         "instances": [
-          "#main-content .two-columns-left-one-column-right:has(form[target])"
+          "main > .container-fluid.px-0 .lease-end-right-container > .card-button.parbase"
+        ]
+      },
+      {
+        "name": "accordion-circle",
+        "instances": [
+          "main > .container-fluid.px-0 .lease-end-right-container > .accordion.parbase > .row > div:has(.accordion-card)"
+        ]
+      },
+      {
+        "name": "cards-video",
+        "instances": [
+          "main > .container-fluid.px-0 .lease-end-right-container > .general-column:has(.video-promo):not(.general-column + .general-column)"
+        ]
+      },
+      {
+        "name": "fragment",
+        "instances": [
+          "main > .container-fluid.px-0 .lease-end-right-container > .login-reg-card.parbase"
         ]
       }
     ],
     "sections": [
       {
-        "id": "main",
-        "name": "credit-application",
+        "id": "rc5",
+        "name": "page-banner",
         "selector": [
-          "#main-content .two-columns-left-one-column-right:has(form[target])"
+          "main > .container-fluid.px-0 > .banner-image.parbase"
+        ],
+        "style": "page-banner",
+        "blocks": [],
+        "defaultContent": [
+          "main > .container-fluid.px-0 > .banner-image.parbase .your-option-img-container.d-md-block"
+        ]
+      },
+      {
+        "id": "rc6",
+        "name": "main-column",
+        "selector": [
+          "main > .container-fluid.px-0 > .two-columns-right-one-column-left"
         ],
         "style": null,
         "blocks": [
-          "embed-app"
+          "cards-steps",
+          "accordion-circle",
+          "cards-video",
+          "fragment"
         ],
+        "defaultContent": [
+          "main > .container-fluid.px-0 > .two-columns-right-one-column-left .lease-end-right-container > .simpleparagraph.parbase",
+          "main > .container-fluid.px-0 > .two-columns-right-one-column-left .lease-end-right-container > .links-section",
+          "main > .container-fluid.px-0 > .two-columns-right-one-column-left .lease-end-right-container > .button.parbase",
+          "main > .container-fluid.px-0 > .two-columns-right-one-column-left .lease-end-right-container > .accordion.parbase > .row > h4"
+        ]
+      },
+      {
+        "id": "rc7",
+        "name": "dealer-callout",
+        "selector": [
+          "main > .container-fluid.px-0 > .footer-card.parbase"
+        ],
+        "style": null,
+        "blocks": [],
         "defaultContent": []
       }
     ]
@@ -740,7 +1014,7 @@ var CustomImportScript = (() => {
     console.log(`Found ${pageBlocks.length} block instances on page`);
     return pageBlocks;
   }
-  var import_apply_for_credit_default = {
+  var import_end_of_lease_default = {
     transform: (payload) => {
       const {
         document,
@@ -783,5 +1057,5 @@ var CustomImportScript = (() => {
       }];
     }
   };
-  return __toCommonJS(import_apply_for_credit_exports);
+  return __toCommonJS(import_end_of_lease_exports);
 })();

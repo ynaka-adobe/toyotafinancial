@@ -181,7 +181,80 @@ var CustomImportScript = (() => {
   }
 
   // tools/importer/parsers/columns-card.js
-  function parse2(element, { document }) {
+  function cleanText(el) {
+    return (el.textContent || "").replace(/ /g, " ").replace(/\s+/g, " ").trim();
+  }
+  function isBlogCard(el) {
+    if (!el || !el.matches || !el.matches(".card-component.parbase, .card-component")) return false;
+    const caption = el.querySelector(".card.no-pd .caption, .card .caption");
+    if (!caption) return false;
+    if (caption.querySelector(".caption-header")) return true;
+    return [...caption.querySelectorAll("a.btn[href]")].some((a) => cleanText(a));
+  }
+  function buildBlogRow(cardEl, document) {
+    const card = cardEl.querySelector(".card") || cardEl;
+    const srcImg = card.querySelector("img");
+    const caption = card.querySelector(".caption");
+    const imageCell = [];
+    if (srcImg) {
+      const img = document.createElement("img");
+      img.setAttribute("src", srcImg.getAttribute("src"));
+      img.setAttribute("alt", srcImg.getAttribute("alt") || "");
+      imageCell.push(img);
+    }
+    const textCell = [];
+    if (caption) {
+      [...caption.children].forEach((child) => {
+        if (child.matches(".caption-header")) {
+          if (!cleanText(child)) return;
+          const h3 = document.createElement("h3");
+          h3.textContent = cleanText(child);
+          textCell.push(h3);
+          return;
+        }
+        if (child.tagName === "A") {
+          if (!cleanText(child) || !child.getAttribute("href")) return;
+          const p = document.createElement("p");
+          const strong = document.createElement("strong");
+          const a = document.createElement("a");
+          a.setAttribute("href", child.getAttribute("href"));
+          a.textContent = cleanText(child);
+          strong.append(a);
+          p.append(strong);
+          textCell.push(p);
+          return;
+        }
+        if (!cleanText(child) && !child.querySelector("img")) return;
+        if (child.tagName === "P") {
+          const p = document.createElement("p");
+          [...child.childNodes].forEach((n) => p.append(n.cloneNode(true)));
+          if (p.lastChild && p.lastChild.nodeType === 3) p.lastChild.textContent = p.lastChild.textContent.replace(/\s+$/, "");
+          textCell.push(p);
+          return;
+        }
+        textCell.push(child);
+      });
+    }
+    if (!imageCell.length && !textCell.length) return null;
+    return [imageCell.length ? imageCell : "", textCell.length ? textCell : ""];
+  }
+  function parseBlogCards(element, document) {
+    const siblings = [element];
+    let next = element.nextElementSibling;
+    while (isBlogCard(next)) {
+      siblings.push(next);
+      next = next.nextElementSibling;
+    }
+    const cells = siblings.map((s) => buildBlogRow(s, document)).filter(Boolean);
+    if (!cells.length) {
+      element.replaceWith(...element.childNodes);
+      return;
+    }
+    siblings.slice(1).forEach((s) => s.remove());
+    const block = WebImporter.Blocks.createBlock(document, { name: "columns-card", cells });
+    element.replaceWith(block);
+  }
+  function parseSingleCard(element, document) {
     const card = element.querySelector(".card") || element;
     const cols = [...card.querySelectorAll(':scope > .col-sm-6, :scope > [class*="col-"]')];
     const imgCol = cols.find((c) => c.querySelector("img")) || card;
@@ -210,9 +283,17 @@ var CustomImportScript = (() => {
     const block = WebImporter.Blocks.createBlock(document, { name: "columns-card", cells });
     element.replaceWith(block);
   }
+  function parse2(element, { document }) {
+    if (!element.parentNode) return;
+    if (isBlogCard(element)) {
+      parseBlogCards(element, document);
+      return;
+    }
+    parseSingleCard(element, document);
+  }
 
   // tools/importer/parsers/table-policy.js
-  function cleanText(el) {
+  function cleanText2(el) {
     return (el.textContent || "").replace(/\u00a0/g, " ").replace(/\s+/g, " ").trim();
   }
   function stripAttributes(root) {
@@ -230,7 +311,7 @@ var CustomImportScript = (() => {
     return cell.querySelectorAll("p").length <= 1;
   }
   function buildCell(cell, document) {
-    if (isSimpleCell(cell)) return cleanText(cell);
+    if (isSimpleCell(cell)) return cleanText2(cell);
     const frag = document.createDocumentFragment();
     [...cell.childNodes].forEach((child) => {
       if (child.nodeType === 3) {
@@ -317,9 +398,99 @@ var CustomImportScript = (() => {
   function isEmptyContainer(el) {
     return el.textContent.replace(/\u00a0/g, " ").trim() === "" && !el.querySelector("img, picture, video, iframe, svg, table, input, select, textarea");
   }
+  function renameElement(el, tagName) {
+    const repl = el.ownerDocument.createElement(tagName);
+    repl.append(...el.childNodes);
+    el.replaceWith(repl);
+    return repl;
+  }
+  function isEmptyText(el) {
+    return el.textContent.replace(/\u00a0/g, " ").trim() === "";
+  }
+  function pageTitle(doc) {
+    return (doc && doc.title || "").split("|")[0].replace(/\s+/g, " ").trim();
+  }
+  function cleanupEndOfLeaseBefore(element, doc) {
+    element.querySelectorAll(".banner-image.parbase .your-option-img-container.d-md-block").forEach((box) => {
+      const src = resolveImageUrl2(findBannerImageUrl(box));
+      let img = box.querySelector("img");
+      if (!img && src) {
+        img = doc.createElement("img");
+        img.setAttribute("src", src);
+        box.prepend(img);
+      } else if (img && src && !/^(https?:)?\/\//i.test(img.getAttribute("src") || "")) {
+        img.setAttribute("src", src);
+      }
+      if (img) {
+        const alt = box.getAttribute("alt") || img.getAttribute("alt") || pageTitle(doc);
+        img.setAttribute("alt", alt);
+      }
+      [...box.childNodes].forEach((n) => {
+        if (n.nodeType === 8) n.remove();
+      });
+      if (img) box.style.removeProperty("background-image");
+    });
+    WebImporter.DOMUtils.remove(element, [
+      ".banner-image.parbase .your-option-img-container.d-md-none",
+      // mobile crop of the banner
+      ".banner-image.parbase br",
+      // stray <br> after the containers
+      // chrome
+      ".two-columns-right-one-column-left .side-nav-container",
+      // left section menu
+      "main > .container-fluid.px-0 > .secure-footer",
+      // footer wrapper (#global-footer)
+      ".lease-end-right-container > .video-modal"
+      // #pop_modal_video player shell
+    ]);
+    element.querySelectorAll([
+      ".banner-image.parbase h1",
+      ".lease-end-right-container > .card-button > h2",
+      ".lease-end-right-container > .accordion.parbase > .row > h4"
+    ].join(", ")).forEach((h) => {
+      if (isEmptyContainer(h)) h.remove();
+    });
+    element.querySelectorAll(".lease-end-right-container .accordion.parbase .card-body a[style]").forEach((a) => {
+      const style = a.getAttribute("style").split(";").filter((decl) => decl.trim() && !/^\s*background-color\s*:/i.test(decl)).join(";").trim();
+      if (style) a.setAttribute("style", style);
+      else a.removeAttribute("style");
+    });
+  }
+  function cleanupEndOfLeaseAfter(element, doc) {
+    element.querySelectorAll(".lease-end-right-container").forEach((col) => {
+      col.querySelectorAll("h1, h2, h3, h4, h5, h6").forEach((h) => {
+        if (isEmptyContainer(h)) h.remove();
+      });
+      const first = [...col.querySelectorAll("h1, h2, h3, h4, h5, h6")].find((h) => !h.closest("table"));
+      if (first && first.tagName !== "H1") renameElement(first, "h1");
+      col.querySelectorAll([
+        ".simpleparagraph h4",
+        ".links-section h4",
+        ".accordion.parbase > .row > h4"
+      ].join(", ")).forEach((h) => renameElement(h, "h3"));
+      col.querySelectorAll("div.sub-header").forEach((d) => renameElement(d, "p"));
+      col.querySelectorAll(".simpleparagraph a.primary-btn.button-link, .button.parbase a.primary-btn.button-link").forEach((a) => {
+        if (a.closest("strong, b")) return;
+        const strong = doc.createElement("strong");
+        if (a.parentElement && a.parentElement.tagName === "P") {
+          a.replaceWith(strong);
+          strong.append(a);
+          return;
+        }
+        const p = doc.createElement("p");
+        a.replaceWith(p);
+        strong.append(a);
+        p.append(strong);
+      });
+      col.querySelectorAll("p").forEach((p) => {
+        if (isEmptyText(p) && !p.querySelector("img, picture, video, iframe, svg, table, input")) p.remove();
+      });
+    });
+  }
   function transform(hookName, element, payload) {
     if (hookName === TransformHook.beforeTransform) {
       const doc = element.ownerDocument;
+      cleanupEndOfLeaseBefore(element, doc);
       element.querySelectorAll(".banner-component .top-section, .faq-banner-component .top-section").forEach((topSection) => {
         const src = resolveImageUrl2(findBannerImageUrl(topSection));
         if (!src) return;
@@ -439,6 +610,7 @@ var CustomImportScript = (() => {
         "link",
         "noscript"
       ]);
+      cleanupEndOfLeaseAfter(element, element.ownerDocument);
       element.querySelectorAll("h1, h2, h3, h4, h5, h6").forEach((heading) => {
         const meaningful = [...heading.childNodes].filter((n) => {
           if (n.nodeType === 3) return n.textContent.trim() !== "";
@@ -457,6 +629,41 @@ var CustomImportScript = (() => {
   // tools/importer/transformers/toyotafinancial-sections.js
   var TransformHook2 = { beforeTransform: "beforeTransform", afterTransform: "afterTransform" };
   var MARKER_ATTR = "data-tfs-section-meta";
+  var START_PREFIX = "tfs-section-start:";
+  var END_PREFIX = "tfs-section-end:";
+  function findComments(root) {
+    const found = /* @__PURE__ */ new Map();
+    const doc = root.ownerDocument;
+    const walker = doc.createTreeWalker(
+      root,
+      128
+      /* NodeFilter.SHOW_COMMENT */
+    );
+    let n = walker.nextNode();
+    while (n) {
+      const v = n.nodeValue || "";
+      if (v.startsWith(START_PREFIX) || v.startsWith(END_PREFIX)) found.set(v, n);
+      n = walker.nextNode();
+    }
+    return found;
+  }
+  function isEmptyNode(node) {
+    if (node.nodeType === 3) return node.textContent.replace(/\u00a0/g, " ").trim() === "";
+    if (node.nodeType !== 1) return true;
+    if (node.hasAttribute(MARKER_ATTR)) return true;
+    if (/^(IMG|PICTURE|VIDEO|IFRAME|SVG|TABLE)$/i.test(node.tagName)) return false;
+    return node.textContent.replace(/\u00a0/g, " ").trim() === "" && !node.querySelector("img, picture, video, iframe, svg, table");
+  }
+  function nodesBetween(start, end) {
+    if (!start || !end || start.parentNode !== end.parentNode) return null;
+    const nodes = [];
+    for (let n = start.nextSibling; n && n !== end; n = n.nextSibling) nodes.push(n);
+    return nodes;
+  }
+  function breakBefore(start) {
+    const prev = start && start.previousSibling;
+    return prev && prev.nodeType === 1 && prev.tagName === "HR" ? prev : null;
+  }
   function toSelectorList(selector) {
     if (Array.isArray(selector)) return selector.filter((s) => typeof s === "string" && s.trim());
     if (typeof selector === "string" && selector.trim()) return [selector];
@@ -497,17 +704,42 @@ var CustomImportScript = (() => {
         const el = resolved[i];
         if (!el) continue;
         const section = sections[i];
+        const id = markerId(section, i);
+        el.after(doc.createComment(`${END_PREFIX}${id}`));
         if (section.style) {
           const marker = doc.createElement("span");
-          marker.setAttribute(MARKER_ATTR, markerId(section, i));
+          marker.setAttribute(MARKER_ATTR, id);
           el.after(marker);
         }
+        const start = doc.createComment(`${START_PREFIX}${id}`);
+        el.before(start);
         if (i !== firstMatched) {
-          el.before(doc.createElement("hr"));
+          start.before(doc.createElement("hr"));
         }
       }
     }
     if (hookName === TransformHook2.afterTransform) {
+      const comments = findComments(element);
+      let firstKept = -1;
+      for (let i = 0; i < sections.length; i += 1) {
+        const section = sections[i];
+        if (!section) continue;
+        const id = markerId(section, i);
+        const start = comments.get(`${START_PREFIX}${id}`);
+        const end = comments.get(`${END_PREFIX}${id}`);
+        if (!start && !end) continue;
+        const between = nodesBetween(start, end);
+        if (between && between.every(isEmptyNode)) {
+          const hr = breakBefore(start);
+          if (hr) hr.remove();
+          between.forEach((n) => n.remove());
+        } else if (firstKept === -1) {
+          firstKept = i;
+          const hr = breakBefore(start);
+          if (hr) hr.remove();
+        }
+      }
+      comments.forEach((c) => c.remove());
       for (let i = sections.length - 1; i >= 0; i -= 1) {
         const section = sections[i];
         if (!section || !section.style) continue;
@@ -577,6 +809,37 @@ var CustomImportScript = (() => {
     "/us/en/planning_tools/get_started",
     "/us/en/contact_us",
     "/us/en/planning_tools/apply_for_credit",
+    // batch 2026-10-04: protection plans, planning tools, financing, end of lease, blog
+    ...[
+      "vehicle_protection_plan/which_plan_is_right_for_me",
+      "vehicle_protection_plan/vehicle_service_agreements",
+      "vehicle_protection_plan/guaranteed_auto_protection",
+      "vehicle_protection_plan/prepaid_maintenance_plan",
+      "vehicle_protection_plan/tire_wheel_protection",
+      "vehicle_protection_plan/how_to_file_a_claim",
+      "planning_tools/ways_to_pay",
+      "planning_tools/visiting_the_dealer",
+      "financing_options/buy_or_lease",
+      "financing_options/buy_a_toyota",
+      "financing_options/leasing_a_toyota",
+      "financing_options/rebate_finance_programs/find_rebate_finance_programs",
+      "financing_options/rebate_finance_programs/college_rebate_program",
+      "financing_options/rebate_finance_programs/military_rebate_program",
+      "financing_options/rebate_finance_programs/repeat_customers",
+      "financing_options/understanding_credit/credit_101",
+      "financing_options/understanding_credit/credit_tips",
+      "financing_options/for_businesses/business_solutions",
+      "financing_options/for_businesses/business_credit_applications",
+      "financing_options/toyota_rewards_visa",
+      "end_of_lease_options/your_option",
+      "end_of_lease_options/lease-end-videos",
+      "end_of_lease_options/early_lease_return",
+      "end_of_lease_options/mileage",
+      "end_of_lease_options/wear_and_use",
+      "end_of_lease_options/return_your_vehicle",
+      "end_of_lease_options/faqs",
+      "TFS_ThoughtFuel_Blog"
+    ].map((p) => `/us/en/${p}`),
     ...FAQ_TOPICS.map((t) => `/us/en/planning_tools/faq/${t}`)
   ].map((p) => p.toLowerCase()));
   function sanitizePath(path) {

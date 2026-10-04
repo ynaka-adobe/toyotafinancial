@@ -59,6 +59,26 @@
  *                                    It is replaced by a real <img> (alt from the element's alt
  *                                    attribute) so the DM transformer rewrites it like any other
  *                                    Scene7 image. .banner-component itself is kept (section anchor).
+ *
+ * end-of-lease template additions (newer Bootstrap-4 design: main > .container-fluid.px-0,
+ * no #main-content .screenFade). Verified in migration-work/cleaned.html (your_option) and
+ * the live end_of_lease_options pages; none of these classes exist on the other templates:
+ *   .two-columns-right-one-column-left .side-nav-container -> left section menu (duplicates
+ *                                    the header menu, hidden on mobile)
+ *   main > .container-fluid.px-0 > .secure-footer -> wrapper around #global-footer
+ *   .lease-end-right-container > .video-modal     -> #pop_modal_video player shell (lease-end-videos)
+ *   .banner-image.parbase .your-option-img-container.d-md-block
+ *                                 -> page banner: inline Scene7 background-image becomes an
+ *                                    <img> INSIDE the container (alt from the element's alt
+ *                                    attribute, else the page title). The .d-md-none mobile crop,
+ *                                    the empty <h1>s and the stray <br> are removed.
+ *   .lease-end-right-container    -> main column. First heading -> h1; h4 -> h3 in rich text
+ *                                    (.simpleparagraph), .links-section and accordion group titles
+ *                                    (.accordion.parbase > .row > h4); empty headings dropped;
+ *                                    div.sub-header -> p; empty/&nbsp; <p> removed;
+ *                                    a.primary-btn.button-link (in .simpleparagraph / .button.parbase)
+ *                                    -> p > strong > a; inline background-color on accordion-body
+ *                                    links stripped.
  */
 
 const TransformHook = { beforeTransform: 'beforeTransform', afterTransform: 'afterTransform' };
@@ -142,9 +162,129 @@ function isEmptyContainer(el) {
     && !el.querySelector('img, picture, video, iframe, svg, table, input, select, textarea');
 }
 
+// Replace an element with a new tag, keeping its child nodes (attributes dropped).
+function renameElement(el, tagName) {
+  const repl = el.ownerDocument.createElement(tagName);
+  repl.append(...el.childNodes);
+  el.replaceWith(repl);
+  return repl;
+}
+
+function isEmptyText(el) {
+  return el.textContent.replace(/\u00a0/g, ' ').trim() === '';
+}
+
+// Page title without the " | Toyota Financial Services" suffix (banner alt fallback).
+function pageTitle(doc) {
+  return ((doc && doc.title) || '').split('|')[0].replace(/\s+/g, ' ').trim();
+}
+
+// end-of-lease (newer design) — before block parsing.
+function cleanupEndOfLeaseBefore(element, doc) {
+  // Banner: desktop container's inline Scene7 background-image -> <img> inside the
+  // same container, so the template's defaultContent selector still matches.
+  element.querySelectorAll('.banner-image.parbase .your-option-img-container.d-md-block').forEach((box) => {
+    const src = resolveImageUrl(findBannerImageUrl(box));
+    let img = box.querySelector('img');
+    if (!img && src) {
+      img = doc.createElement('img');
+      img.setAttribute('src', src);
+      box.prepend(img);
+    } else if (img && src && !/^(https?:)?\/\//i.test(img.getAttribute('src') || '')) {
+      img.setAttribute('src', src);
+    }
+    if (img) {
+      const alt = box.getAttribute('alt') || img.getAttribute('alt') || pageTitle(doc);
+      img.setAttribute('alt', alt);
+    }
+    // commented-out legacy <img> markup inside the container
+    [...box.childNodes].forEach((n) => { if (n.nodeType === 8) n.remove(); });
+    // the image is extracted now; drop the inline background so the importer's
+    // transformBackgroundImages rule doesn't add a second (non-carrier) copy
+    if (img) box.style.removeProperty('background-image');
+  });
+  WebImporter.DOMUtils.remove(element, [
+    '.banner-image.parbase .your-option-img-container.d-md-none', // mobile crop of the banner
+    '.banner-image.parbase br',                                    // stray <br> after the containers
+    // chrome
+    '.two-columns-right-one-column-left .side-nav-container',      // left section menu
+    'main > .container-fluid.px-0 > .secure-footer',               // footer wrapper (#global-footer)
+    '.lease-end-right-container > .video-modal',                   // #pop_modal_video player shell
+  ]);
+
+  // Empty headings (banner h1, card-button h2, empty accordion group title).
+  element.querySelectorAll([
+    '.banner-image.parbase h1',
+    '.lease-end-right-container > .card-button > h2',
+    '.lease-end-right-container > .accordion.parbase > .row > h4',
+  ].join(', ')).forEach((h) => {
+    if (isEmptyContainer(h)) h.remove();
+  });
+
+  // Inline background-color on links inside accordion bodies.
+  element.querySelectorAll('.lease-end-right-container .accordion.parbase .card-body a[style]').forEach((a) => {
+    const style = a.getAttribute('style')
+      .split(';')
+      .filter((decl) => decl.trim() && !/^\s*background-color\s*:/i.test(decl))
+      .join(';')
+      .trim();
+    if (style) a.setAttribute('style', style);
+    else a.removeAttribute('style');
+  });
+}
+
+// end-of-lease (newer design) — after block parsing (default content in the main column).
+// Runs in afterTransform so the template's defaultContent selectors (h4, .sub-header)
+// still match while parsers run; block tables inside the column are left untouched
+// except for empty <p> removal.
+function cleanupEndOfLeaseAfter(element, doc) {
+  element.querySelectorAll('.lease-end-right-container').forEach((col) => {
+    // drop empty headings
+    col.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach((h) => {
+      if (isEmptyContainer(h)) h.remove();
+    });
+
+    // first heading in the main column (outside block tables) becomes the page h1
+    const first = [...col.querySelectorAll('h1, h2, h3, h4, h5, h6')].find((h) => !h.closest('table'));
+    if (first && first.tagName !== 'H1') renameElement(first, 'h1');
+
+    // h4 -> h3 in rich text, links section and accordion group titles
+    col.querySelectorAll([
+      '.simpleparagraph h4',
+      '.links-section h4',
+      '.accordion.parbase > .row > h4',
+    ].join(', ')).forEach((h) => renameElement(h, 'h3'));
+
+    // lead text: div.sub-header -> p
+    col.querySelectorAll('div.sub-header').forEach((d) => renameElement(d, 'p'));
+
+    // CTA buttons in rich text -> p > strong > a
+    col.querySelectorAll('.simpleparagraph a.primary-btn.button-link, .button.parbase a.primary-btn.button-link').forEach((a) => {
+      if (a.closest('strong, b')) return;
+      const strong = doc.createElement('strong');
+      if (a.parentElement && a.parentElement.tagName === 'P') {
+        a.replaceWith(strong);
+        strong.append(a);
+        return;
+      }
+      const p = doc.createElement('p');
+      a.replaceWith(p);
+      strong.append(a);
+      p.append(strong);
+    });
+
+    // empty and &nbsp;-only paragraphs
+    col.querySelectorAll('p').forEach((p) => {
+      if (isEmptyText(p) && !p.querySelector('img, picture, video, iframe, svg, table, input')) p.remove();
+    });
+  });
+}
+
 export default function transform(hookName, element, payload) {
   if (hookName === TransformHook.beforeTransform) {
     const doc = element.ownerDocument;
+
+    cleanupEndOfLeaseBefore(element, doc);
 
     // page banners (about-us .banner-component, FAQ .faq-banner-component):
     // CSS background-image -> real <img>.
@@ -277,6 +417,8 @@ export default function transform(hookName, element, payload) {
       'link',
       'noscript',
     ]);
+
+    cleanupEndOfLeaseAfter(element, element.ownerDocument);
 
     // Plain headings: unwrap <b>/<strong> when it is the heading's sole content
     // (ignoring whitespace and <br>), e.g. <h3><b>Our Passion</b><br></h3>.

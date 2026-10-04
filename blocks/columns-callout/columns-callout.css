@@ -120,3 +120,30 @@
     margin: 0;
   }
 }
+
+/* option: grey — flat #fafafa box (end-of-lease "more questions" card):
+   no red top border, no shadow, no radius; compact bold title */
+.columns-callout.grey > .columns-callout-row {
+  border-top: 0;
+  border-radius: 0;
+  background-color: #fafafa;
+  box-shadow: none;
+}
+
+.columns-callout.grey .columns-callout-title {
+  margin-bottom: 0;
+  font-family: var(--display-font-family);
+  font-size: var(--heading-font-size-s);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+@media (width >= 900px) {
+  .columns-callout.grey > .columns-callout-row {
+    padding: 30px 55px;
+  }
+
+  .columns-callout.grey .columns-callout-title {
+    font-size: var(--heading-font-size-m);
+  }
+}

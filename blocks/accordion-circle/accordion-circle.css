@@ -1,0 +1,107 @@
+/* accordion-circle: end-of-lease FAQ accordion (source accordion parbase)
+   dark grey titles, filled red circle +/- icon on the right, grey dividers, generous padding;
+   single-expand per block (JS) */
+
+.accordion-circle {
+  color: var(--text-color);
+}
+
+.accordion-circle .accordion-circle-item {
+  border-bottom: 1px solid #949494;
+}
+
+.accordion-circle .accordion-circle-item-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 25px 0;
+  list-style: none;
+  cursor: pointer;
+  color: #3a3a3a;
+  font-family: var(--display-font-family);
+  font-size: var(--heading-font-size-s);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.accordion-circle .accordion-circle-item-label::-webkit-details-marker {
+  display: none;
+}
+
+.accordion-circle .accordion-circle-item-label:focus-visible {
+  outline: 2px solid var(--text-color);
+  outline-offset: 2px;
+}
+
+.accordion-circle .accordion-circle-item-title {
+  min-width: 0;
+}
+
+/* filled red circle with a white plus (closed) / minus (open) */
+.accordion-circle .accordion-circle-item-icon {
+  position: relative;
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  margin-right: 25px;
+  border-radius: 50%;
+  background-color: var(--brand-red);
+}
+
+.accordion-circle .accordion-circle-item-icon::before,
+.accordion-circle .accordion-circle-item-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 2px;
+  background-color: #fff;
+  transform: translate(-50%, -50%);
+}
+
+.accordion-circle .accordion-circle-item-icon::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+  transition: transform 0.2s;
+}
+
+.accordion-circle .accordion-circle-item[open] > .accordion-circle-item-label .accordion-circle-item-icon::after {
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.accordion-circle .accordion-circle-item-body {
+  padding: 0 0 30px;
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-s);
+  line-height: 1.7;
+}
+
+.accordion-circle .accordion-circle-item-body > :first-child {
+  margin-top: 0;
+}
+
+.accordion-circle .accordion-circle-item-body > :last-child {
+  margin-bottom: 0;
+}
+
+.accordion-circle .accordion-circle-item-body ul,
+.accordion-circle .accordion-circle-item-body ol {
+  padding-left: 35px;
+}
+
+.accordion-circle .accordion-circle-item-body .button-container {
+  display: block;
+  margin-top: 30px;
+}
+
+/* the new end-of-lease design uses square-cornered CTAs */
+.accordion-circle .accordion-circle-item-body a.button.primary:any-link {
+  border-radius: 2px;
+}
+
+@media (width >= 900px) {
+  .accordion-circle .accordion-circle-item-label {
+    font-size: var(--heading-font-size-m);
+  }
+}

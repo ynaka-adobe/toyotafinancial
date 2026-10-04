@@ -1,0 +1,104 @@
+/* cards-steps: numbered option cards (source end-of-lease .card-button list)
+   red outlined circle number (CSS counter), title, text, CTA, small disclaimer;
+   grey divider between steps; number above content on mobile, number left of content from 900px */
+
+.cards-steps {
+  color: var(--text-color);
+}
+
+.cards-steps > ol {
+  counter-reset: cards-steps;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cards-steps .cards-steps-item {
+  counter-increment: cards-steps;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 30px 0;
+}
+
+.cards-steps .cards-steps-item:first-child {
+  padding-top: 0;
+}
+
+.cards-steps .cards-steps-item:last-child {
+  padding-bottom: 0;
+}
+
+.cards-steps .cards-steps-item + .cards-steps-item {
+  border-top: 1px solid #ddd;
+}
+
+/* the circled number */
+.cards-steps .cards-steps-item::before {
+  content: counter(cards-steps);
+  box-sizing: border-box;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 2px solid var(--brand-red);
+  border-radius: 50%;
+  color: var(--brand-red);
+  font-family: var(--display-font-family);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.cards-steps .cards-steps-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-s);
+  line-height: 1.6;
+}
+
+.cards-steps .cards-steps-body > * {
+  margin: 0 0 15px;
+}
+
+.cards-steps .cards-steps-body > :last-child {
+  margin-bottom: 0;
+}
+
+.cards-steps .cards-steps-title {
+  font-family: var(--display-font-family);
+  font-size: var(--heading-font-size-s);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.cards-steps .cards-steps-title sup {
+  font-size: 0.6em;
+}
+
+.cards-steps .cards-steps-cta {
+  display: block;
+  margin-top: 25px;
+}
+
+/* the new end-of-lease design uses square-cornered CTAs */
+.cards-steps .cards-steps-cta a.button.primary:any-link {
+  border-radius: 2px;
+}
+
+.cards-steps .cards-steps-disclaimer {
+  font-size: var(--body-font-size-xs);
+  line-height: 1.5;
+  color: var(--dark-color);
+}
+
+@media (width >= 900px) {
+  .cards-steps .cards-steps-item {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 40px 0;
+  }
+}

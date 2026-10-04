@@ -25,9 +25,11 @@
   "usage": {
     "pagesUsing": [
       "/us/en/about-us/company-overview",
-      "/us/en/tfs-thoughtfuel-blog"
+      "/us/en/tfs-thoughtfuel-blog",
+      "/us/en/fragments/lease-end-help"
     ],
-    "reuseCount": 2,
-    "lastUsed": "2026-10-04T00:37:20.000Z"
+    "reuseCount": 3,
+    "lastUsed": "2026-10-04T06:52:34.059Z",
+    "note": "end-of-lease template via fragment on: /us/en/end-of-lease-options/your-option, /us/en/end-of-lease-options/early-lease-return, /us/en/end-of-lease-options/faqs, /us/en/end-of-lease-options/lease-end-videos, /us/en/end-of-lease-options/mileage, /us/en/end-of-lease-options/wear-and-use, /us/en/end-of-lease-options/return-your-vehicle"
   }
 }

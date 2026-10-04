@@ -1,0 +1,31 @@
+{
+  "variantName": "accordion-circle",
+  "baseBlock": "accordion",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "spacious",
+    "purpose": "faq-accordion",
+    "imagePattern": "noimg",
+    "structure": "N rows, 2 cells: [title text] | [body rich text: p, ul/ol (nested), sup, em disclaimers, links, p > strong > a buttons]"
+  },
+  "contentPattern": {
+    "structure": "N rows, 2 cells: [title text] | [body rich text: p, ul/ol (nested), sup, em disclaimers, links, p > strong > a buttons]; dark grey bold titles, filled red circle +/- icon on the right, grey dividers; all closed on load, opening one closes the others in the same block. Use one block per independent accordion group",
+    "buttonCount": 0,
+    "imageCount": 0,
+    "hasDescription": true,
+    "hasCTA": false
+  },
+  "options": [],
+  "memberVariantIds": [],
+  "sourceContext": {
+    "originUrl": "https://www.toyotafinancial.com/us/en/end_of_lease_options/mileage.html",
+    "originPage": "Toyota Financial - Mileage",
+    "blockPosition": "middle"
+  },
+  "usage": {
+    "pagesUsing": [],
+    "reuseCount": 0,
+    "lastUsed": "2026-10-04T00:00:00.000Z"
+  }
+}

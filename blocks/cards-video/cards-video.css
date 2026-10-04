@@ -1,0 +1,183 @@
+/* cards-video: lease-end video tiles (source video-promo)
+   white shadowed tile: centred title, red rule, description, poster with play icon at the bottom;
+   1 column on mobile, 2 from 900px; poster opens the MP4 in a modal dialog */
+
+.cards-video {
+  color: var(--text-color);
+}
+
+.cards-video > ul {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cards-video .cards-video-tile {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background-color: var(--background-color);
+  box-shadow: rgb(0 0 0 / 20%) 0 2px 6px 0;
+}
+
+.cards-video .cards-video-tile-body {
+  flex: 1 1 auto;
+  padding: 15px 20px 30px;
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-s);
+  line-height: 1.7;
+  text-align: center;
+}
+
+.cards-video .cards-video-tile-body > :first-child {
+  margin-top: 0;
+}
+
+.cards-video .cards-video-tile-body > :last-child {
+  margin-bottom: 0;
+}
+
+.cards-video .cards-video-tile-title {
+  margin: 0 0 15px;
+  font-family: var(--display-font-family);
+  font-size: var(--heading-font-size-s);
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+/* short red rule under the title */
+.cards-video .cards-video-tile-title::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  margin: 10px auto 0;
+  background-color: var(--brand-red);
+}
+
+/* poster button: reset the global red pill button styles */
+.cards-video .cards-video-tile-media {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: none;
+  line-height: 0;
+  white-space: normal;
+}
+
+.cards-video button.cards-video-tile-media {
+  cursor: pointer;
+}
+
+.cards-video button.cards-video-tile-media:hover {
+  background: none;
+}
+
+.cards-video button.cards-video-tile-media:focus-visible {
+  outline: 2px solid var(--text-color);
+  outline-offset: 2px;
+}
+
+.cards-video .cards-video-tile-media picture,
+.cards-video .cards-video-tile-media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+/* translucent white play triangle centred on the poster */
+.cards-video .cards-video-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-top: 18px solid transparent;
+  border-bottom: 18px solid transparent;
+  border-left: 28px solid rgb(255 255 255 / 80%);
+  transform: translate(-40%, -50%);
+  transition: border-left-color 0.2s;
+}
+
+.cards-video button.cards-video-tile-media:hover .cards-video-play,
+.cards-video button.cards-video-tile-media:focus-visible .cards-video-play {
+  border-left-color: #fff;
+}
+
+/* modal player (appended to <body>, shared by every cards-video block) */
+dialog.cards-video-dialog {
+  box-sizing: border-box;
+  width: min(900px, calc(100vw - 32px));
+  max-width: none;
+  border: 0;
+  border-top: 2px solid var(--brand-red);
+  padding: 50px 5px 5px;
+  background-color: #fff;
+  overflow: visible;
+}
+
+dialog.cards-video-dialog::backdrop {
+  background-color: rgb(0 0 0 / 50%);
+}
+
+dialog.cards-video-dialog .cards-video-dialog-frame video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: #000;
+}
+
+dialog.cards-video-dialog .cards-video-dialog-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  border: 0;
+  border-radius: 50%;
+  padding: 0;
+  background-color: #616161;
+}
+
+dialog.cards-video-dialog .cards-video-dialog-close::before,
+dialog.cards-video-dialog .cards-video-dialog-close::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 2px;
+  background-color: #fff;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+dialog.cards-video-dialog .cards-video-dialog-close::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+dialog.cards-video-dialog .cards-video-dialog-close:hover {
+  background-color: #616161;
+}
+
+dialog.cards-video-dialog .cards-video-dialog-close:focus-visible {
+  outline: 2px solid var(--text-color);
+  outline-offset: 2px;
+}
+
+@media (width >= 900px) {
+  .cards-video > ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 40px 30px;
+  }
+}
