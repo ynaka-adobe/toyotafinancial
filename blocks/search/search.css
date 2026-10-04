@@ -3,6 +3,12 @@
   margin: 0 auto;
 }
 
+main .section.search-container h1 {
+  margin-bottom: 40px;
+  font-weight: 400;
+  text-align: center;
+}
+
 /* search bar */
 .search .search-bar {
   position: relative;
@@ -306,6 +312,9 @@
 .search .search-result-answer a.button,
 .search .search-help a.button {
   display: inline-block;
+  min-width: 0;
+  max-width: none;
+  height: auto;
   margin: 0;
   padding: 14px 24px;
   border: 0;
