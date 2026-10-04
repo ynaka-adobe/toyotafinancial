@@ -33,7 +33,8 @@ export function getSharedDocumentUrls(name, embed = null) {
   const local = pathname.startsWith('/content/');
   const base = local ? '/content' : '';
   const pagePath = local ? pathname.slice(base.length) : pathname;
-  const locale = pagePath.match(/^\/[a-z]{2}\/[a-z]{2}(?=\/|$)/i);
+  // also match legacy .html URLs (/us/en.html) served in place by the CDN rule
+  const locale = pagePath.match(/^\/[a-z]{2}\/[a-z]{2}(?=\/|\.html$|$)/i);
   const paths = locale ? [`${locale[0].toLowerCase()}/${name}`, `/${name}`] : [`/${name}`];
   return paths.map((path) => `${base}${path}.plain.html`);
 }
