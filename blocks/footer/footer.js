@@ -1,17 +1,16 @@
 import { decorateIcons } from '../../scripts/aem.js';
-import { fetchFirstAvailable, getSharedDocumentUrls } from '../../scripts/scripts.js';
+import { getEmbedOptions, loadSharedDocument } from '../../scripts/shared-documents.js';
 
 const isDesktop = window.matchMedia('(width >= 900px)');
 
 /**
  * Fetches the footer for the page's language folder (e.g. /us/en/footer), falling back to /footer.
+ * @param {Element} block the footer block
  * @returns {Promise<HTMLElement|null>} container holding the fragment sections
  */
-async function fetchFooter() {
-  const resp = await fetchFirstAvailable(getSharedDocumentUrls('footer'));
-  if (!resp) return null;
-  const container = document.createElement('div');
-  container.innerHTML = await resp.text();
+async function fetchFooter(block) {
+  const container = await loadSharedDocument('footer', block);
+  if (!container) return null;
   // published documents wrap list-item content in <p>; unwrap so items hold their links directly
   container.querySelectorAll('li > p').forEach((p) => p.replaceWith(...p.childNodes));
   decorateIcons(container);
@@ -53,13 +52,14 @@ const SITE_ORIGIN = 'https://www.toyotafinancial.com';
 /**
  * Image-only links get an accessible name from their image; links to other hosts open in a new tab.
  * @param {Element} root footer root
+ * @param {string[]} siteOrigins origins treated as part of this site
  */
-function decorateLinks(root) {
+function decorateLinks(root, siteOrigins) {
   root.querySelectorAll('a[href]').forEach((a) => {
     const img = a.querySelector('img');
     if (img && !a.textContent.trim() && img.alt) a.setAttribute('aria-label', img.alt);
     const url = new URL(a.href, window.location.href);
-    const sameSite = url.origin === window.location.origin || url.origin === SITE_ORIGIN;
+    const sameSite = siteOrigins.includes(url.origin);
     if (!sameSite && url.protocol.startsWith('http')) {
       a.target = '_blank';
       a.rel = 'noopener';
@@ -145,7 +145,7 @@ function decorateColumnAccordions(columns) {
  * @param {Element} block The footer block element
  */
 export default async function decorate(block) {
-  const fragment = await fetchFooter();
+  const fragment = await fetchFooter(block);
   block.textContent = '';
   if (!fragment) return;
 
@@ -207,6 +207,9 @@ export default async function decorate(block) {
     wrapper.append(bottom);
   }
 
-  decorateLinks(wrapper);
+  const siteOrigins = [window.location.origin, SITE_ORIGIN];
+  const embed = getEmbedOptions(block);
+  if (embed) siteOrigins.push(new URL(embed.linkBase).origin);
+  decorateLinks(wrapper, siteOrigins);
   block.prepend(wrapper);
 }

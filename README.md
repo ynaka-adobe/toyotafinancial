@@ -22,3 +22,15 @@ This specific repo has been _slightly_ modified to be compatible with DA's live 
 1. Start the AEM CLI: `aem up`.
 1. Open the `{repo}` folder in your favorite code editor and buil something.
 1. **Recommended:** Install common npm packages like linting and testing: `npm i`.
+
+## Embedding the header/footer in other apps
+
+`scripts/aem-embed.js` defines `<aem-header>` and `<aem-footer>`, which render this site's header and footer blocks (Shadow DOM) on external sites such as the DSS app ([ynakagawa/toyotafinancial](https://github.com/ynakagawa/toyotafinancial)):
+
+```html
+<script type="module" src="https://main--toyotafinancial--ynaka-adobe.aem.live/scripts/aem-embed.js"></script>
+<aem-header locale="/us/en" link-base="https://toyotafinancial.ynaka-adobe.com"></aem-header>
+<aem-footer locale="/us/en" link-base="https://toyotafinancial.ynaka-adobe.com"></aem-footer>
+```
+
+Cross-origin hosts must be allowed in the site config `headers` (Admin API `config/ynaka-adobe/sites/toyotafinancial/headers.json`). Set `access-control-allow-origin` for `/nav.plain.html`, `/footer.plain.html`, `/**/nav.plain.html`, `/**/footer.plain.html`, `/scripts/**`, `/blocks/**` and `/styles/**`. It currently allows `https://dss.toyotafinancial.ynaka-adobe.com`. Other origins can use a same-origin proxy and the `base` attribute (e.g. `base="/aem"`).
