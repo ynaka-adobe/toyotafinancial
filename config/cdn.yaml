@@ -3,11 +3,12 @@
 kind: "CDN"
 version: "1"
 data:
-  redirects:
+  requestTransformations:
     rules:
-      # Legacy AEM URLs (/us/en/page.html) -> EDS extensionless URLs (/us/en/page).
-      # Keeps the query string. Skips EDS fragments (*.plain.html) and code paths.
-      - name: strip-html-extension
+      # Legacy AEM URLs: serve /us/en/page.html from the EDS page /us/en/page,
+      # keeping .html in the browser address bar (no redirect).
+      # Skips EDS fragments (*.plain.html) and code paths.
+      - name: serve-html-extension
         when:
           allOf:
             - { reqProperty: domain, equals: "toyotafinancial.ynaka-adobe.com" }
@@ -15,12 +16,9 @@ data:
             - { reqProperty: path, doesNotMatch: "\\.plain\\.html$" }
             - { reqProperty: path, doesNotMatch: "^/(404|head)\\.html$" }
             - { reqProperty: path, doesNotMatch: "^/(blocks|scripts|styles|tools|plugins|deps|ue|icons|fonts|workers|\\.well-known|well-known)/" }
-        action:
-          type: redirect
-          status: 301
-          location:
-            reqProperty: url
-            transform:
-              - op: replace
-                match: '^([^?]*)\.html(\?.*)?$'
-                replacement: '\1\2'
+        actions:
+          - type: transform
+            reqProperty: path
+            op: replace
+            match: '\.html$'
+            replacement: ""
