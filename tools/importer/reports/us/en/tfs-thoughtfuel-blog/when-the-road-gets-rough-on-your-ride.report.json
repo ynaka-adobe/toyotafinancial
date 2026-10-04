@@ -1,0 +1,12 @@
+{
+  "status": "success",
+  "url": "https://www.toyotafinancial.com/us/en/TFS_ThoughtFuel_Blog/When-the-Road-Gets-Rough-on-Your-Ride.html",
+  "path": "us/en/tfs-thoughtfuel-blog/when-the-road-gets-rough-on-your-ride",
+  "timestamp": "2026-10-04T15:37:23.813Z",
+  "title": "When the Road Gets Rough on Your Ride | Toyota Financial",
+  "template": "content-page",
+  "blocks": [
+    "columns-callout",
+    "fragment"
+  ]
+}

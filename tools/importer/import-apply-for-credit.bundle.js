@@ -233,8 +233,6 @@ var CustomImportScript = (() => {
         // about-us
         ".bread-crumb.parbase",
         // breadcrumb
-        ".nav-list-component",
-        // empty right-hand nav column
         // hidden at every breakpoint on the source (e.g. the policy pages'
         // "View More" link in .terms-view-extra) — never visible to visitors
         ".hidden-xs.hidden-sm.hidden-md.hidden-lg",
@@ -243,6 +241,16 @@ var CustomImportScript = (() => {
         "a.sr-only",
         "#oca-loading"
       ]);
+      const pageUrl = payload && payload.params && payload.params.originalURL || payload && payload.url || "";
+      const isBlogArticle = /\/TFS_ThoughtFuel_Blog\/./i.test(pageUrl);
+      element.querySelectorAll(".nav-list-component").forEach((el) => {
+        if (!isBlogArticle) el.remove();
+      });
+      if (element.querySelector("#faqcard")) {
+        element.querySelectorAll(".rtequestionnaire > .container-fluid:not([id])").forEach((box) => {
+          if (box.querySelector(".faq-card") && !box.querySelector("#faqcard")) box.remove();
+        });
+      }
       element.querySelectorAll(".one-column-component").forEach((el) => {
         if (isEmptyContainer(el)) el.remove();
       });
@@ -570,6 +578,26 @@ var CustomImportScript = (() => {
     if (!MIGRATED_PATHS.has(pathname.toLowerCase())) return null;
     return `${sanitizePath(pathname)}${m[2] || ""}`;
   }
+  var LINK_CORRECTIONS = {
+    // broken on the original site (404) -> the page they were meant to reach
+    "/us/en/planning_tools/faq/account_access_and_password/what_is_the_best_way_to_protect_my_account_s_password": "/us/en/planning-tools/faq/account-access-and-password/how-can-i-protect-my-accounts-password",
+    "/us/en/planning_tools/faq/loan_payoff_and_title_lien_release/where_can_i_find_payoff_information_for_my_vehicle_": "/us/en/planning-tools/faq/loan-payoff-and-title-lien-release/where-can-i-find-payoff-information-for-loan-account",
+    "/us/en/planning_tools/faq/mileage/how_can_i_see_the_mileage_allowance_in_my_lease_agreement_and_track_progress": "/us/en/planning-tools/faq/mileage/where-can-i-find-my-mileage-allowance",
+    "/us/en/financing_options/rebate_finance_programs/college_grad_program": "/us/en/financing-options/rebate-finance-programs/college-rebate-program",
+    "/us/en/financing_options/rebate_finance_programs/military_rebate": "/us/en/financing-options/rebate-finance-programs/military-rebate-program",
+    // redirects on the original site
+    "/us/en/about_us": "/us/en/about-us/company-overview",
+    "/us/en/consumer-web/home/login": `${SITE_ORIGIN2}/dss/login`,
+    "/us/en/external_login": `${SITE_ORIGIN2}/dss/login`,
+    // credit application form (part of the app, stays on the original site)
+    "/us/en/planning_tools/apply_for_credit/application/form": `${SITE_ORIGIN2}/us/en/planning_tools/apply_for_credit/application/form`
+  };
+  function toCorrectedLink(sitePath) {
+    const m = sitePath.match(/^([^?#]*)([?#].*)?$/);
+    const key = m[1].replace(/\/{2,}/g, "/").replace(/(\.html?)+$/i, "").replace(/\/$/, "").toLowerCase();
+    const to = LINK_CORRECTIONS[key];
+    return to ? `${to}${m[2] || ""}` : null;
+  }
   var NON_PAGE_PREFIXES = ["/dss/", "/myaccounts/", "/pub/", "/content/dam/", "/etc/", "/us/en/search"];
   function isContentPage(pathname) {
     if (NON_PAGE_PREFIXES.some((prefix) => pathname.toLowerCase().startsWith(prefix))) return false;
@@ -578,7 +606,7 @@ var CustomImportScript = (() => {
   }
   function toNewSitePath(sitePath) {
     const m = sitePath.match(/^([^?#]*)([?#].*)?$/);
-    const pathname = m[1].replace(/\/{2,}/g, "/").replace(/\.html?$/i, "").replace(/\/$/, "") || "/";
+    const pathname = m[1].replace(/\/{2,}/g, "/").replace(/(\.html?)+$/i, "").replace(/\/$/, "") || "/";
     if (!isContentPage(m[1])) return null;
     return `${pathname === "/" ? "/" : sanitizePath(pathname)}${m[2] || ""}`;
   }
@@ -589,7 +617,7 @@ var CustomImportScript = (() => {
     if (abs) {
       const after = href.slice(abs[0].length);
       const rest = after.replace(CONTENT_PREFIX_RE, "") || "/";
-      const page2 = toMigratedPath(rest) || toNewSitePath(rest);
+      const page2 = toCorrectedLink(rest) || toMigratedPath(rest) || toNewSitePath(rest);
       if (page2) return page2;
       if (!CONTENT_PREFIX_RE.test(after)) return null;
       return `${SITE_ORIGIN2}${rest}`;
@@ -598,7 +626,7 @@ var CustomImportScript = (() => {
     let path = href.replace(CONTENT_PREFIX_RE, "");
     if (!path.startsWith("/")) path = `/${path}`;
     if (isNewSitePath(path)) return path === href ? null : path;
-    const page = toMigratedPath(path) || toNewSitePath(path);
+    const page = toCorrectedLink(path) || toMigratedPath(path) || toNewSitePath(path);
     if (page) return page === href ? null : page;
     return `${SITE_ORIGIN2}${path}`;
   }

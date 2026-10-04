@@ -71,7 +71,9 @@ const PAGE_TEMPLATE = {
     {
       "name": "fragment",
       "instances": [
-        "#main-content .screenFade > .questionlist #faqcard"
+        "#main-content .screenFade > .questionlist #faqcard",
+        "#main-content .screenFade > .rtequestionnaire #faqcard",
+        "#main-content .screenFade > .faqcard #faqcard"
       ]
     }
   ],
@@ -92,21 +94,25 @@ const PAGE_TEMPLATE = {
       "id": "rc7",
       "name": "topic-questions",
       "selector": [
-        "#main-content .screenFade > .questionlist"
+        "#main-content .screenFade > .questionlist",
+        "#main-content .screenFade > .rtequestionnaire"
       ],
       "style": null,
       "blocks": [
         "cards-questions"
       ],
       "defaultContent": [
-        "#main-content .screenFade > .questionlist h1"
+        "#main-content .screenFade > .questionlist h1",
+        "#main-content .screenFade > .rtequestionnaire h1"
       ]
     },
     {
       "id": "rc8",
       "name": "help-card",
       "selector": [
-        "#main-content .screenFade > .questionlist #faqcard"
+        "#main-content .screenFade > .questionlist #faqcard",
+        "#main-content .screenFade > .rtequestionnaire #faqcard",
+        "#main-content .screenFade > .faqcard #faqcard"
       ],
       "style": null,
       "blocks": [

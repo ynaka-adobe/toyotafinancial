@@ -33,6 +33,14 @@ const CLASS_FRAGMENTS = [
     // Companion elements folded into the same fragment (removed from the page).
     remove: ['main > .container-fluid.px-0 > .footer-card.parbase'],
   },
+  {
+    // Blog articles (template content-page): the right-hand "TFS ThoughtFuel Blog"
+    // article list, identical on every article. The cleanup transformer keeps
+    // .nav-list-component only on blog article pages.
+    selector: '.nav-list-component',
+    path: '/us/en/fragments/blog-articles',
+    remove: [],
+  },
 ];
 
 export default function parse(element, { document }) {

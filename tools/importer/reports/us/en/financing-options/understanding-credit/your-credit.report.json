@@ -1,0 +1,12 @@
+{
+  "status": "success",
+  "url": "https://www.toyotafinancial.com/us/en/financing_options/understanding_credit/your_credit.html",
+  "path": "us/en/financing-options/understanding-credit/your-credit",
+  "timestamp": "2026-10-04T15:40:17.406Z",
+  "title": "Your Credit | Toyota Financial",
+  "template": "content-page",
+  "blocks": [
+    "columns-callout",
+    "table-caption"
+  ]
+}

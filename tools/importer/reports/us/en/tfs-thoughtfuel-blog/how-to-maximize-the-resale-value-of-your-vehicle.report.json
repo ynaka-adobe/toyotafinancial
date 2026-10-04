@@ -1,0 +1,12 @@
+{
+  "status": "success",
+  "url": "https://www.toyotafinancial.com/us/en/TFS_ThoughtFuel_Blog/how_to_maximize_the_resale_value_of_your_vehicle.html",
+  "path": "us/en/tfs-thoughtfuel-blog/how-to-maximize-the-resale-value-of-your-vehicle",
+  "timestamp": "2026-10-04T15:38:24.530Z",
+  "title": "How to Maximize the Resale Value of Your Vehicle | Toyota Financial",
+  "template": "content-page",
+  "blocks": [
+    "columns-callout",
+    "fragment"
+  ]
+}

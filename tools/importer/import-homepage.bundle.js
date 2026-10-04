@@ -516,8 +516,6 @@ var CustomImportScript = (() => {
         // about-us
         ".bread-crumb.parbase",
         // breadcrumb
-        ".nav-list-component",
-        // empty right-hand nav column
         // hidden at every breakpoint on the source (e.g. the policy pages'
         // "View More" link in .terms-view-extra) — never visible to visitors
         ".hidden-xs.hidden-sm.hidden-md.hidden-lg",
@@ -526,6 +524,16 @@ var CustomImportScript = (() => {
         "a.sr-only",
         "#oca-loading"
       ]);
+      const pageUrl = payload && payload.params && payload.params.originalURL || payload && payload.url || "";
+      const isBlogArticle = /\/TFS_ThoughtFuel_Blog\/./i.test(pageUrl);
+      element.querySelectorAll(".nav-list-component").forEach((el) => {
+        if (!isBlogArticle) el.remove();
+      });
+      if (element.querySelector("#faqcard")) {
+        element.querySelectorAll(".rtequestionnaire > .container-fluid:not([id])").forEach((box) => {
+          if (box.querySelector(".faq-card") && !box.querySelector("#faqcard")) box.remove();
+        });
+      }
       element.querySelectorAll(".one-column-component").forEach((el) => {
         if (isEmptyContainer(el)) el.remove();
       });

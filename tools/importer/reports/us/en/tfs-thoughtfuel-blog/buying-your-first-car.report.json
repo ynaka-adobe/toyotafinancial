@@ -1,0 +1,12 @@
+{
+  "status": "success",
+  "url": "https://www.toyotafinancial.com/us/en/TFS_ThoughtFuel_Blog/buying_your_first_car.html",
+  "path": "us/en/tfs-thoughtfuel-blog/buying-your-first-car",
+  "timestamp": "2026-10-04T15:37:51.123Z",
+  "title": "Buying Your First Car | Toyota Financial",
+  "template": "content-page",
+  "blocks": [
+    "columns-callout",
+    "fragment"
+  ]
+}

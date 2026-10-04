@@ -1,0 +1,12 @@
+{
+  "status": "success",
+  "url": "https://www.toyotafinancial.com/us/en/TFS_ThoughtFuel_Blog/nine-easy-ways-to-reduce-fuel-consumption.html",
+  "path": "us/en/tfs-thoughtfuel-blog/nine-easy-ways-to-reduce-fuel-consumption",
+  "timestamp": "2026-10-04T15:38:49.222Z",
+  "title": "Nine Easy Ways to Reduce Fuel Consumption | Toyota Financial",
+  "template": "content-page",
+  "blocks": [
+    "columns-callout",
+    "fragment"
+  ]
+}

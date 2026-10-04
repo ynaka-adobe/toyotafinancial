@@ -1,0 +1,12 @@
+{
+  "status": "success",
+  "url": "https://www.toyotafinancial.com/us/en/TFS_ThoughtFuel_Blog/purchase-your-toyota-at-lease-end.html",
+  "path": "us/en/tfs-thoughtfuel-blog/purchase-your-toyota-at-lease-end",
+  "timestamp": "2026-10-04T15:38:55.051Z",
+  "title": "Purchase Your Toyota at Lease-End | Toyota Financial",
+  "template": "content-page",
+  "blocks": [
+    "columns-callout",
+    "fragment"
+  ]
+}

@@ -315,7 +315,6 @@ export default function transform(hookName, element, payload) {
       'a.carousel-control',           // carousel Previous/Next arrow controls in #fold-1
       // about-us
       '.bread-crumb.parbase',         // breadcrumb
-      '.nav-list-component',          // empty right-hand nav column
       // hidden at every breakpoint on the source (e.g. the policy pages'
       // "View More" link in .terms-view-extra) — never visible to visitors
       '.hidden-xs.hidden-sm.hidden-md.hidden-lg',
@@ -324,6 +323,23 @@ export default function transform(hookName, element, payload) {
       'a.sr-only',
       '#oca-loading',
     ]);
+
+    // Right-hand nav column (.nav-list-component): section menus, dropped. Blog
+    // articles keep theirs — the article list becomes the shared
+    // /us/en/fragments/blog-articles fragment (parsers/fragment.js).
+    const pageUrl = (payload && payload.params && payload.params.originalURL) || (payload && payload.url) || '';
+    const isBlogArticle = /\/TFS_ThoughtFuel_Blog\/./i.test(pageUrl);
+    element.querySelectorAll('.nav-list-component').forEach((el) => {
+      if (!isBlogArticle) el.remove();
+    });
+
+    // FAQ answers: some pages carry a second, id-less copy of the help card inside
+    // .rtequestionnaire next to the real #faqcard (shared faq-help fragment).
+    if (element.querySelector('#faqcard')) {
+      element.querySelectorAll('.rtequestionnaire > .container-fluid:not([id])').forEach((box) => {
+        if (box.querySelector('.faq-card') && !box.querySelector('#faqcard')) box.remove();
+      });
+    }
 
     // about-us: empty .one-column-component containers only (e.g. #fair_lending).
     // Removed before sections/parsers so an empty one can never be picked as the

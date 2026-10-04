@@ -1,0 +1,13 @@
+{
+  "status": "success",
+  "url": "https://www.toyotafinancial.com/us/en/TFS_ThoughtFuel_Blog/how_to_protect_your_toyota.html",
+  "path": "us/en/tfs-thoughtfuel-blog/how-to-protect-your-toyota",
+  "timestamp": "2026-10-04T15:38:30.723Z",
+  "title": "How To Protect Your Toyota | Toyota Financial",
+  "template": "content-page",
+  "blocks": [
+    "columns-callout",
+    "video-poster",
+    "fragment"
+  ]
+}

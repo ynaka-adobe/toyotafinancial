@@ -12,6 +12,7 @@ import cardsThumbnailParser from './parsers/cards-thumbnail.js';
 import tableCaptionParser from './parsers/table-caption.js';
 import columnsCardParser from './parsers/columns-card.js';
 import tabsPlansParser from './parsers/tabs-plans.js';
+import fragmentParser from './parsers/fragment.js';
 
 // TRANSFORMER IMPORTS
 import cleanupTransformer from './transformers/toyotafinancial-cleanup.js';
@@ -33,6 +34,7 @@ const parsers = {
   'table-caption': tableCaptionParser,
   'columns-card': columnsCardParser,
   'tabs-plans': tabsPlansParser,
+  fragment: fragmentParser,
 };
 
 // PAGE TEMPLATE CONFIGURATION - Embedded from page-templates.json
@@ -128,6 +130,12 @@ const PAGE_TEMPLATE = {
       "instances": [
         "#main-content .screenFade .card-component.parbase:has(.materialized-dropdown)",
         "#main-content .screenFade .tabcomponent"
+      ]
+    },
+    {
+      "name": "fragment",
+      "instances": [
+        "#main-content .screenFade .two-columns-left-one-column-right .nav-list-component"
       ]
     }
   ],

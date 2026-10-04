@@ -1,0 +1,12 @@
+{
+  "status": "success",
+  "url": "https://www.toyotafinancial.com/us/en/TFS_ThoughtFuel_Blog/demystifying_apr.html",
+  "path": "us/en/tfs-thoughtfuel-blog/demystifying-apr",
+  "timestamp": "2026-10-04T15:38:04.007Z",
+  "title": "Demystifying APR | Toyota Financial",
+  "template": "content-page",
+  "blocks": [
+    "columns-callout",
+    "fragment"
+  ]
+}
