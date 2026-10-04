@@ -114,6 +114,19 @@ async function fetchIndex(source) {
 }
 
 /** Answer = default content of the page's main text section (minus back link + h1). */
+// <p><a href="https://…/is/image/…">alt</a></p>: a Dynamic Media image that scripts.js
+// turns into a <picture> on the page itself; the raw .plain.html still has the link.
+function isImageLink(node) {
+  const a = node.tagName === 'P' && node.children.length === 1 && node.querySelector(':scope > a[href]');
+  if (!a || a.textContent.trim() !== node.textContent.trim()) return false;
+  try {
+    return /^(https?:)?\/\//i.test(a.getAttribute('href'))
+      && new URL(a.getAttribute('href'), window.location.href).pathname.startsWith('/is/image/');
+  } catch (e) {
+    return false;
+  }
+}
+
 async function loadAnswer(entry) {
   const pageUrl = new URL(entry.path, window.location.origin);
   const resp = await fetch(`${entry.path}.plain.html`);
@@ -126,6 +139,7 @@ async function loadAnswer(entry) {
   const allowed = ['P', 'UL', 'OL', 'H2', 'H3', 'H4', 'H5', 'H6', 'TABLE', 'BLOCKQUOTE'];
   const nodes = [...section.children].filter((n) => allowed.includes(n.tagName)
     && !n.querySelector('picture, img')
+    && !isImageLink(n)
     && !(n.tagName === 'P' && /^back to /i.test(n.textContent.trim())));
   const picked = isFaq ? nodes : nodes.slice(0, 3);
   const frag = document.createDocumentFragment();
