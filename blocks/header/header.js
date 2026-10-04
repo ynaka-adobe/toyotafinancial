@@ -1,18 +1,17 @@
 import { decorateIcons } from '../../scripts/aem.js';
-import { fetchFirstAvailable, getSharedDocumentUrls } from '../../scripts/scripts.js';
+import { loadSharedDocument } from '../../scripts/shared-documents.js';
 
 // media query match that indicates desktop width
 const isDesktop = window.matchMedia('(width >= 900px)');
 
 /**
  * Fetches the nav for the page's language folder (e.g. /us/en/nav), falling back to /nav.
+ * @param {Element} block the header block
  * @returns {Promise<HTMLElement|null>} container holding the fragment sections
  */
-async function fetchNav() {
-  const resp = await fetchFirstAvailable(getSharedDocumentUrls('nav'));
-  if (!resp) return null;
-  const container = document.createElement('div');
-  container.innerHTML = await resp.text();
+async function fetchNav(block) {
+  const container = await loadSharedDocument('nav', block);
+  if (!container) return null;
   // published documents wrap list-item content in <p>; unwrap so items hold their links directly
   container.querySelectorAll('li > p').forEach((p) => p.replaceWith(...p.childNodes));
   decorateIcons(container);
@@ -232,7 +231,7 @@ function buildMegamenu(section) {
  * @param {Element} block The header block element
  */
 export default async function decorate(block) {
-  const fragment = await fetchNav();
+  const fragment = await fetchNav(block);
   block.textContent = '';
   if (!fragment) return;
 
@@ -315,7 +314,8 @@ export default async function decorate(block) {
   });
 
   document.addEventListener('click', (e) => {
-    if (!nav.contains(e.target)) {
+    // composedPath sees through shadow roots when the header is embedded
+    if (!e.composedPath().includes(nav)) {
       closeAll(nav);
     }
   });

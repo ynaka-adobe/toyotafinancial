@@ -379,33 +379,7 @@ export function moveInstrumentation(from, to) {
   );
 }
 
-/**
- * URLs to try for a shared document such as the nav or footer, most specific first:
- * the page's language folder (e.g. /us/en/nav), then the site root (/nav).
- * Local preview serves authored content under /content.
- * @param {string} name document name, e.g. 'nav'
- * @returns {string[]} .plain.html URLs in lookup order
- */
-export function getSharedDocumentUrls(name) {
-  const { pathname } = window.location;
-  const local = pathname.startsWith('/content/');
-  const base = local ? '/content' : '';
-  const pagePath = local ? pathname.slice(base.length) : pathname;
-  const locale = pagePath.match(/^\/[a-z]{2}\/[a-z]{2}(?=\/|$)/i);
-  const paths = locale ? [`${locale[0].toLowerCase()}/${name}`, `/${name}`] : [`/${name}`];
-  return paths.map((path) => `${base}${path}.plain.html`);
-}
-
-/**
- * Fetches the first URL that responds OK.
- * @param {string[]} urls URLs in lookup order
- * @returns {Promise<Response|null>}
- */
-export async function fetchFirstAvailable(urls) {
-  if (!urls.length) return null;
-  const resp = await fetch(urls[0]);
-  return resp.ok ? resp : fetchFirstAvailable(urls.slice(1));
-}
+export { getSharedDocumentUrls, fetchFirstAvailable } from './shared-documents.js';
 
 /**
  * Decorates the main element.
