@@ -179,6 +179,10 @@ export default function transform(hookName, element, payload) {
       // hidden at every breakpoint on the source (e.g. the policy pages'
       // "View More" link in .terms-view-extra) — never visible to visitors
       '.hidden-xs.hidden-sm.hidden-md.hidden-lg',
+      // newer page shell (apply_for_credit): screen-reader skip links and the
+      // credit application's own loading spinner
+      'a.sr-only',
+      '#oca-loading',
     ]);
 
     // about-us: empty .one-column-component containers only (e.g. #fair_lending).
@@ -187,6 +191,11 @@ export default function transform(hookName, element, payload) {
     element.querySelectorAll('.one-column-component').forEach((el) => {
       if (isEmptyContainer(el)) el.remove();
     });
+    // Empty lists left in rich text (e.g. contact_us has an <ul> holding only an empty <p>).
+    element.querySelectorAll('#main-content ul, #main-content ol').forEach((list) => {
+      if (isEmptyContainer(list)) list.remove();
+    });
+
     // FAQ topic pages (e.g. bZ4X, support_center) carry an empty two-column
     // container; on about-us the same class holds the main text, so only empty ones go.
     element.querySelectorAll('.two-columns-left-one-column-right').forEach((el) => {

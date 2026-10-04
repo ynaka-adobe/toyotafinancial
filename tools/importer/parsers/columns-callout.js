@@ -22,17 +22,11 @@
  *   B) .img-card > .col-sm-12 > p.card-header + .card-content > img + .card-btn > a.btn
  *   C) .card > .card-content > p.card-header + .col-sm-4 > p.pdf-link > a > span.card-pdf-text
  *   D) .card > .card-content > p.card-header (title only) + .card-btn > a.btn
- * PDF/document links are made absolute (https://www.toyotafinancial.com/...); other hrefs
- * are kept as found (the links transformer rewrites them later).
+ * All hrefs are kept as found (the links transformer rewrites/absolutizes them later).
  */
-const ORIGIN = 'https://www.toyotafinancial.com';
 
 function cleanText(el) {
   return (el.textContent || '').replace(/ /g, ' ').replace(/\s+/g, ' ').trim();
-}
-
-function absolute(href) {
-  try { return new URL(href, ORIGIN).href; } catch (e) { return href; }
 }
 
 function isDocumentHref(href) {
@@ -53,6 +47,18 @@ export default function parse(element, { document }) {
     p.append(strong);
     textCell.push(p);
   }
+  // img-card shape: body text sits next to the header, outside .card-content
+  // (.col-sm-12 > p.card-header + p + .card-content > img + .card-btn > a.btn).
+  const headerSiblingText = [];
+  if (header && header.parentElement && (!content || !content.contains(header))) {
+    [...header.parentElement.children].forEach((sib) => {
+      if (sib === header || !/^(P|UL|OL|H[1-6])$/.test(sib.tagName)) return;
+      if (sib.matches('.card-content, .card-btn') || sib.querySelector('.card-btn, a.btn')) return;
+      if (!cleanText(sib)) return;
+      headerSiblingText.push(sib);
+      textCell.push(sib);
+    });
+  }
   if (content) {
     [...content.children].forEach((child) => {
       if (child === header || child.classList.contains('card-header')) return;
@@ -72,7 +78,8 @@ export default function parse(element, { document }) {
   // ---- CTA cell ---- (every link outside the text column, plus .btn links anywhere)
   const ctaCell = [];
   const ctaLinks = [...root.querySelectorAll('a[href]')]
-    .filter((a) => !content || !content.contains(a) || a.classList.contains('btn'));
+    .filter((a) => !content || !content.contains(a) || a.classList.contains('btn'))
+    .filter((a) => !headerSiblingText.some((el) => el.contains(a))); // inline text links stay in text
   ctaLinks.forEach((a) => {
     const label = cleanText(a.querySelector('.card-pdf-text') || a);
     if (!label) return;
@@ -81,7 +88,7 @@ export default function parse(element, { document }) {
     const p = document.createElement('p');
     if (a.closest('.pdf-link') || isDocumentHref(href)) {
       // plain link -> link list (Download card)
-      link.href = absolute(href);
+      link.href = href;
       link.textContent = label;
       p.append(link);
     } else {

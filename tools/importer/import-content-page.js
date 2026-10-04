@@ -3,6 +3,7 @@
 
 // PARSER IMPORTS
 import cardsThumbnailParser from './parsers/cards-thumbnail.js';
+import columnsCalloutParser from './parsers/columns-callout.js';
 
 // TRANSFORMER IMPORTS
 import cleanupTransformer from './transformers/toyotafinancial-cleanup.js';
@@ -12,9 +13,10 @@ import dmImagesTransformer from './transformers/toyotafinancial-dm-images.js';
 
 // PARSER REGISTRY
 const parsers = {
-  // Only the parsers needed so far (planning_tools/get_started); the other
+  // Only the parsers needed so far (get_started, contact_us); the other
   // content-page blocks get their parsers when the rest of the template is migrated.
   'cards-thumbnail': cardsThumbnailParser,
+  'columns-callout': columnsCalloutParser,
 };
 
 // PAGE TEMPLATE CONFIGURATION - Embedded from page-templates.json
@@ -42,7 +44,8 @@ const PAGE_TEMPLATE = {
     "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/prepaid_maintenance_plan.html",
     "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/tire_wheel_protection.html",
     "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/vehicle_service_agreements.html",
-    "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/which_plan_is_right_for_me.html"
+    "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/which_plan_is_right_for_me.html",
+    "https://www.toyotafinancial.com/us/en/contact_us.html"
   ],
   "blocks": [
     {

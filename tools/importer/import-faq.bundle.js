@@ -128,6 +128,13 @@ var CustomImportScript = (() => {
     }
     return imgSrc || "";
   }
+  function headingSlug(text) {
+    return text.toLowerCase().replace(/['‘’]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  }
+  var KNOWN_SECTION_TITLES = {
+    oasa: "Online Account Services Agreement (applicable to Financial Services Customers with Online Account Services)",
+    otou: "Online Terms of Use (applicable to all Website users)"
+  };
   function isEmptyContainer(el) {
     return el.textContent.replace(/\u00a0/g, " ").trim() === "" && !el.querySelector("img, picture, video, iframe, svg, table, input, select, textarea");
   }
@@ -170,10 +177,17 @@ var CustomImportScript = (() => {
         // empty right-hand nav column
         // hidden at every breakpoint on the source (e.g. the policy pages'
         // "View More" link in .terms-view-extra) — never visible to visitors
-        ".hidden-xs.hidden-sm.hidden-md.hidden-lg"
+        ".hidden-xs.hidden-sm.hidden-md.hidden-lg",
+        // newer page shell (apply_for_credit): screen-reader skip links and the
+        // credit application's own loading spinner
+        "a.sr-only",
+        "#oca-loading"
       ]);
       element.querySelectorAll(".one-column-component").forEach((el) => {
         if (isEmptyContainer(el)) el.remove();
+      });
+      element.querySelectorAll("#main-content ul, #main-content ol").forEach((list) => {
+        if (isEmptyContainer(list)) list.remove();
       });
       element.querySelectorAll(".two-columns-left-one-column-right").forEach((el) => {
         if (isEmptyContainer(el)) el.remove();
@@ -188,6 +202,22 @@ var CustomImportScript = (() => {
         p.querySelectorAll("a.faq-ques").forEach((a) => a.remove());
         h1.textContent = p.textContent.replace(/\s+/g, " ").trim();
         p.replaceWith(back, h1);
+      });
+      const sectionSlugs = /* @__PURE__ */ new Map();
+      element.querySelectorAll(".policy-scroll-section[id]").forEach((section) => {
+        const title = section.matches("p") ? section : section.querySelector(":scope > p");
+        if (!title) return;
+        const text = title.textContent.replace(/\u00a0/g, " ").replace(/\s+/g, " ").trim();
+        if (!text) return;
+        const heading = doc.createElement("h3");
+        heading.textContent = text;
+        title.replaceWith(heading);
+        sectionSlugs.set(section.id, headingSlug(text));
+      });
+      element.querySelectorAll('a[href*="#"]').forEach((a) => {
+        const [base, id] = a.getAttribute("href").split("#");
+        const slug = sectionSlugs.get(id) || KNOWN_SECTION_TITLES[id] && headingSlug(KNOWN_SECTION_TITLES[id]);
+        if (slug) a.setAttribute("href", `${base}#${slug}`);
       });
       element.querySelectorAll("p.faq-para").forEach((p) => {
         const h2 = doc.createElement("h2");
@@ -365,6 +395,9 @@ var CustomImportScript = (() => {
     "/us/en/online_policies_and_agreements",
     "/us/en/online_privacy_policy",
     "/us/en/planning_tools/faq",
+    "/us/en/planning_tools/get_started",
+    "/us/en/contact_us",
+    "/us/en/planning_tools/apply_for_credit",
     ...FAQ_TOPICS.map((t) => `/us/en/planning_tools/faq/${t}`)
   ].map((p) => p.toLowerCase()));
   function sanitizePath(path) {

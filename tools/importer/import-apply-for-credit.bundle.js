@@ -35,161 +35,21 @@ var CustomImportScript = (() => {
   };
   var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-  // tools/importer/import-content-page.js
-  var import_content_page_exports = {};
-  __export(import_content_page_exports, {
-    default: () => import_content_page_default
+  // tools/importer/import-apply-for-credit.js
+  var import_apply_for_credit_exports = {};
+  __export(import_apply_for_credit_exports, {
+    default: () => import_apply_for_credit_default
   });
 
-  // tools/importer/parsers/cards-thumbnail.js
-  function cleanText(el) {
-    return (el.textContent || "").replace(/ /g, " ").replace(/\s+/g, " ").trim();
-  }
-  function cleanParagraph(p, document) {
-    const np = document.createElement("p");
-    [...p.childNodes].forEach((n) => np.append(n.cloneNode(true)));
-    np.querySelectorAll("*").forEach((el) => {
-      [...el.attributes].forEach((attr) => {
-        if (el.tagName === "A" && attr.name === "href") return;
-        el.removeAttribute(attr.name);
-      });
-    });
-    let last = np.lastChild;
-    while (last && (last.nodeType === 3 && !last.textContent.replace(/ /g, " ").trim() || last.nodeType === 1 && last.tagName === "BR")) {
-      np.removeChild(last);
-      last = np.lastChild;
-    }
-    return np;
-  }
-  function absoluteUrl(src, document) {
-    if (!src) return src;
-    try {
-      const base = document.location && document.location.href || "https://www.toyotafinancial.com/";
-      return new URL(src, base).href;
-    } catch (e) {
-      return src;
-    }
-  }
+  // tools/importer/parsers/embed-app.js
+  var DEFAULT_TITLE = "Apply for Credit application";
   function parse(element, { document }) {
-    const cards = [...element.querySelectorAll(".thumbnail-card")];
-    const cells = [];
-    cards.forEach((card) => {
-      const srcImg = card.querySelector(".thumbnail img, img.img-responsive");
-      let img = null;
-      if (srcImg && srcImg.getAttribute("src")) {
-        img = document.createElement("img");
-        img.src = absoluteUrl(srcImg.getAttribute("src"), document);
-        img.alt = (srcImg.getAttribute("alt") || "").trim();
-      }
-      const textCell = [];
-      const caption = card.querySelector(".caption") || card;
-      const body = caption.querySelector(".caption-body");
-      const bodyNodes = body ? [...body.children] : [...caption.children].filter((c) => c.tagName !== "A");
-      bodyNodes.forEach((child) => {
-        if (!cleanText(child)) return;
-        if (/^H[1-6]$/.test(child.tagName)) {
-          const h3 = document.createElement("h3");
-          h3.textContent = cleanText(child);
-          textCell.push(h3);
-        } else if (child.tagName === "P") {
-          textCell.push(cleanParagraph(child, document));
-        } else if (child.tagName !== "A") {
-          textCell.push(child);
-        }
-      });
-      [...caption.querySelectorAll("a[href]")].filter((a) => !body || !body.contains(a)).forEach((a) => {
-        const label = cleanText(a);
-        if (!label) return;
-        const p = document.createElement("p");
-        const link = document.createElement("a");
-        link.href = a.getAttribute("href");
-        link.textContent = label;
-        p.append(link);
-        textCell.push(p);
-      });
-      if (!img && !textCell.length) return;
-      if (img) cells.push([img, textCell.length ? textCell : ""]);
-      else cells.push([textCell]);
-    });
-    if (!cells.length) {
-      element.replaceWith(...element.childNodes);
-      return;
-    }
-    const block = WebImporter.Blocks.createBlock(document, { name: "cards-thumbnail", cells });
-    element.replaceWith(block);
-  }
-
-  // tools/importer/parsers/columns-callout.js
-  function cleanText2(el) {
-    return (el.textContent || "").replace(/ /g, " ").replace(/\s+/g, " ").trim();
-  }
-  function isDocumentHref(href) {
-    return /\.(pdf|docx?|xlsx?|mp4|webm)(\?|#|$)/i.test(href || "") || /\/content\/dam\//.test(href || "");
-  }
-  function parse2(element, { document }) {
-    const root = element.querySelector(".img-card, .card") || element;
-    const header = root.querySelector(".card-header");
-    const content = root.querySelector(".card-content");
-    const textCell = [];
-    if (header && cleanText2(header)) {
-      const p = document.createElement("p");
-      const strong = document.createElement("strong");
-      strong.textContent = cleanText2(header);
-      p.append(strong);
-      textCell.push(p);
-    }
-    const headerSiblingText = [];
-    if (header && header.parentElement && (!content || !content.contains(header))) {
-      [...header.parentElement.children].forEach((sib) => {
-        if (sib === header || !/^(P|UL|OL|H[1-6])$/.test(sib.tagName)) return;
-        if (sib.matches(".card-content, .card-btn") || sib.querySelector(".card-btn, a.btn")) return;
-        if (!cleanText2(sib)) return;
-        headerSiblingText.push(sib);
-        textCell.push(sib);
-      });
-    }
-    if (content) {
-      [...content.children].forEach((child) => {
-        if (child === header || child.classList.contains("card-header")) return;
-        if (child.tagName === "IMG") {
-          const img = document.createElement("img");
-          img.src = child.getAttribute("src");
-          img.alt = child.getAttribute("alt") || "";
-          textCell.push(img);
-          return;
-        }
-        if (child.tagName === "A" && child.classList.contains("btn")) return;
-        if (!cleanText2(child) && !child.querySelector("img")) return;
-        textCell.push(child);
-      });
-    }
-    const ctaCell = [];
-    const ctaLinks = [...root.querySelectorAll("a[href]")].filter((a) => !content || !content.contains(a) || a.classList.contains("btn")).filter((a) => !headerSiblingText.some((el) => el.contains(a)));
-    ctaLinks.forEach((a) => {
-      const label = cleanText2(a.querySelector(".card-pdf-text") || a);
-      if (!label) return;
-      const href = a.getAttribute("href");
-      const link = document.createElement("a");
-      const p = document.createElement("p");
-      if (a.closest(".pdf-link") || isDocumentHref(href)) {
-        link.href = href;
-        link.textContent = label;
-        p.append(link);
-      } else {
-        link.href = href;
-        link.textContent = label;
-        const strong = document.createElement("strong");
-        strong.append(link);
-        p.append(strong);
-      }
-      ctaCell.push(p);
-    });
-    if (!textCell.length && !ctaCell.length) {
-      element.replaceWith(...element.childNodes);
-      return;
-    }
-    const cells = [[textCell.length ? textCell : "", ctaCell.length ? ctaCell : ""]];
-    const block = WebImporter.Blocks.createBlock(document, { name: "columns-callout", cells });
+    const form = element.querySelector("form[action][target]");
+    if (!form) return;
+    const link = document.createElement("a");
+    link.setAttribute("href", new URL(form.getAttribute("action"), "https://www.toyotafinancial.com").href);
+    link.textContent = DEFAULT_TITLE;
+    const block = WebImporter.Blocks.createBlock(document, { name: "embed-app", cells: [[link]] });
     element.replaceWith(block);
   }
 
@@ -623,211 +483,36 @@ var CustomImportScript = (() => {
     });
   }
 
-  // tools/importer/import-content-page.js
+  // tools/importer/import-apply-for-credit.js
   var parsers = {
-    // Only the parsers needed so far (get_started, contact_us); the other
-    // content-page blocks get their parsers when the rest of the template is migrated.
-    "cards-thumbnail": parse,
-    "columns-callout": parse2
+    "embed-app": parse
   };
   var PAGE_TEMPLATE = {
-    "name": "content-page",
-    "description": "Older-design content pages: banner image, main text column with embedded components (accordions, tabs, videos, cards, tables, carousel), blog index and article.",
+    "name": "apply-for-credit",
+    "description": "Apply for Credit: embedded credit application (form POST into an iframe), no other content.",
     "urls": [
-      "https://www.toyotafinancial.com/us/en/TFS_ThoughtFuel_Blog.html",
-      "https://www.toyotafinancial.com/us/en/TFS_ThoughtFuel_Blog/Weighing_Your_Options_Buy_vs_Lease.html",
-      "https://www.toyotafinancial.com/us/en/financing_options/buy_a_toyota.html",
-      "https://www.toyotafinancial.com/us/en/financing_options/for_businesses.html",
-      "https://www.toyotafinancial.com/us/en/financing_options/for_businesses/business_solutions.html",
-      "https://www.toyotafinancial.com/us/en/financing_options/leasing_a_toyota.html",
-      "https://www.toyotafinancial.com/us/en/financing_options/rebate_finance_programs.html",
-      "https://www.toyotafinancial.com/us/en/financing_options/rebate_finance_programs/find_rebate_finance_programs.html",
-      "https://www.toyotafinancial.com/us/en/financing_options/rebate_finance_programs/repeat_customers.html",
-      "https://www.toyotafinancial.com/us/en/financing_options/toyota_rewards_visa.html",
-      "https://www.toyotafinancial.com/us/en/financing_options/understanding_credit.html",
-      "https://www.toyotafinancial.com/us/en/financing_options/understanding_credit/credit_101.html",
-      "https://www.toyotafinancial.com/us/en/financing_options/understanding_credit/credit_tips.html",
-      "https://www.toyotafinancial.com/us/en/financing_options/understanding_credit/your_credit.html",
-      "https://www.toyotafinancial.com/us/en/planning_tools/get_started.html",
-      "https://www.toyotafinancial.com/us/en/planning_tools/ways_to_pay.html",
-      "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/guaranteed_auto_protection.html",
-      "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/prepaid_maintenance_plan.html",
-      "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/tire_wheel_protection.html",
-      "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/vehicle_service_agreements.html",
-      "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/which_plan_is_right_for_me.html",
-      "https://www.toyotafinancial.com/us/en/contact_us.html"
+      "https://www.toyotafinancial.com/us/en/planning_tools/apply_for_credit.html"
     ],
     "blocks": [
       {
-        "name": "columns-callout",
+        "name": "embed-app",
         "instances": [
-          "#main-content .screenFade .card-component.parbase:has(.card-content, .img-card):not(:has(.thumbnail-card, .materialized-dropdown, .card.no-pd))"
-        ]
-      },
-      {
-        "name": "accordion-faq",
-        "instances": [
-          "#main-content .screenFade .accordion.parbase ul.custom-faq-accordion"
-        ]
-      },
-      {
-        "name": "accordion-boxed",
-        "instances": [
-          "#main-content .screenFade .compContainer.parbase .tmcc-accordion > .newAccordion.parbase"
-        ]
-      },
-      {
-        "name": "video-poster",
-        "instances": [
-          "#main-content .screenFade .video-component.parbase:has(video)"
-        ]
-      },
-      {
-        "name": "quiz-plans",
-        "instances": [
-          "#main-content .screenFade .quiz-component.parbase .quiz-card"
-        ]
-      },
-      {
-        "name": "carousel-cards",
-        "instances": [
-          "#main-content .screenFade .secondary-section > .viewplans"
-        ]
-      },
-      {
-        "name": "cards-thumbnail",
-        "instances": [
-          "#main-content .screenFade .generalcolumn.parbase:has(.thumbnail-card)"
-        ]
-      },
-      {
-        "name": "table-caption",
-        "instances": [
-          "#main-content .screenFade .table.parbase:has(table)"
-        ]
-      },
-      {
-        "name": "columns-card",
-        "instances": [
-          "#main-content .screenFade > .card-component.parbase:has(.card.no-pd)"
-        ]
-      },
-      {
-        "name": "tabs-plans",
-        "instances": [
-          "#main-content .screenFade .card-component.parbase:has(.materialized-dropdown)",
-          "#main-content .screenFade .tabcomponent"
+          "#main-content .two-columns-left-one-column-right:has(form[target])"
         ]
       }
     ],
     "sections": [
       {
-        "id": "rc7",
-        "name": "page-banner",
+        "id": "main",
+        "name": "credit-application",
         "selector": [
-          "#main-content .screenFade > .banner-component"
-        ],
-        "style": "page-banner",
-        "blocks": [],
-        "defaultContent": [
-          "#main-content .screenFade > .banner-component img"
-        ]
-      },
-      {
-        "id": "rc8",
-        "name": "main-text",
-        "selector": [
-          "#main-content .screenFade > .two-columns-left-one-column-right"
+          "#main-content .two-columns-left-one-column-right:has(form[target])"
         ],
         "style": null,
         "blocks": [
-          "columns-callout",
-          "accordion-faq",
-          "accordion-boxed",
-          "video-poster",
-          "quiz-plans",
-          "cards-thumbnail",
-          "table-caption",
-          "tabs-plans"
-        ],
-        "defaultContent": [
-          "#main-content .screenFade > .two-columns-left-one-column-right .page-heading",
-          "#main-content .screenFade > .two-columns-left-one-column-right .rte.parbase",
-          "#main-content .screenFade > .two-columns-left-one-column-right .list.parbase",
-          "#main-content .screenFade > .two-columns-left-one-column-right .image.parbase figure",
-          "#main-content .screenFade > .two-columns-left-one-column-right .accordion.parbase > div > h2",
-          "#main-content .screenFade > .two-columns-left-one-column-right .accordion.parbase > div > p",
-          "#main-content .screenFade > .two-columns-left-one-column-right .accordion.parbase .btn-primary-center",
-          "#main-content .screenFade > .two-columns-left-one-column-right .accordion.parbase .disclaimer-note",
-          "#main-content .screenFade > .two-columns-left-one-column-right .accordion.parbase ol.disclaimer",
-          "#main-content .screenFade > .two-columns-left-one-column-right .quiz-component.parbase > div > h2",
-          "#main-content .screenFade > .two-columns-left-one-column-right .quiz-component.parbase > div > h3",
-          "#main-content .screenFade > .two-columns-left-one-column-right .quiz-component.parbase > div > p"
-        ]
-      },
-      {
-        "id": "rc8-tabs",
-        "name": "plan-tab-panels",
-        "selector": [
-          "#main-content .screenFade .tabcomponent"
-        ],
-        "style": null,
-        "blocks": [
-          "table-caption",
-          "columns-callout",
-          "accordion-faq"
-        ],
-        "defaultContent": [
-          "#main-content .screenFade .tabcomponent .tab-pane .rte.parbase",
-          "#main-content .screenFade .tabcomponent .tab-pane .accordion.parbase > div > h2",
-          "#main-content .screenFade .tabcomponent .tab-pane .accordion.parbase .disclaimer-note",
-          "#main-content .screenFade .tabcomponent .tab-pane .accordion.parbase ol.disclaimer"
-        ]
-      },
-      {
-        "id": "rc9",
-        "name": "secondary-faq",
-        "selector": [
-          "#main-content .screenFade > .one-column:has(.parbase)"
-        ],
-        "style": null,
-        "blocks": [
-          "accordion-faq",
-          "columns-callout"
-        ],
-        "defaultContent": [
-          "#main-content .screenFade > .one-column .accordion.parbase > div > h2",
-          "#main-content .screenFade > .one-column .accordion.parbase > div > p",
-          "#main-content .screenFade > .one-column .accordion.parbase .btn-primary-center",
-          "#main-content .screenFade > .one-column .accordion.parbase ol.disclaimer"
-        ]
-      },
-      {
-        "id": "rc9-carousel",
-        "name": "plans-carousel",
-        "selector": [
-          "#main-content .screenFade > .one-column-component:has(.viewplans)"
-        ],
-        "style": null,
-        "blocks": [
-          "carousel-cards",
-          "columns-callout"
+          "embed-app"
         ],
         "defaultContent": []
-      },
-      {
-        "id": "rc9-rc49",
-        "name": "blog-index",
-        "selector": [
-          "#main-content .screenFade > .one-column-component:not(:has(.viewplans))"
-        ],
-        "style": null,
-        "blocks": [
-          "columns-card"
-        ],
-        "defaultContent": [
-          "#main-content .screenFade > .one-column-component .rte.parbase"
-        ]
       }
     ]
   };
@@ -873,7 +558,7 @@ var CustomImportScript = (() => {
     console.log(`Found ${pageBlocks.length} block instances on page`);
     return pageBlocks;
   }
-  var import_content_page_default = {
+  var import_apply_for_credit_default = {
     transform: (payload) => {
       const {
         document,
@@ -916,5 +601,5 @@ var CustomImportScript = (() => {
       }];
     }
   };
-  return __toCommonJS(import_content_page_exports);
+  return __toCommonJS(import_apply_for_credit_exports);
 })();

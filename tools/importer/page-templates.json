@@ -96,7 +96,6 @@
     {
       "name": "contact-us",
       "urls": [
-        "https://www.toyotafinancial.com/us/en/contact_us.html",
         "https://www.toyotafinancial.com/us/en/financing_options/buy_or_lease.html",
         "https://www.toyotafinancial.com/us/en/financing_options/for_businesses/business_credit_applications.html",
         "https://www.toyotafinancial.com/us/en/financing_options/rebate_finance_programs/college_rebate_program.html",
@@ -135,9 +134,30 @@
         "https://www.toyotafinancial.com/us/en/planning_tools/apply_for_credit.html"
       ],
       "representativeUrl": "https://www.toyotafinancial.com/us/en/planning_tools/apply_for_credit.html",
-      "description": "To be named in naming step",
-      "blocks": [],
-      "urlPattern": "/us/en/planning_tools/*"
+      "description": "Apply for Credit: embedded credit application (form POST into an iframe), no other content.",
+      "blocks": [
+        {
+          "name": "embed-app",
+          "instances": [
+            "#main-content .two-columns-left-one-column-right:has(form[target])"
+          ]
+        }
+      ],
+      "urlPattern": "/us/en/planning_tools/*",
+      "sections": [
+        {
+          "id": "main",
+          "name": "credit-application",
+          "selector": [
+            "#main-content .two-columns-left-one-column-right:has(form[target])"
+          ],
+          "style": null,
+          "blocks": [
+            "embed-app"
+          ],
+          "defaultContent": []
+        }
+      ]
     },
     {
       "name": "faq",
@@ -407,7 +427,8 @@
         "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/prepaid_maintenance_plan.html",
         "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/tire_wheel_protection.html",
         "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/vehicle_service_agreements.html",
-        "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/which_plan_is_right_for_me.html"
+        "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/which_plan_is_right_for_me.html",
+        "https://www.toyotafinancial.com/us/en/contact_us.html"
       ],
       "representativeUrl": "https://www.toyotafinancial.com/us/en/financing_options/leasing_a_toyota.html",
       "description": "Older-design content pages: banner image, main text column with embedded components (accordions, tabs, videos, cards, tables, carousel), blog index and article.",

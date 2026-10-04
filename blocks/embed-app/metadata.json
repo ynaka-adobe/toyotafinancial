@@ -1,0 +1,31 @@
+{
+  "variantName": "embed-app",
+  "baseBlock": "embed",
+  "canonicalModel": "standalone",
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "spacious",
+    "purpose": "embedded-third-party-application",
+    "imagePattern": "none",
+    "structure": "Full-content-width borderless iframe (default height 51em) hosting a third-party web application started by a form POST"
+  },
+  "contentPattern": {
+    "structure": "Row 1 (one cell): link whose href is the application start URL; the link text is the accessible iframe title (e.g. \"Apply for Credit application\"). Optional row: method | POST or GET (default POST). Optional row: height | CSS length such as 51em or 816px (default 51em). The block is replaced by a borderless 100%-wide iframe when it nears the viewport; for POST a hidden form targeting the iframe is submitted once, for GET the iframe src is set. A loading indicator shows until the frame loads; the link stays as a fallback if JavaScript does not run",
+    "buttonCount": 0,
+    "imageCount": 0,
+    "hasDescription": false,
+    "hasCTA": false
+  },
+  "options": [],
+  "memberVariantIds": [],
+  "sourceContext": {
+    "originUrl": "https://www.toyotafinancial.com/us/en/planning_tools/apply_for_credit.html",
+    "originPage": "Toyota Financial - Apply for Credit",
+    "blockPosition": "middle"
+  },
+  "usage": {
+    "pagesUsing": [],
+    "reuseCount": 0,
+    "lastUsed": "2026-10-04T00:00:00.000Z"
+  }
+}

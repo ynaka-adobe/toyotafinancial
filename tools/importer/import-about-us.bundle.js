@@ -356,10 +356,17 @@ var CustomImportScript = (() => {
         // empty right-hand nav column
         // hidden at every breakpoint on the source (e.g. the policy pages'
         // "View More" link in .terms-view-extra) — never visible to visitors
-        ".hidden-xs.hidden-sm.hidden-md.hidden-lg"
+        ".hidden-xs.hidden-sm.hidden-md.hidden-lg",
+        // newer page shell (apply_for_credit): screen-reader skip links and the
+        // credit application's own loading spinner
+        "a.sr-only",
+        "#oca-loading"
       ]);
       element.querySelectorAll(".one-column-component").forEach((el) => {
         if (isEmptyContainer(el)) el.remove();
+      });
+      element.querySelectorAll("#main-content ul, #main-content ol").forEach((list) => {
+        if (isEmptyContainer(list)) list.remove();
       });
       element.querySelectorAll(".two-columns-left-one-column-right").forEach((el) => {
         if (isEmptyContainer(el)) el.remove();
@@ -568,6 +575,8 @@ var CustomImportScript = (() => {
     "/us/en/online_privacy_policy",
     "/us/en/planning_tools/faq",
     "/us/en/planning_tools/get_started",
+    "/us/en/contact_us",
+    "/us/en/planning_tools/apply_for_credit",
     ...FAQ_TOPICS.map((t) => `/us/en/planning_tools/faq/${t}`)
   ].map((p) => p.toLowerCase()));
   function sanitizePath(path) {
