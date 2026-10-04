@@ -150,6 +150,12 @@ function el(tag, attrs = {}, ...children) {
   return node;
 }
 
+// Page links on the site use .html (/us/en/glossary.html); index paths are extensionless.
+function toPageHref(path) {
+  if (!path || path === '/' || /\.[a-z0-9]{2,5}$/i.test(path.split('/').pop())) return path;
+  return `${path.replace(/\/+$/, '')}.html`;
+}
+
 function renderResult(entry, ph) {
   const summary = el('summary', {}, el('span', { class: 'search-result-title', text: entry.title }));
   const body = el('div', { class: 'search-result-answer' });
@@ -162,7 +168,7 @@ function renderResult(entry, ph) {
     if (answer) body.append(answer);
     else if (entry.description) body.append(el('p', { text: entry.description }));
     body.append(el('p', { class: 'button-wrapper' }, el('a', {
-      class: 'button', href: entry.path, text: ph.searchLearnMore || 'Learn More',
+      class: 'button', href: toPageHref(entry.path), text: ph.searchLearnMore || 'Learn More',
     })));
     body.removeAttribute('aria-busy');
   });
