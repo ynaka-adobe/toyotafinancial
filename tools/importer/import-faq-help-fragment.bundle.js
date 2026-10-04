@@ -76,6 +76,40 @@ var CustomImportScript = (() => {
     "/us/en/online_policies_and_agreements",
     "/us/en/online_privacy_policy",
     "/us/en/planning_tools/faq",
+    "/us/en/planning_tools/get_started",
+    "/us/en/contact_us",
+    "/us/en/planning_tools/apply_for_credit",
+    // batch 2026-10-04: protection plans, planning tools, financing, end of lease, blog
+    ...[
+      "vehicle_protection_plan/which_plan_is_right_for_me",
+      "vehicle_protection_plan/vehicle_service_agreements",
+      "vehicle_protection_plan/guaranteed_auto_protection",
+      "vehicle_protection_plan/prepaid_maintenance_plan",
+      "vehicle_protection_plan/tire_wheel_protection",
+      "vehicle_protection_plan/how_to_file_a_claim",
+      "planning_tools/ways_to_pay",
+      "planning_tools/visiting_the_dealer",
+      "financing_options/buy_or_lease",
+      "financing_options/buy_a_toyota",
+      "financing_options/leasing_a_toyota",
+      "financing_options/rebate_finance_programs/find_rebate_finance_programs",
+      "financing_options/rebate_finance_programs/college_rebate_program",
+      "financing_options/rebate_finance_programs/military_rebate_program",
+      "financing_options/rebate_finance_programs/repeat_customers",
+      "financing_options/understanding_credit/credit_101",
+      "financing_options/understanding_credit/credit_tips",
+      "financing_options/for_businesses/business_solutions",
+      "financing_options/for_businesses/business_credit_applications",
+      "financing_options/toyota_rewards_visa",
+      "end_of_lease_options/your_option",
+      "end_of_lease_options/lease-end-videos",
+      "end_of_lease_options/early_lease_return",
+      "end_of_lease_options/mileage",
+      "end_of_lease_options/wear_and_use",
+      "end_of_lease_options/return_your_vehicle",
+      "end_of_lease_options/faqs",
+      "TFS_ThoughtFuel_Blog"
+    ].map((p) => `/us/en/${p}`),
     ...FAQ_TOPICS.map((t) => `/us/en/planning_tools/faq/${t}`)
   ].map((p) => p.toLowerCase()));
   function sanitizePath(path) {
@@ -96,6 +130,18 @@ var CustomImportScript = (() => {
     if (!MIGRATED_PATHS.has(pathname.toLowerCase())) return null;
     return `${sanitizePath(pathname)}${m[2] || ""}`;
   }
+  var NON_PAGE_PREFIXES = ["/dss/", "/myaccounts/", "/pub/", "/content/dam/", "/etc/", "/us/en/search"];
+  function isContentPage(pathname) {
+    if (NON_PAGE_PREFIXES.some((prefix) => pathname.toLowerCase().startsWith(prefix))) return false;
+    const last = pathname.split("/").pop();
+    return !/\.[a-z0-9]{2,5}$/i.test(last) || /\.html?$/i.test(last);
+  }
+  function toNewSitePath(sitePath) {
+    const m = sitePath.match(/^([^?#]*)([?#].*)?$/);
+    const pathname = m[1].replace(/\/{2,}/g, "/").replace(/\.html?$/i, "").replace(/\/$/, "") || "/";
+    if (!isContentPage(m[1])) return null;
+    return `${pathname === "/" ? "/" : sanitizePath(pathname)}${m[2] || ""}`;
+  }
   function rewriteHref(rawHref) {
     const href = (rawHref || "").trim();
     if (!href) return null;
@@ -103,8 +149,8 @@ var CustomImportScript = (() => {
     if (abs) {
       const after = href.slice(abs[0].length);
       const rest = after.replace(CONTENT_PREFIX_RE, "") || "/";
-      const migrated = toMigratedPath(rest);
-      if (migrated) return migrated;
+      const page2 = toMigratedPath(rest) || toNewSitePath(rest);
+      if (page2) return page2;
       if (!CONTENT_PREFIX_RE.test(after)) return null;
       return `${SITE_ORIGIN}${rest}`;
     }
@@ -112,7 +158,9 @@ var CustomImportScript = (() => {
     let path = href.replace(CONTENT_PREFIX_RE, "");
     if (!path.startsWith("/")) path = `/${path}`;
     if (isNewSitePath(path)) return path === href ? null : path;
-    return toMigratedPath(path) || `${SITE_ORIGIN}${path}`;
+    const page = toMigratedPath(path) || toNewSitePath(path);
+    if (page) return page === href ? null : page;
+    return `${SITE_ORIGIN}${path}`;
   }
   function transform(hookName, element, payload) {
     if (hookName !== TransformHook.afterTransform) return;

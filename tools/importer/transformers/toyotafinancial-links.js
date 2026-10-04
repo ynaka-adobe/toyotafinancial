@@ -105,6 +105,25 @@ function toMigratedPath(sitePath) {
   return `${sanitizePath(pathname)}${m[2] || ''}`;
 }
 
+// Links that are not content pages stay on the original site: the account app,
+// search, and stored files (PDFs, videos, images under /content/dam etc.).
+const NON_PAGE_PREFIXES = ['/dss/', '/myaccounts/', '/pub/', '/content/dam/', '/etc/', '/us/en/search'];
+
+function isContentPage(pathname) {
+  if (NON_PAGE_PREFIXES.some((prefix) => pathname.toLowerCase().startsWith(prefix))) return false;
+  const last = pathname.split('/').pop();
+  return !/\.[a-z0-9]{2,5}$/i.test(last) || /\.html?$/i.test(last);
+}
+
+// "/us/en/x_y.html?q#h" -> "/us/en/x-y?q#h": the path the page has (or will have)
+// on the new site. Not-yet-migrated pages 404 until they are migrated.
+function toNewSitePath(sitePath) {
+  const m = sitePath.match(/^([^?#]*)([?#].*)?$/);
+  const pathname = m[1].replace(/\/{2,}/g, '/').replace(/\.html?$/i, '').replace(/\/$/, '') || '/';
+  if (!isContentPage(m[1])) return null;
+  return `${pathname === '/' ? '/' : sanitizePath(pathname)}${m[2] || ''}`;
+}
+
 function rewriteHref(rawHref) {
   const href = (rawHref || '').trim();
   if (!href) return null;
@@ -114,8 +133,8 @@ function rewriteHref(rawHref) {
   if (abs) {
     const after = href.slice(abs[0].length);
     const rest = after.replace(CONTENT_PREFIX_RE, '') || '/';
-    const migrated = toMigratedPath(rest);
-    if (migrated) return migrated;
+    const page = toMigratedPath(rest) || toNewSitePath(rest);
+    if (page) return page;
     if (!CONTENT_PREFIX_RE.test(after)) return null;
     return `${SITE_ORIGIN}${rest}`;
   }
@@ -126,7 +145,9 @@ function rewriteHref(rawHref) {
   let path = href.replace(CONTENT_PREFIX_RE, '');
   if (!path.startsWith('/')) path = `/${path}`;
   if (isNewSitePath(path)) return path === href ? null : path;
-  return toMigratedPath(path) || `${SITE_ORIGIN}${path}`;
+  const page = toMigratedPath(path) || toNewSitePath(path);
+  if (page) return page === href ? null : page;
+  return `${SITE_ORIGIN}${path}`;
 }
 
 export default function transform(hookName, element, payload) {
