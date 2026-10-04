@@ -12,6 +12,16 @@
     window.isErrorPage = true;
     window.errorCode = '404';
   </script>
+  <script nonce="aem" type="text/javascript">
+    // Legacy AEM URLs (/us/en/page.html) -> EDS extensionless URLs (/us/en/page).
+    // Mirrors the CDN rule in config/cdn.yaml for aem.page/aem.live hosts.
+    (() => {
+      const { pathname, search, hash } = window.location;
+      if (/^\/.+\.html$/.test(pathname) && !pathname.endsWith('.plain.html')) {
+        window.location.replace(pathname.slice(0, -5) + search + hash);
+      }
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta property="og:title" content="Page not found">
   <script nonce="aem" src="/scripts/aem.js" type="module"></script>
