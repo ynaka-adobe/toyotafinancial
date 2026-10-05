@@ -2,10 +2,12 @@
   "status": "success",
   "url": "https://www.toyotafinancial.com/us/en/vehicle_protection_plan/used_vehicle.html",
   "path": "us/en/vehicle-protection-plan/used-vehicle",
-  "timestamp": "2026-10-04T15:41:48.439Z",
+  "timestamp": "2026-10-05T02:04:41.048Z",
   "title": "Used Vehicle | Toyota Financial",
   "template": "content-page",
   "blocks": [
+    "compare-plans",
+    "compare-plans",
     "cards-thumbnail",
     "cards-thumbnail",
     "cards-thumbnail",

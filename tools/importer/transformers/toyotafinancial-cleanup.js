@@ -333,6 +333,17 @@ export default function transform(hookName, element, payload) {
       if (!isBlogArticle) el.remove();
     });
 
+    // VSA comparison "View Printer Friendly Version" (a.js-comparison-printer, href "#") is a
+    // print button: bold link to #print = primary CTA; blocks/compare-plans prints the page.
+    element.querySelectorAll('a.js-comparison-printer').forEach((a) => {
+      a.setAttribute('href', '#print');
+      if (!a.closest('strong, b')) {
+        const strong = doc.createElement('strong');
+        a.before(strong);
+        strong.append(a);
+      }
+    });
+
     // FAQ answers: some pages carry a second, id-less copy of the help card inside
     // .rtequestionnaire next to the real #faqcard (shared faq-help fragment).
     if (element.querySelector('#faqcard')) {

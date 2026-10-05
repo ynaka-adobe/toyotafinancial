@@ -41,6 +41,103 @@ var CustomImportScript = (() => {
     default: () => import_content_page_default
   });
 
+  // tools/importer/parsers/compare-plans.js
+  var text = (el) => el ? el.textContent.replace(/\s+/g, " ").trim() : "";
+  function titleCell(document, panel) {
+    const a = panel.querySelector(".panel-heading .panel-title a") || panel.querySelector(".panel-heading .panel-title");
+    const h3 = document.createElement("h3");
+    if (a) {
+      const clone = a.cloneNode(true);
+      clone.querySelectorAll("i, .glyphicon").forEach((i) => i.remove());
+      h3.innerHTML = clone.innerHTML.replace(/\s+/g, " ").trim();
+    }
+    return h3;
+  }
+  function noteCell(document, el) {
+    const p = document.createElement("p");
+    p.innerHTML = el.innerHTML.replace(/<br\s*\/?>\s*$/i, "").trim();
+    return p;
+  }
+  function legendRow(document, element) {
+    const prev = element.previousElementSibling;
+    const list = prev && prev.matches(".rte.parbase") && prev.querySelector("ul.list-inline");
+    if (!list || !list.querySelector('[class*="icon-check"], [class*="icon-cross"]')) return null;
+    const ul = document.createElement("ul");
+    list.querySelectorAll(":scope > li").forEach((li) => {
+      const item = document.createElement("li");
+      const sym = li.querySelector('[class*="icon-check"]') ? "\u2713" : li.querySelector('[class*="icon-cross"]') ? "\u2717" : "";
+      item.textContent = `${sym} ${text(li)}`.trim();
+      ul.append(item);
+    });
+    prev.remove();
+    return [ul];
+  }
+  function parseComponents(document, element) {
+    const cells = [];
+    const legend = legendRow(document, element);
+    if (legend) cells.push(legend);
+    const panels = [...element.querySelectorAll(".panel")];
+    const plans = [...(element.querySelector(".compare-table-header") || element).querySelectorAll(".support .plan")].map(text);
+    cells.push(["", ...plans]);
+    panels.forEach((panel) => {
+      cells.push([titleCell(document, panel)]);
+      const body = panel.querySelector(".panel-body");
+      if (!body) return;
+      [...body.children].forEach((child) => {
+        if (child.matches(".compare-table-header")) return;
+        if (child.matches(".sub-components")) {
+          child.querySelectorAll(":scope > .component").forEach((comp) => {
+            const marks = [...comp.querySelectorAll(".support .plan")].map((pl) => {
+              if (pl.querySelector('[class*="icon-check"]')) return "\u2713";
+              if (pl.querySelector('[class*="icon-cross"]')) return "\u2717";
+              return text(pl);
+            });
+            cells.push([text(comp.querySelector(".name")), ...marks]);
+          });
+          return;
+        }
+        if (text(child)) cells.push([noteCell(document, child)]);
+      });
+    });
+    return cells;
+  }
+  function parseFeatures(document, element) {
+    const panels = [...element.querySelectorAll(".panel")];
+    const plans = [];
+    const rows = panels.map((panel) => {
+      const values = {};
+      const notes = [];
+      panel.querySelectorAll(".panel-body .caption-body").forEach((cap) => {
+        const name = text(cap.querySelector("h1, h2, h3, h4, h5, h6"));
+        if (!name) return;
+        if (!plans.includes(name)) plans.push(name);
+        const holder = document.createElement("div");
+        [...cap.children].filter((c) => !/^H[1-6]$/.test(c.tagName)).forEach((c) => {
+          if (text(c) || c.querySelector("a, img")) holder.append(noteCell(document, c));
+        });
+        values[name] = holder;
+      });
+      panel.querySelectorAll(".panel-body > div > p, .panel-body > p").forEach((p) => {
+        if (text(p)) notes.push(noteCell(document, p));
+      });
+      return { title: titleCell(document, panel), values, notes };
+    });
+    const cells = [["", ...plans]];
+    rows.forEach((r) => {
+      cells.push([r.title]);
+      cells.push(["", ...plans.map((pl) => r.values[pl] || "")]);
+      r.notes.forEach((n) => cells.push([n]));
+    });
+    return cells;
+  }
+  function parse(element, { document }) {
+    const isFeatures = element.matches(".feature_accordion");
+    const cells = isFeatures ? parseFeatures(document, element) : parseComponents(document, element);
+    if (cells.length < 2) return;
+    const block = WebImporter.Blocks.createBlock(document, { name: "Compare Plans", cells });
+    element.replaceWith(block);
+  }
+
   // tools/importer/parsers/columns-callout.js
   function cleanText(el) {
     return (el.textContent || "").replace(/ /g, " ").replace(/\s+/g, " ").trim();
@@ -48,7 +145,7 @@ var CustomImportScript = (() => {
   function isDocumentHref(href) {
     return /\.(pdf|docx?|xlsx?|mp4|webm)(\?|#|$)/i.test(href || "") || /\/content\/dam\//.test(href || "");
   }
-  function parse(element, { document }) {
+  function parse2(element, { document }) {
     const root = element.querySelector(".img-card, .card") || element;
     const header = root.querySelector(".card-header");
     const content = root.querySelector(".card-content");
@@ -143,7 +240,7 @@ var CustomImportScript = (() => {
     if (frag.lastChild && frag.lastChild.nodeType === 3) frag.lastChild.textContent = frag.lastChild.textContent.replace(/\s+$/, "");
     return frag;
   }
-  function parse2(element, { document }) {
+  function parse3(element, { document }) {
     const items = [...element.querySelectorAll(":scope > li.panel, :scope > li")];
     const cells = [];
     items.forEach((item) => {
@@ -270,10 +367,10 @@ var CustomImportScript = (() => {
   function panelTitle(panel) {
     const heading = panel.querySelector(".panel-heading .panel-title, .panel-heading");
     if (!heading) return "";
-    const text = heading.querySelector(".col-xs-9, .pad_left_0") || heading.querySelector("a") || heading;
-    return cleanText3(text);
+    const text2 = heading.querySelector(".col-xs-9, .pad_left_0") || heading.querySelector("a") || heading;
+    return cleanText3(text2);
   }
-  function parse3(element, { document }) {
+  function parse4(element, { document }) {
     if (!element.parentNode) return;
     const panels = [element];
     let next = element.nextElementSibling;
@@ -308,7 +405,7 @@ var CustomImportScript = (() => {
       return href;
     }
   }
-  function parse4(element, { document }) {
+  function parse5(element, { document }) {
     const video = element.querySelector("video");
     const source = video && (video.querySelector("source[src]") || (video.hasAttribute("src") ? video : null));
     const rawSrc = source && source.getAttribute("src") || video && video.getAttribute("data-src") || (element.querySelector('[data-src$=".mp4"], [data-video-src]') || { getAttribute: () => null }).getAttribute("data-src");
@@ -340,7 +437,7 @@ var CustomImportScript = (() => {
   function cleanText4(el) {
     return (el.textContent || "").replace(/ /g, " ").replace(/\s+/g, " ").trim();
   }
-  function parse5(element, { document }) {
+  function parse6(element, { document }) {
     const cells = [];
     const photo = element.querySelector(".card-content img, :scope > div:not(.quiz-section) img");
     if (photo) {
@@ -380,17 +477,17 @@ var CustomImportScript = (() => {
       const ul = document.createElement("ul");
       holder.querySelectorAll(".answer input").forEach((input) => {
         const label = input.id && holder.querySelector(`label[for="${input.id}"]`) || input.nextElementSibling;
-        const text = label ? cleanText4(label) : input.getAttribute("value") || "";
-        if (!text) return;
+        const text2 = label ? cleanText4(label) : input.getAttribute("value") || "";
+        if (!text2) return;
         const li = document.createElement("li");
         const target = input.getAttribute("data-target");
         if (target) {
           const a = document.createElement("a");
           a.href = target.startsWith("#") ? target : `#${target}`;
-          a.textContent = text;
+          a.textContent = text2;
           li.append(a);
         } else {
-          li.textContent = text;
+          li.textContent = text2;
         }
         ul.append(li);
       });
@@ -431,7 +528,7 @@ var CustomImportScript = (() => {
     });
     return clone;
   }
-  function parse6(element, { document }) {
+  function parse7(element, { document }) {
     const filterLabel = element.querySelector(".dropdown-card .card-header, .dropdown-card p");
     const options = [...element.querySelectorAll(".materialized-dropdown li.option, .materialized-dropdown option")].map(cleanText5).filter(Boolean);
     const all = [...element.querySelectorAll(".populate-carousel")];
@@ -527,7 +624,7 @@ var CustomImportScript = (() => {
       return src;
     }
   }
-  function parse7(element, { document }) {
+  function parse8(element, { document }) {
     const cards = [...element.querySelectorAll(".thumbnail-card")];
     const cells = [];
     cards.forEach((card) => {
@@ -672,7 +769,7 @@ var CustomImportScript = (() => {
     });
     return frag;
   }
-  function parse8(element, { document }) {
+  function parse9(element, { document }) {
     const table = element.querySelector("table");
     if (!table) {
       element.replaceWith(...element.childNodes);
@@ -811,7 +908,7 @@ var CustomImportScript = (() => {
     const block = WebImporter.Blocks.createBlock(document, { name: "columns-card", cells });
     element.replaceWith(block);
   }
-  function parse9(element, { document }) {
+  function parse10(element, { document }) {
     if (!element.parentNode) return;
     if (isBlogCard(element)) {
       parseBlogCards(element, document);
@@ -911,7 +1008,7 @@ var CustomImportScript = (() => {
     });
     return { block, rest };
   }
-  function parse10(element, { document }) {
+  function parse11(element, { document }) {
     if (!element.parentNode) return;
     const isDropdownCard = element.matches(".card-component, .card-component.parbase") && !!element.querySelector(".materialized-dropdown");
     let label = NEUTRAL_LABEL;
@@ -980,7 +1077,7 @@ var CustomImportScript = (() => {
       remove: []
     }
   ];
-  function parse11(element, { document }) {
+  function parse12(element, { document }) {
     let path = FRAGMENTS[element.id];
     if (!path) {
       const match = CLASS_FRAGMENTS.find((f) => element.matches(f.selector));
@@ -1044,8 +1141,8 @@ var CustomImportScript = (() => {
     }
     return imgSrc || "";
   }
-  function headingSlug(text) {
-    return text.toLowerCase().replace(/['‘’]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  function headingSlug(text2) {
+    return text2.toLowerCase().replace(/['‘’]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
   }
   var KNOWN_SECTION_TITLES = {
     oasa: "Online Account Services Agreement (applicable to Financial Services Customers with Online Account Services)",
@@ -1192,6 +1289,14 @@ var CustomImportScript = (() => {
       element.querySelectorAll(".nav-list-component").forEach((el) => {
         if (!isBlogArticle) el.remove();
       });
+      element.querySelectorAll("a.js-comparison-printer").forEach((a) => {
+        a.setAttribute("href", "#print");
+        if (!a.closest("strong, b")) {
+          const strong = doc.createElement("strong");
+          a.before(strong);
+          strong.append(a);
+        }
+      });
       if (element.querySelector("#faqcard")) {
         element.querySelectorAll(".rtequestionnaire > .container-fluid:not([id])").forEach((box) => {
           if (box.querySelector(".faq-card") && !box.querySelector("#faqcard")) box.remove();
@@ -1221,12 +1326,12 @@ var CustomImportScript = (() => {
       element.querySelectorAll(".policy-scroll-section[id]").forEach((section) => {
         const title = section.matches("p") ? section : section.querySelector(":scope > p");
         if (!title) return;
-        const text = title.textContent.replace(/\u00a0/g, " ").replace(/\s+/g, " ").trim();
-        if (!text) return;
+        const text2 = title.textContent.replace(/\u00a0/g, " ").replace(/\s+/g, " ").trim();
+        if (!text2) return;
         const heading = doc.createElement("h3");
-        heading.textContent = text;
+        heading.textContent = text2;
         title.replaceWith(heading);
-        sectionSlugs.set(section.id, headingSlug(text));
+        sectionSlugs.set(section.id, headingSlug(text2));
       });
       element.querySelectorAll('a[href*="#"]').forEach((a) => {
         const [base, id] = a.getAttribute("href").split("#");
@@ -1676,17 +1781,18 @@ var CustomImportScript = (() => {
 
   // tools/importer/import-content-page.js
   var parsers = {
-    "columns-callout": parse,
-    "accordion-faq": parse2,
-    "accordion-boxed": parse3,
-    "video-poster": parse4,
-    "quiz-plans": parse5,
-    "carousel-cards": parse6,
-    "cards-thumbnail": parse7,
-    "table-caption": parse8,
-    "columns-card": parse9,
-    "tabs-plans": parse10,
-    fragment: parse11
+    "compare-plans": parse,
+    "columns-callout": parse2,
+    "accordion-faq": parse3,
+    "accordion-boxed": parse4,
+    "video-poster": parse5,
+    "quiz-plans": parse6,
+    "carousel-cards": parse7,
+    "cards-thumbnail": parse8,
+    "table-caption": parse9,
+    "columns-card": parse10,
+    "tabs-plans": parse11,
+    fragment: parse12
   };
   var PAGE_TEMPLATE = {
     "name": "content-page",
@@ -1721,6 +1827,13 @@ var CustomImportScript = (() => {
       "https://www.toyotafinancial.com/us/en/financing_options/for_businesses/business_credit_applications.html"
     ],
     "blocks": [
+      {
+        "name": "compare-plans",
+        "instances": [
+          "#main-content .screenFade .compare-table-component.parbase",
+          "#main-content .screenFade .feature_accordion.parbase"
+        ]
+      },
       {
         "name": "columns-callout",
         "instances": [

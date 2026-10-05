@@ -529,6 +529,14 @@ var CustomImportScript = (() => {
       element.querySelectorAll(".nav-list-component").forEach((el) => {
         if (!isBlogArticle) el.remove();
       });
+      element.querySelectorAll("a.js-comparison-printer").forEach((a) => {
+        a.setAttribute("href", "#print");
+        if (!a.closest("strong, b")) {
+          const strong = doc.createElement("strong");
+          a.before(strong);
+          strong.append(a);
+        }
+      });
       if (element.querySelector("#faqcard")) {
         element.querySelectorAll(".rtequestionnaire > .container-fluid:not([id])").forEach((box) => {
           if (box.querySelector(".faq-card") && !box.querySelector("#faqcard")) box.remove();

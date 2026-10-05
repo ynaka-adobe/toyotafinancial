@@ -1,0 +1,192 @@
+/* compare-plans: VSA comparison (source .compare-table-component / .feature_accordion)
+   white category bars with red bold titles + red chevron and a soft shadow; inside, a dark
+   plan-name bar and rows with red (included) / black (excluded) round marks */
+
+.compare-plans {
+  color: var(--text-color);
+  font-family: var(--body-font-family);
+}
+
+/* round marks: red check = included, black cross = excluded */
+.compare-plans-mark {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: no-repeat center / 70%;
+  vertical-align: middle;
+}
+
+.compare-plans-mark.included {
+  background-color: var(--brand-red);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 6.2l2.3 2.3 4.7-5' fill='none' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.compare-plans-mark.excluded {
+  background-color: #000;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M3.5 3.5l5 5M8.5 3.5l-5 5' fill='none' stroke='%23fff' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+/* legend: "✓ Included Component  ✗ Excluded Component" */
+.compare-plans-intro ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 20px;
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.compare-plans-intro li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.compare-plans-intro .compare-plans-mark {
+  width: 16px;
+  height: 16px;
+}
+
+.compare-plans-group {
+  margin: 0 0 6px;
+  background-color: var(--background-color);
+  box-shadow: rgb(0 0 0 / 5%) 0 1px 1px 0;
+}
+
+.compare-plans-group > summary {
+  position: relative;
+  display: block;
+  padding: 10px 46px 10px 15px;
+  box-shadow: #ddd 0 2px 2px 0;
+  color: var(--brand-red);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.1;
+  list-style: none;
+  cursor: pointer;
+}
+
+.compare-plans-group > summary::-webkit-details-marker {
+  display: none;
+}
+
+.compare-plans-group > summary:focus-visible {
+  outline: 2px solid var(--text-color);
+  outline-offset: -2px;
+}
+
+/* chevron: points right when closed, down when open */
+.compare-plans-group > summary::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 18px;
+  width: 8px;
+  height: 8px;
+  border: solid var(--brand-red);
+  border-width: 2px 2px 0 0;
+  transform: translateY(-50%) rotate(45deg);
+  transition: transform 0.2s;
+}
+
+.compare-plans-group[open] > summary::after {
+  transform: translateY(-75%) rotate(135deg);
+}
+
+.compare-plans-table {
+  margin-top: 14px;
+  overflow-x: auto;
+}
+
+.compare-plans table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.compare-plans thead th {
+  padding: 9px 4px;
+  background-color: #403a3a;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 400;
+  text-align: center;
+}
+
+.compare-plans tbody th,
+.compare-plans tbody td {
+  padding: 8px 4px;
+  border-bottom: 1px solid #c7c0c0;
+  font-weight: 400;
+  vertical-align: middle;
+}
+
+.compare-plans tbody th {
+  padding-left: 38px;
+  text-align: left;
+}
+
+.compare-plans tbody td {
+  text-align: center;
+}
+
+.compare-plans tbody td.compare-plans-note {
+  padding-left: 38px;
+  border-bottom: 0;
+  text-align: left;
+}
+
+.compare-plans tbody td > :first-child {
+  margin-top: 0;
+}
+
+.compare-plans tbody td > :last-child {
+  margin-bottom: 0;
+}
+
+.compare-plans table:not(.compare-plans-text) thead th:first-child {
+  width: 37.5%;
+}
+
+/* text-only comparisons (Features): one text cell per plan, no name column */
+.compare-plans table.compare-plans-text td {
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  vertical-align: top;
+}
+
+/* ...stacked on small screens, plan name above each value */
+@media (width < 768px) {
+  .compare-plans table.compare-plans-text,
+  .compare-plans table.compare-plans-text tbody,
+  .compare-plans table.compare-plans-text tr,
+  .compare-plans table.compare-plans-text td {
+    display: block;
+    min-width: 0;
+  }
+
+  .compare-plans table.compare-plans-text thead {
+    display: none;
+  }
+
+  .compare-plans table.compare-plans-text td[data-plan]::before {
+    content: attr(data-plan);
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 700;
+  }
+}
+
+@media print {
+  .compare-plans-group > summary::after {
+    display: none;
+  }
+
+  .compare-plans-table {
+    overflow: visible;
+  }
+}

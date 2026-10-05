@@ -483,6 +483,13 @@
       "description": "Older-design content pages: banner image, main text column with embedded components (accordions, tabs, videos, cards, tables, carousel), blog index and article.",
       "blocks": [
         {
+          "name": "compare-plans",
+          "instances": [
+            "#main-content .screenFade .compare-table-component.parbase",
+            "#main-content .screenFade .feature_accordion.parbase"
+          ]
+        },
+        {
           "name": "columns-callout",
           "instances": [
             "#main-content .screenFade .card-component.parbase:has(.card-content, .img-card):not(:has(.thumbnail-card, .materialized-dropdown, .card.no-pd))"

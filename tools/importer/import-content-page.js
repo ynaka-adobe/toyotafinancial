@@ -2,6 +2,7 @@
 /* global WebImporter */
 
 // PARSER IMPORTS
+import comparePlansParser from './parsers/compare-plans.js';
 import columnsCalloutParser from './parsers/columns-callout.js';
 import accordionFaqParser from './parsers/accordion-faq.js';
 import accordionBoxedParser from './parsers/accordion-boxed.js';
@@ -24,6 +25,7 @@ import dmImagesTransformer from './transformers/toyotafinancial-dm-images.js';
 // tabs-plans runs last (blocks[] order): it moves panel content that the
 // other parsers have already turned into blocks.
 const parsers = {
+  'compare-plans': comparePlansParser,
   'columns-callout': columnsCalloutParser,
   'accordion-faq': accordionFaqParser,
   'accordion-boxed': accordionBoxedParser,
@@ -71,6 +73,13 @@ const PAGE_TEMPLATE = {
     "https://www.toyotafinancial.com/us/en/financing_options/for_businesses/business_credit_applications.html"
   ],
   "blocks": [
+    {
+      "name": "compare-plans",
+      "instances": [
+        "#main-content .screenFade .compare-table-component.parbase",
+        "#main-content .screenFade .feature_accordion.parbase"
+      ]
+    },
     {
       "name": "columns-callout",
       "instances": [
