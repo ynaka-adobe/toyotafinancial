@@ -130,6 +130,11 @@
   box-shadow: none;
 }
 
+/* end-of-lease design: square-cornered CTA (as in cards-steps) */
+.columns-callout.grey a.button.primary:any-link {
+  border-radius: 2px;
+}
+
 .columns-callout.grey .columns-callout-title {
   margin-bottom: 0;
   font-family: var(--display-font-family);

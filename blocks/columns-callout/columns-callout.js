@@ -35,6 +35,18 @@ export default function decorate(block) {
         col.append(p);
       }
 
+      // bare <strong><a> / <em><a> cells: decorateButtons ran before the cell content was
+      // wrapped in a <p> (here or by aem.js), so mark primary / secondary CTAs now
+      const only = col.children.length === 1 && col.firstElementChild.tagName === 'P'
+        ? col.firstElementChild : null;
+      const wrap = only && only.children.length === 1 ? only.firstElementChild : null;
+      const cta = wrap && wrap.children.length === 1 && wrap.querySelector(':scope > a[href]');
+      if (cta && !cta.classList.contains('button') && ['STRONG', 'EM'].includes(wrap.tagName)
+        && only.textContent.trim() === cta.textContent.trim()) {
+        cta.classList.add('button', wrap.tagName === 'STRONG' ? 'primary' : 'secondary');
+        only.classList.add('button-container');
+      }
+
       const action = cols.length > 1 && isActionCell(col);
       col.classList.add(action ? 'columns-callout-action' : 'columns-callout-text');
 

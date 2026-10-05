@@ -420,6 +420,49 @@ export function decorateMain(main) {
   decorateBlocks(main);
 }
 
+// Page types that share a layout on the source site, keyed by URL path
+// (/us/en/... with or without .html; local preview adds /content).
+const PAGE_TYPES = [
+  ['home', /^\/[a-z]{2}\/[a-z]{2}$/],
+  ['faq-page', /\/planning-tools\/faq\/[^/]+(\/[^/]+)?$/],
+  ['faq-answer', /\/planning-tools\/faq\/[^/]+\/[^/]+$/],
+  ['blog-article', /\/tfs-thoughtfuel-blog\/[^/]+$/],
+  ['glossary', /\/glossary$/],
+  ['sitemap', /\/sitemap$/],
+];
+
+/**
+ * Adds page-type classes (e.g. "faq-answer", "blog-article") to the body.
+ * @param {Document} doc The document
+ */
+export function decoratePageType(doc = document) {
+  const path = window.location.pathname
+    .replace(/^\/content(?=\/)/, '')
+    .replace(/\.html$/, '')
+    .replace(/\/$/, '');
+  PAGE_TYPES.forEach(([name, re]) => {
+    if (re.test(path)) doc.body.classList.add(name);
+  });
+}
+
+/**
+ * Site map page: groups each title paragraph with the list after it, so a group
+ * never splits across the page's columns.
+ * @param {Element} main The main element
+ */
+function decorateSitemap(main) {
+  main.querySelectorAll('.section:not(.page-banner) > .default-content-wrapper').forEach((wrapper) => {
+    [...wrapper.querySelectorAll(':scope > p')].forEach((title) => {
+      const list = title.nextElementSibling;
+      if (!list || list.tagName !== 'UL') return;
+      const group = document.createElement('div');
+      group.className = 'sitemap-group';
+      title.before(group);
+      group.append(title, list);
+    });
+  });
+}
+
 /**
  * Loads everything needed to get to LCP.
  * @param {Element} doc The container element
@@ -427,12 +470,14 @@ export function decorateMain(main) {
 async function loadEager(doc) {
   doc.documentElement.lang = 'en';
   decorateTemplateAndTheme();
+  decoratePageType(doc);
   if (getMetadata('breadcrumbs').toLowerCase() === 'true') {
     doc.body.dataset.breadcrumbs = true;
   }
   const main = doc.querySelector('main');
   if (main) {
     decorateMain(main);
+    if (doc.body.classList.contains('sitemap')) decorateSitemap(main);
     doc.body.classList.add('appear');
     await loadSection(main.querySelector('.section'), waitForFirstImage);
   }

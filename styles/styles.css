@@ -330,19 +330,20 @@ main .section.highlight {
   padding: 0 0 40px;
 }
 
-/* default-content headings are centered section titles on the source */
-main .default-content-wrapper h2 {
+/* homepage: default-content headings are centered section titles on the source
+   (content pages keep left-aligned h2s) */
+.home main .default-content-wrapper h2 {
   margin: 0 0 10px;
   padding-top: 20px;
   text-align: center;
 }
 
-main .section.highlight .default-content-wrapper h2 {
+.home main .section.highlight .default-content-wrapper h2 {
   padding-top: 40px;
 }
 
 /* e.g. "Have Questions?" + centered FAQ link */
-main .default-content-wrapper h2 + .button-container {
+.home main .default-content-wrapper h2 + .button-container {
   display: block;
   margin: 0 0 40px;
   text-align: center;
@@ -352,3 +353,289 @@ main .section.dark {
   background-color: var(--dark-color);
   color: #fff;
 }
+
+/* ---- content pages (values measured on the source at 1440 / 390px) ----
+   Rules are grouped by page type (body classes from decoratePageType in scripts.js),
+   so selectors for different page types never compete. */
+/* stylelint-disable no-descending-specificity */
+
+/* page banner: full-bleed image strip (source .banner-component / .faq-banner-component
+   .top-section: 1440x250 cover, 76px tall at 390px) */
+main > .section.page-banner {
+  margin: 0;
+}
+
+main > .section.page-banner > .default-content-wrapper {
+  max-width: none;
+  padding: 0;
+}
+
+main > .section.page-banner > .default-content-wrapper > picture,
+main > .section.page-banner > .default-content-wrapper > p > picture {
+  display: block;
+}
+
+main > .section.page-banner > .default-content-wrapper > picture img,
+main > .section.page-banner > .default-content-wrapper > p > picture img {
+  display: block;
+  width: 100%;
+  height: clamp(76px, 17.4vw, 250px);
+  object-fit: cover;
+}
+
+main > .section.page-banner + .section {
+  margin-top: 40px;
+}
+
+/* page title + optional subtitle (source .page-heading: centered HelvNeueLight
+   50px / 22px; 40px title on mobile) */
+body:not(.home, .faq-page, .glossary) main > .section:not(.page-banner) > .default-content-wrapper > h1 {
+  margin: 20px 0 10px;
+  font-size: 40px;
+  font-weight: 300;
+  line-height: 1;
+  text-align: center;
+}
+
+body:not(.home, .faq-page, .glossary) main > .section:not(.page-banner) > .default-content-wrapper > h1 + h3 {
+  margin: 20px 0 30px;
+  font-size: 22px;
+  font-weight: 300;
+  line-height: 1;
+  text-align: center;
+}
+
+@media (width >= 900px) {
+  body:not(.home, .faq-page, .glossary) main > .section:not(.page-banner) > .default-content-wrapper > h1 {
+    font-size: 50px;
+  }
+}
+
+/* section title: a lone h2 right before a block is centered on the source
+   (e.g. "TFS in the Community", "Popular Topics"); h2s in running text stay left */
+main .default-content-wrapper:has(+ [class$="-wrapper"]) > h2:only-child {
+  margin: 0 0 10px;
+  padding-top: 20px;
+  text-align: center;
+}
+
+/* FAQ topic + answer pages: "← Title" heading (source p.faq_ques_text: 20px medium,
+   back arrow link before it) */
+.faq-page main .default-content-wrapper > p.button-container:first-child:has(+ h1) {
+  float: left;
+  margin: 0 10px 0 0;
+  line-height: 37.6px;
+}
+
+.faq-page main .default-content-wrapper > p.button-container:first-child:has(+ h1) > a {
+  display: inline-block;
+  width: 20px;
+  height: 37.6px;
+  overflow: hidden;
+  background: no-repeat center / 20px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23eb0a1e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 12H4M10 6l-6 6 6 6'/%3E%3C/svg%3E");
+  font-size: 0;
+  vertical-align: top;
+}
+
+.faq-page main .default-content-wrapper > p:first-child + h1 {
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 37.6px;
+}
+
+.faq-answer main .default-content-wrapper > h1 ~ :is(p, ul, ol, table) {
+  padding-left: 15px;
+}
+
+/* shared "Still need help?" card (faq-help fragment; source .faq-card: #f8f8f8,
+   3px radius, soft shadow, 32px title, red pill CTA on the right) */
+main .help-card .default-content-wrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  box-sizing: border-box;
+  padding: 16px 30px 24px;
+  border-radius: 3px;
+  background-color: #f8f8f8;
+  box-shadow: rgb(0 0 0 / 20%) 0 2px 4px 0;
+}
+
+main .help-card .default-content-wrapper > * {
+  margin: 0;
+}
+
+main .help-card h2 {
+  padding: 0;
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.06;
+  text-align: left;
+}
+
+@media (width >= 900px) {
+  main .help-card .default-content-wrapper {
+    grid-template-columns: 1fr auto;
+    column-gap: 40px;
+    align-items: center;
+    padding: 16px 30px;
+  }
+
+  main .help-card .default-content-wrapper > :not(.button-container) {
+    grid-column: 1;
+  }
+
+  main .help-card .default-content-wrapper > .button-container {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    padding-right: 90px;
+  }
+}
+
+/* red pill CTA as on the source (.btn.btn-primary.btn-large: 16px, 16px 24px, 60px radius) */
+main .help-card a.button:any-link,
+main .columns-callout:not(.grey) a.button.primary:any-link {
+  display: inline-block;
+  border: 1px solid var(--brand-red);
+  border-radius: 60px;
+  padding: 16px 24px;
+  background-color: var(--brand-red);
+  color: #fff;
+  font-family: var(--body-font-family);
+  font-size: 16px;
+  line-height: 1.43;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+main .help-card a.button:hover,
+main .columns-callout:not(.grey) a.button.primary:hover {
+  color: #fff;
+  text-decoration: none;
+}
+
+/* blog articles: images centered at the source width (70% of a 945px column) */
+.blog-article main .default-content-wrapper > picture {
+  display: block;
+  margin: 20px 0;
+  text-align: center;
+}
+
+.blog-article main .default-content-wrapper > picture img {
+  width: 662px;
+}
+
+/* blog articles: shared article list (source sidebar nav: uppercase bold title with
+   red rule, red links) shown below the article in three columns */
+.blog-article main .fragment-wrapper {
+  margin-top: 40px;
+}
+
+.blog-article main .fragment-wrapper h2 {
+  margin: 0 0 20px;
+  padding: 0 0 10px;
+  border-bottom: 2px solid var(--brand-red);
+  font-size: 14px;
+  font-weight: 700;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.blog-article main .fragment-wrapper ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.blog-article main .fragment-wrapper li {
+  margin: 0 0 12px;
+  break-inside: avoid;
+}
+
+@media (width >= 900px) {
+  .blog-article main .fragment-wrapper ul {
+    columns: 3;
+    column-gap: 40px;
+  }
+}
+
+/* glossary: A-Z bar (letters without terms greyed), letter headings, term list */
+.glossary main .default-content-wrapper > ul:first-of-type {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 0;
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.glossary main .default-content-wrapper > ul:first-of-type > li {
+  min-width: 43px;
+  color: #ccc;
+  font-size: 18px;
+  text-align: center;
+}
+
+.glossary main .default-content-wrapper > h1 {
+  margin: 30px 0 10px;
+  font-size: 50px;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.glossary main .default-content-wrapper > ul:not(:first-of-type) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.glossary main .default-content-wrapper > ul:not(:first-of-type) > li {
+  margin: 0 0 30px;
+}
+
+.glossary main .default-content-wrapper > ul:not(:first-of-type) > li > p {
+  margin: 0;
+}
+
+/* site map: three columns of groups (title + list, grouped by decorateSitemap in
+   scripts.js), bold group titles, black links */
+.sitemap main .sitemap-group {
+  margin: 0 0 30px;
+  break-inside: avoid;
+}
+
+.sitemap main .sitemap-group > p {
+  margin: 0;
+  font-weight: 700;
+}
+
+.sitemap main .sitemap-group > ul {
+  margin: 10px 0 0;
+}
+
+.sitemap main .sitemap-group li > p {
+  margin: 0;
+}
+
+.sitemap main .sitemap-group li {
+  margin: 4px 0;
+}
+
+.sitemap main .sitemap-group a:any-link {
+  color: var(--text-color);
+}
+
+@media (width >= 900px) {
+  .sitemap main > .section:not(.page-banner) > .default-content-wrapper {
+    columns: 3;
+    column-gap: 40px;
+  }
+
+  .sitemap main > .section:not(.page-banner) > .default-content-wrapper > h1 {
+    column-span: all;
+    margin-bottom: 40px;
+  }
+}
+/* stylelint-enable no-descending-specificity */
