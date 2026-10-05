@@ -2,10 +2,11 @@
   "status": "success",
   "url": "https://www.toyotafinancial.com/us/en/investor_relations/sales_and_trading.html",
   "path": "us/en/investor-relations/sales-and-trading",
-  "timestamp": "2026-10-04T15:41:10.053Z",
+  "timestamp": "2026-10-05T02:42:18.817Z",
   "title": "Sales and Trading | Toyota Financial",
   "template": "content-page",
   "blocks": [
+    "terms-gate",
     "columns-callout"
   ]
 }

@@ -490,6 +490,25 @@
           ]
         },
         {
+          "name": "terms-gate",
+          "instances": [
+            "#main-content .screenFade .investor-relations-terms"
+          ]
+        },
+        {
+          "name": "document-library",
+          "instances": [
+            "#main-content .screenFade .sec-filling.parbase",
+            "#main-content .screenFade .assetbacked-security.parbase"
+          ]
+        },
+        {
+          "name": "documents",
+          "instances": [
+            "#main-content .screenFade .doc-link.parbase"
+          ]
+        },
+        {
           "name": "columns-callout",
           "instances": [
             "#main-content .screenFade .card-component.parbase:has(.card-content, .img-card):not(:has(.thumbnail-card, .materialized-dropdown, .card.no-pd))"

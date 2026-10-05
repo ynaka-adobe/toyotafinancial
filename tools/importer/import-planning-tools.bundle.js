@@ -262,6 +262,36 @@ var CustomImportScript = (() => {
       element.querySelectorAll(".nav-list-component").forEach((el) => {
         if (!isBlogArticle) el.remove();
       });
+      const liveLinks = [...element.querySelectorAll(".doc-link .doc-subsection .doc-links")];
+      if (liveLinks.length && payload && payload.html && payload.html.includes("doc-links")) {
+        const FILE_TYPES = { pdf: "PDF", doc: "Word", docx: "Word", htm: "HTML", html: "HTML", xls: "Excel", xlsx: "Excel" };
+        const raw = doc.implementation.createHTMLDocument("");
+        raw.body.innerHTML = payload.html;
+        const rawLinks = [...raw.querySelectorAll(".doc-link .doc-subsection .doc-links")];
+        if (rawLinks.length === liveLinks.length) {
+          liveLinks.forEach((box, i) => {
+            if (box.querySelector("a[href]")) return;
+            rawLinks[i].querySelectorAll("a[href]").forEach((src) => {
+              const a = doc.createElement("a");
+              const href = src.getAttribute("href");
+              const ext = decodeURIComponent(href).split("?")[0].split(".").pop().toLowerCase();
+              a.setAttribute("href", href);
+              a.textContent = FILE_TYPES[ext] || ext.toUpperCase();
+              box.append(a, " ");
+            });
+          });
+        }
+      }
+      const chart = element.querySelector(".investor-relations-chart");
+      const chartHeading = chart && chart.querySelector("h1, h2, h3");
+      if (chartHeading) {
+        const slug = chartHeading.textContent.trim().toLowerCase().replace(/[^\p{L}\p{N}\s-]/gu, "").replace(/\s/g, "-");
+        element.querySelectorAll(".investor-relations-content a.view-chart").forEach((a) => {
+          const href = a.getAttribute("href");
+          if (!href || href === "#") a.setAttribute("href", `#${slug}`);
+        });
+      }
+      element.querySelectorAll(".investor-relations-chart .previous-section").forEach((s) => s.remove());
       element.querySelectorAll("a.js-comparison-printer").forEach((a) => {
         a.setAttribute("href", "#print");
         if (!a.closest("strong, b")) {

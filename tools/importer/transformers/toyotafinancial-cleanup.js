@@ -333,6 +333,48 @@ export default function transform(hookName, element, payload) {
       if (!isBlogArticle) el.remove();
     });
 
+    // Investor Relations doc-link component: its file links are icon-only (no text), and the
+    // importer drops empty links while loading the page, leaving .doc-links empty. Restore them
+    // from the raw source HTML (payload.html, same component order), with the file type as
+    // text, for parsers/documents.js.
+    const liveLinks = [...element.querySelectorAll('.doc-link .doc-subsection .doc-links')];
+    if (liveLinks.length && payload && payload.html && payload.html.includes('doc-links')) {
+      const FILE_TYPES = { pdf: 'PDF', doc: 'Word', docx: 'Word', htm: 'HTML', html: 'HTML', xls: 'Excel', xlsx: 'Excel' };
+      const raw = doc.implementation.createHTMLDocument('');
+      raw.body.innerHTML = payload.html;
+      const rawLinks = [...raw.querySelectorAll('.doc-link .doc-subsection .doc-links')];
+      if (rawLinks.length === liveLinks.length) {
+        liveLinks.forEach((box, i) => {
+          if (box.querySelector('a[href]')) return;
+          rawLinks[i].querySelectorAll('a[href]').forEach((src) => {
+            const a = doc.createElement('a');
+            const href = src.getAttribute('href');
+            const ext = decodeURIComponent(href).split('?')[0].split('.').pop().toLowerCase();
+            a.setAttribute('href', href);
+            a.textContent = FILE_TYPES[ext] || ext.toUpperCase();
+            box.append(a, ' ');
+          });
+        });
+      }
+    }
+
+    // Investor Relations: a.view-chart ("TMCC asset-backed securities", About Toyota "See now")
+    // swaps the content for the .investor-relations-chart view on the source. On the new page
+    // both views follow each other, so the link jumps to the chart view's heading (id as
+    // generated for headings: lowercase, punctuation dropped, spaces -> "-").
+    const chart = element.querySelector('.investor-relations-chart');
+    const chartHeading = chart && chart.querySelector('h1, h2, h3');
+    if (chartHeading) {
+      const slug = chartHeading.textContent.trim().toLowerCase()
+        .replace(/[^\p{L}\p{N}\s-]/gu, '').replace(/\s/g, '-');
+      element.querySelectorAll('.investor-relations-content a.view-chart').forEach((a) => {
+        const href = a.getAttribute('href');
+        if (!href || href === '#') a.setAttribute('href', `#${slug}`);
+      });
+    }
+    // chart view "back" arrow (span.previous-section) only works with the view swap
+    element.querySelectorAll('.investor-relations-chart .previous-section').forEach((s) => s.remove());
+
     // VSA comparison "View Printer Friendly Version" (a.js-comparison-printer, href "#") is a
     // print button: bold link to #print = primary CTA; blocks/compare-plans prints the page.
     element.querySelectorAll('a.js-comparison-printer').forEach((a) => {

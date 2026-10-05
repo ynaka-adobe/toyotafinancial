@@ -138,6 +138,94 @@ var CustomImportScript = (() => {
     element.replaceWith(block);
   }
 
+  // tools/importer/parsers/documents.js
+  var text2 = (el) => el ? el.textContent.replace(/\s+/g, " ").trim() : "";
+  var TYPE = { pdf: "PDF", doc: "Word", docx: "Word", htm: "HTML", html: "HTML", xls: "Excel", xlsx: "Excel" };
+  function parse2(element, { document }) {
+    const cells = [];
+    const h = element.querySelector("h1, h2, h3, h4");
+    if (h) {
+      const h3 = document.createElement("h3");
+      h3.textContent = text2(h);
+      cells.push([h3]);
+    }
+    element.querySelectorAll(".doc-subsection").forEach((sub) => {
+      const label = text2(sub.querySelector(".doc-links-text")) || (h ? text2(h) : "Document");
+      const links = document.createElement("p");
+      sub.querySelectorAll(".doc-links a[href]").forEach((a, i) => {
+        const href = a.getAttribute("href");
+        const ext = decodeURIComponent(href).split("?")[0].split(".").pop().toLowerCase();
+        const link = document.createElement("a");
+        link.setAttribute("href", href);
+        link.textContent = TYPE[ext] || ext.toUpperCase();
+        if (i) links.append(" ");
+        links.append(link);
+      });
+      if (links.childNodes.length) cells.push([label, links]);
+    });
+    if (!cells.length) return;
+    const block = WebImporter.Blocks.createBlock(document, { name: "Documents", cells });
+    element.replaceWith(block);
+  }
+
+  // tools/importer/parsers/document-library.js
+  var ORIGIN = "https://www.toyotafinancial.com";
+  var DEFAULTS = {
+    "sec-filings": "/content/dam/tmcc-webcommons/toyotafinancial/documents/investor-relations/sec-filings",
+    "asset-backed": "/content/dam/tmcc-webcommons/toyotafinancial/documents/investor-relations/ABS"
+  };
+  var SEC_ORDER = "Quarterly Reports on Form 10-Q, Annual Reports on Form 10-K, Current Reports on Form 8-K";
+  function parse3(element, { document }) {
+    const layout = element.matches(".assetbacked-security") ? "asset-backed" : "sec-filings";
+    const script = [...element.querySelectorAll("script")].map((s) => s.textContent).join("\n");
+    const m = script.match(/root_dir\s*=\s*'([^']+)'/);
+    const folder = m ? m[1].replace(/^\/api\/assets\//, "/content/dam/").replace(/\.json.*$/, "") : DEFAULTS[layout];
+    const labelEl = element.querySelector("label, .select-label, p");
+    const label = (labelEl ? labelEl.textContent.replace(/\s+/g, " ").trim() : "") || (layout === "sec-filings" ? "Please select a fiscal year" : "Please select a year");
+    const toSentence = (s) => s === s.toUpperCase() ? s.charAt(0) + s.slice(1).toLowerCase() : s;
+    const link = document.createElement("a");
+    link.setAttribute("href", `${ORIGIN}${folder}`);
+    link.textContent = `${ORIGIN}${folder}`;
+    const cells = [["Source", link], ["Layout", layout], ["Year label", toSentence(label)]];
+    if (layout === "sec-filings") cells.push(["Order", SEC_ORDER]);
+    const after = [...element.querySelectorAll("p.sec_footer_text")];
+    const block = WebImporter.Blocks.createBlock(document, { name: "Document Library", cells });
+    element.replaceWith(block);
+    block.after(...after);
+  }
+
+  // tools/importer/parsers/terms-gate.js
+  var text3 = (el) => el ? el.textContent.replace(/\s+/g, " ").trim() : "";
+  function parse4(element, { document }) {
+    const content = document.createElement("div");
+    const h = element.querySelector("h1, h2");
+    if (h) {
+      const h1 = document.createElement("h1");
+      h1.textContent = text3(h);
+      content.append(h1);
+    }
+    element.querySelectorAll(".rte p, .rte ul, .rte ol").forEach((p) => {
+      if (text3(p)) content.append(p.cloneNode(true));
+    });
+    const actions = document.createElement("p");
+    const decline = element.querySelector("a.terms-decline");
+    if (decline) {
+      const a = document.createElement("a");
+      a.setAttribute("href", decline.getAttribute("href"));
+      a.textContent = text3(decline) || "Decline";
+      actions.append(a, " ");
+    }
+    const accept = document.createElement("a");
+    accept.setAttribute("href", "#accept");
+    accept.textContent = text3(element.querySelector("a.terms-accept")) || "Accept";
+    const strong = document.createElement("strong");
+    strong.append(accept);
+    actions.append(strong);
+    const block = WebImporter.Blocks.createBlock(document, { name: "Terms Gate", cells: [[content], [actions]] });
+    element.replaceWith(block);
+    block.after(document.createElement("hr"));
+  }
+
   // tools/importer/parsers/columns-callout.js
   function cleanText(el) {
     return (el.textContent || "").replace(/ /g, " ").replace(/\s+/g, " ").trim();
@@ -145,7 +233,7 @@ var CustomImportScript = (() => {
   function isDocumentHref(href) {
     return /\.(pdf|docx?|xlsx?|mp4|webm)(\?|#|$)/i.test(href || "") || /\/content\/dam\//.test(href || "");
   }
-  function parse2(element, { document }) {
+  function parse5(element, { document }) {
     const root = element.querySelector(".img-card, .card") || element;
     const header = root.querySelector(".card-header");
     const content = root.querySelector(".card-content");
@@ -240,7 +328,7 @@ var CustomImportScript = (() => {
     if (frag.lastChild && frag.lastChild.nodeType === 3) frag.lastChild.textContent = frag.lastChild.textContent.replace(/\s+$/, "");
     return frag;
   }
-  function parse3(element, { document }) {
+  function parse6(element, { document }) {
     const items = [...element.querySelectorAll(":scope > li.panel, :scope > li")];
     const cells = [];
     items.forEach((item) => {
@@ -367,10 +455,10 @@ var CustomImportScript = (() => {
   function panelTitle(panel) {
     const heading = panel.querySelector(".panel-heading .panel-title, .panel-heading");
     if (!heading) return "";
-    const text2 = heading.querySelector(".col-xs-9, .pad_left_0") || heading.querySelector("a") || heading;
-    return cleanText3(text2);
+    const text4 = heading.querySelector(".col-xs-9, .pad_left_0") || heading.querySelector("a") || heading;
+    return cleanText3(text4);
   }
-  function parse4(element, { document }) {
+  function parse7(element, { document }) {
     if (!element.parentNode) return;
     const panels = [element];
     let next = element.nextElementSibling;
@@ -397,15 +485,15 @@ var CustomImportScript = (() => {
   }
 
   // tools/importer/parsers/video-poster.js
-  var ORIGIN = "https://www.toyotafinancial.com";
+  var ORIGIN2 = "https://www.toyotafinancial.com";
   function absolute(href) {
     try {
-      return new URL(href, ORIGIN).href;
+      return new URL(href, ORIGIN2).href;
     } catch (e) {
       return href;
     }
   }
-  function parse5(element, { document }) {
+  function parse8(element, { document }) {
     const video = element.querySelector("video");
     const source = video && (video.querySelector("source[src]") || (video.hasAttribute("src") ? video : null));
     const rawSrc = source && source.getAttribute("src") || video && video.getAttribute("data-src") || (element.querySelector('[data-src$=".mp4"], [data-video-src]') || { getAttribute: () => null }).getAttribute("data-src");
@@ -437,7 +525,7 @@ var CustomImportScript = (() => {
   function cleanText4(el) {
     return (el.textContent || "").replace(/ /g, " ").replace(/\s+/g, " ").trim();
   }
-  function parse6(element, { document }) {
+  function parse9(element, { document }) {
     const cells = [];
     const photo = element.querySelector(".card-content img, :scope > div:not(.quiz-section) img");
     if (photo) {
@@ -477,17 +565,17 @@ var CustomImportScript = (() => {
       const ul = document.createElement("ul");
       holder.querySelectorAll(".answer input").forEach((input) => {
         const label = input.id && holder.querySelector(`label[for="${input.id}"]`) || input.nextElementSibling;
-        const text2 = label ? cleanText4(label) : input.getAttribute("value") || "";
-        if (!text2) return;
+        const text4 = label ? cleanText4(label) : input.getAttribute("value") || "";
+        if (!text4) return;
         const li = document.createElement("li");
         const target = input.getAttribute("data-target");
         if (target) {
           const a = document.createElement("a");
           a.href = target.startsWith("#") ? target : `#${target}`;
-          a.textContent = text2;
+          a.textContent = text4;
           li.append(a);
         } else {
-          li.textContent = text2;
+          li.textContent = text4;
         }
         ul.append(li);
       });
@@ -502,13 +590,13 @@ var CustomImportScript = (() => {
   }
 
   // tools/importer/parsers/carousel-cards.js
-  var ORIGIN2 = "https://www.toyotafinancial.com";
+  var ORIGIN3 = "https://www.toyotafinancial.com";
   function cleanText5(el) {
     return (el.textContent || "").replace(/ /g, " ").replace(/\s+/g, " ").trim();
   }
   function absolute2(href) {
     try {
-      return new URL(href, ORIGIN2).href;
+      return new URL(href, ORIGIN3).href;
     } catch (e) {
       return href;
     }
@@ -528,7 +616,7 @@ var CustomImportScript = (() => {
     });
     return clone;
   }
-  function parse7(element, { document }) {
+  function parse10(element, { document }) {
     const filterLabel = element.querySelector(".dropdown-card .card-header, .dropdown-card p");
     const options = [...element.querySelectorAll(".materialized-dropdown li.option, .materialized-dropdown option")].map(cleanText5).filter(Boolean);
     const all = [...element.querySelectorAll(".populate-carousel")];
@@ -624,7 +712,7 @@ var CustomImportScript = (() => {
       return src;
     }
   }
-  function parse8(element, { document }) {
+  function parse11(element, { document }) {
     const cards = [...element.querySelectorAll(".thumbnail-card")];
     const cells = [];
     cards.forEach((card) => {
@@ -769,7 +857,7 @@ var CustomImportScript = (() => {
     });
     return frag;
   }
-  function parse9(element, { document }) {
+  function parse12(element, { document }) {
     const table = element.querySelector("table");
     if (!table) {
       element.replaceWith(...element.childNodes);
@@ -908,7 +996,7 @@ var CustomImportScript = (() => {
     const block = WebImporter.Blocks.createBlock(document, { name: "columns-card", cells });
     element.replaceWith(block);
   }
-  function parse10(element, { document }) {
+  function parse13(element, { document }) {
     if (!element.parentNode) return;
     if (isBlogCard(element)) {
       parseBlogCards(element, document);
@@ -1008,7 +1096,7 @@ var CustomImportScript = (() => {
     });
     return { block, rest };
   }
-  function parse11(element, { document }) {
+  function parse14(element, { document }) {
     if (!element.parentNode) return;
     const isDropdownCard = element.matches(".card-component, .card-component.parbase") && !!element.querySelector(".materialized-dropdown");
     let label = NEUTRAL_LABEL;
@@ -1077,7 +1165,7 @@ var CustomImportScript = (() => {
       remove: []
     }
   ];
-  function parse12(element, { document }) {
+  function parse15(element, { document }) {
     let path = FRAGMENTS[element.id];
     if (!path) {
       const match = CLASS_FRAGMENTS.find((f) => element.matches(f.selector));
@@ -1141,8 +1229,8 @@ var CustomImportScript = (() => {
     }
     return imgSrc || "";
   }
-  function headingSlug(text2) {
-    return text2.toLowerCase().replace(/['‘’]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  function headingSlug(text4) {
+    return text4.toLowerCase().replace(/['‘’]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
   }
   var KNOWN_SECTION_TITLES = {
     oasa: "Online Account Services Agreement (applicable to Financial Services Customers with Online Account Services)",
@@ -1289,6 +1377,36 @@ var CustomImportScript = (() => {
       element.querySelectorAll(".nav-list-component").forEach((el) => {
         if (!isBlogArticle) el.remove();
       });
+      const liveLinks = [...element.querySelectorAll(".doc-link .doc-subsection .doc-links")];
+      if (liveLinks.length && payload && payload.html && payload.html.includes("doc-links")) {
+        const FILE_TYPES = { pdf: "PDF", doc: "Word", docx: "Word", htm: "HTML", html: "HTML", xls: "Excel", xlsx: "Excel" };
+        const raw = doc.implementation.createHTMLDocument("");
+        raw.body.innerHTML = payload.html;
+        const rawLinks = [...raw.querySelectorAll(".doc-link .doc-subsection .doc-links")];
+        if (rawLinks.length === liveLinks.length) {
+          liveLinks.forEach((box, i) => {
+            if (box.querySelector("a[href]")) return;
+            rawLinks[i].querySelectorAll("a[href]").forEach((src) => {
+              const a = doc.createElement("a");
+              const href = src.getAttribute("href");
+              const ext = decodeURIComponent(href).split("?")[0].split(".").pop().toLowerCase();
+              a.setAttribute("href", href);
+              a.textContent = FILE_TYPES[ext] || ext.toUpperCase();
+              box.append(a, " ");
+            });
+          });
+        }
+      }
+      const chart = element.querySelector(".investor-relations-chart");
+      const chartHeading = chart && chart.querySelector("h1, h2, h3");
+      if (chartHeading) {
+        const slug = chartHeading.textContent.trim().toLowerCase().replace(/[^\p{L}\p{N}\s-]/gu, "").replace(/\s/g, "-");
+        element.querySelectorAll(".investor-relations-content a.view-chart").forEach((a) => {
+          const href = a.getAttribute("href");
+          if (!href || href === "#") a.setAttribute("href", `#${slug}`);
+        });
+      }
+      element.querySelectorAll(".investor-relations-chart .previous-section").forEach((s) => s.remove());
       element.querySelectorAll("a.js-comparison-printer").forEach((a) => {
         a.setAttribute("href", "#print");
         if (!a.closest("strong, b")) {
@@ -1326,12 +1444,12 @@ var CustomImportScript = (() => {
       element.querySelectorAll(".policy-scroll-section[id]").forEach((section) => {
         const title = section.matches("p") ? section : section.querySelector(":scope > p");
         if (!title) return;
-        const text2 = title.textContent.replace(/\u00a0/g, " ").replace(/\s+/g, " ").trim();
-        if (!text2) return;
+        const text4 = title.textContent.replace(/\u00a0/g, " ").replace(/\s+/g, " ").trim();
+        if (!text4) return;
         const heading = doc.createElement("h3");
-        heading.textContent = text2;
+        heading.textContent = text4;
         title.replaceWith(heading);
-        sectionSlugs.set(section.id, headingSlug(text2));
+        sectionSlugs.set(section.id, headingSlug(text4));
       });
       element.querySelectorAll('a[href*="#"]').forEach((a) => {
         const [base, id] = a.getAttribute("href").split("#");
@@ -1782,17 +1900,20 @@ var CustomImportScript = (() => {
   // tools/importer/import-content-page.js
   var parsers = {
     "compare-plans": parse,
-    "columns-callout": parse2,
-    "accordion-faq": parse3,
-    "accordion-boxed": parse4,
-    "video-poster": parse5,
-    "quiz-plans": parse6,
-    "carousel-cards": parse7,
-    "cards-thumbnail": parse8,
-    "table-caption": parse9,
-    "columns-card": parse10,
-    "tabs-plans": parse11,
-    fragment: parse12
+    "documents": parse2,
+    "document-library": parse3,
+    "terms-gate": parse4,
+    "columns-callout": parse5,
+    "accordion-faq": parse6,
+    "accordion-boxed": parse7,
+    "video-poster": parse8,
+    "quiz-plans": parse9,
+    "carousel-cards": parse10,
+    "cards-thumbnail": parse11,
+    "table-caption": parse12,
+    "columns-card": parse13,
+    "tabs-plans": parse14,
+    fragment: parse15
   };
   var PAGE_TEMPLATE = {
     "name": "content-page",
@@ -1832,6 +1953,25 @@ var CustomImportScript = (() => {
         "instances": [
           "#main-content .screenFade .compare-table-component.parbase",
           "#main-content .screenFade .feature_accordion.parbase"
+        ]
+      },
+      {
+        "name": "terms-gate",
+        "instances": [
+          "#main-content .screenFade .investor-relations-terms"
+        ]
+      },
+      {
+        "name": "document-library",
+        "instances": [
+          "#main-content .screenFade .sec-filling.parbase",
+          "#main-content .screenFade .assetbacked-security.parbase"
+        ]
+      },
+      {
+        "name": "documents",
+        "instances": [
+          "#main-content .screenFade .doc-link.parbase"
         ]
       },
       {

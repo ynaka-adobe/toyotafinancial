@@ -1,0 +1,74 @@
+/* documents: source Investor Relations document rows — label on the left, small file-type
+   icons (red PDF, blue Word, ...) on the right, thin grey dividers.
+   Also used by blocks/document-library (loaded from there). */
+
+.documents .documents-heading > :first-child,
+.document-library .documents-heading > :first-child {
+  margin-top: 30px;
+}
+
+.documents-list {
+  margin: 10px 0 30px;
+  padding: 0;
+  list-style: none;
+}
+
+.documents-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 8px 16px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.documents-row:first-child {
+  border-top: 1px solid #eee;
+}
+
+.documents-files {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 4px;
+}
+
+.documents-file {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background: no-repeat center / contain;
+}
+
+.documents-file:focus-visible {
+  outline: 2px solid var(--text-color);
+  outline-offset: 2px;
+}
+
+.documents-file-pdf {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='2' fill='%23e2231a'/%3E%3Ctext x='8' y='11' font-family='Arial' font-size='6.5' font-weight='700' fill='%23fff' text-anchor='middle'%3EPDF%3C/text%3E%3C/svg%3E");
+}
+
+.documents-file-word {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='2' fill='%232b579a'/%3E%3Ctext x='8' y='12' font-family='Arial' font-size='10' font-weight='700' fill='%23fff' text-anchor='middle'%3EW%3C/text%3E%3C/svg%3E");
+}
+
+.documents-file-html {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='2' fill='%23555'/%3E%3Ctext x='8' y='11' font-family='Arial' font-size='5.5' font-weight='700' fill='%23fff' text-anchor='middle'%3EHTML%3C/text%3E%3C/svg%3E");
+}
+
+.documents-file-excel {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='2' fill='%23217346'/%3E%3Ctext x='8' y='12' font-family='Arial' font-size='10' font-weight='700' fill='%23fff' text-anchor='middle'%3EX%3C/text%3E%3C/svg%3E");
+}
+
+.documents-file-xml,
+.documents-file-zip,
+.documents-file-ppt,
+.documents-file-file {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='2' fill='%23888'/%3E%3Cpath d='M4 3h5l3 3v7H4z' fill='none' stroke='%23fff' stroke-width='1.2'/%3E%3C/svg%3E");
+}
+
+.documents .documents-text {
+  margin: 10px 0;
+}

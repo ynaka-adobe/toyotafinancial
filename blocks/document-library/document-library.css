@@ -1,0 +1,105 @@
+/* document-library: source sec-filling / assetbacked-security apps — year picker card (red top
+   border, soft shadow, uppercase label, underlined select), report-type headings or month
+   accordion (uppercase red titles, chevron), document rows from blocks/documents */
+
+.document-library-picker {
+  box-sizing: border-box;
+  max-width: 653px;
+  margin: 10px 0 30px;
+  padding: 16px 22px 22px;
+  border-top: 2px solid var(--brand-red);
+  border-radius: 3px;
+  background-color: var(--background-color);
+  box-shadow: rgb(0 0 0 / 20%) 0 2px 4px 0;
+}
+
+.document-library-picker label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.document-library-picker select {
+  width: 100%;
+  padding: 6px 0;
+  border: 0;
+  border-bottom: 1px solid var(--text-color);
+  border-radius: 0;
+  background-color: transparent;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.document-library-results h2 {
+  margin: 30px 0 10px;
+  font-size: 28px;
+  text-align: left;
+}
+
+.document-library-results h3 {
+  margin: 40px 0 10px;
+  font-size: 22px;
+}
+
+.document-library-message {
+  color: var(--dark-color);
+  font-size: 14px;
+}
+
+/* month accordion (asset-backed) */
+.document-library-months {
+  margin: 20px 0;
+  border-top: 1px solid #eee;
+}
+
+.document-library-months details {
+  border-bottom: 1px solid #eee;
+}
+
+.document-library-months summary {
+  position: relative;
+  display: block;
+  padding: 6px 40px 6px 10px;
+  color: var(--brand-red);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.6;
+  list-style: none;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.document-library-months summary::-webkit-details-marker {
+  display: none;
+}
+
+.document-library-months summary:focus-visible {
+  outline: 2px solid var(--text-color);
+  outline-offset: -2px;
+}
+
+.document-library-months summary::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  width: 8px;
+  height: 8px;
+  border: solid var(--brand-red);
+  border-width: 2px 2px 0 0;
+  transform: translateY(-50%) rotate(45deg);
+  transition: transform 0.2s;
+}
+
+.document-library-months details[open] > summary::after {
+  transform: translateY(-75%) rotate(135deg);
+}
+
+.document-library-month {
+  padding: 0 0 10px;
+}
+
+.document-library-month .documents-list {
+  margin: 0;
+}

@@ -1,0 +1,58 @@
+/* terms-gate: source .investor-relations-terms — centered light title, terms text,
+   grey "Decline" and red "Accept" pill buttons; the content after it stays hidden */
+
+main > .section.terms-gated {
+  display: none !important;
+}
+
+.terms-gate .terms-gate-text h1,
+.terms-gate .terms-gate-text h2 {
+  margin: 20px 0 30px;
+  font-size: 40px;
+  font-weight: 300;
+  line-height: 1;
+  text-align: center;
+}
+
+.terms-gate .terms-gate-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  margin-top: 30px;
+}
+
+.terms-gate .terms-gate-actions p {
+  display: contents;
+}
+
+.terms-gate a.button:any-link {
+  display: inline-block;
+  min-width: 76px;
+  border: 1px solid #ccc;
+  border-radius: 60px;
+  padding: 16px 24px;
+  background-color: #f5f5f5;
+  color: var(--text-color);
+  font-family: var(--body-font-family);
+  font-size: 16px;
+  line-height: 1.43;
+  text-align: center;
+  text-decoration: none;
+}
+
+.terms-gate a.button.primary:any-link {
+  border-color: var(--brand-red);
+  background-color: var(--brand-red);
+  color: #fff;
+}
+
+.terms-gate a.button:hover {
+  text-decoration: none;
+}
+
+@media (width >= 900px) {
+  .terms-gate .terms-gate-text h1,
+  .terms-gate .terms-gate-text h2 {
+    font-size: 50px;
+  }
+}

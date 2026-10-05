@@ -3,6 +3,9 @@
 
 // PARSER IMPORTS
 import comparePlansParser from './parsers/compare-plans.js';
+import documentsParser from './parsers/documents.js';
+import documentLibraryParser from './parsers/document-library.js';
+import termsGateParser from './parsers/terms-gate.js';
 import columnsCalloutParser from './parsers/columns-callout.js';
 import accordionFaqParser from './parsers/accordion-faq.js';
 import accordionBoxedParser from './parsers/accordion-boxed.js';
@@ -26,6 +29,9 @@ import dmImagesTransformer from './transformers/toyotafinancial-dm-images.js';
 // other parsers have already turned into blocks.
 const parsers = {
   'compare-plans': comparePlansParser,
+  'documents': documentsParser,
+  'document-library': documentLibraryParser,
+  'terms-gate': termsGateParser,
   'columns-callout': columnsCalloutParser,
   'accordion-faq': accordionFaqParser,
   'accordion-boxed': accordionBoxedParser,
@@ -78,6 +84,25 @@ const PAGE_TEMPLATE = {
       "instances": [
         "#main-content .screenFade .compare-table-component.parbase",
         "#main-content .screenFade .feature_accordion.parbase"
+      ]
+    },
+    {
+      "name": "terms-gate",
+      "instances": [
+        "#main-content .screenFade .investor-relations-terms"
+      ]
+    },
+    {
+      "name": "document-library",
+      "instances": [
+        "#main-content .screenFade .sec-filling.parbase",
+        "#main-content .screenFade .assetbacked-security.parbase"
+      ]
+    },
+    {
+      "name": "documents",
+      "instances": [
+        "#main-content .screenFade .doc-link.parbase"
       ]
     },
     {
